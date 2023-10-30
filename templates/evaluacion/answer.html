@@ -1,0 +1,64 @@
+{% extends 'base-min.html' %}
+
+
+{% block head %}
+    <title>Evaluacion - Sistema de Recursos Humanos </title>
+    <style>
+      .container.enc { padding: 10vh 0; }
+      .dmpi4g { display: none; }
+      {% if contents %}
+      form { display: none; }
+      {% endif %}
+      button { width: 100%; }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="container enc">
+<b>{{ person.nombres }} {{ person.apellido1 }} {{ person.apellido2 }}</b>
+
+{{ contents | safe }}
+    
+{% if evaluacion %}
+    <form enctype="multipart/form-data" method="POST">
+        <div class="dmpi4g">
+            {% csrf_token %}
+            <input type="hidden" value="{{ evaluacion.clave }}" name="clave"/>
+            <input type="hidden" value="{{ person.curp }}" name="curp"/>
+            <input type="number" value="0.0" name="porcentaje" step=".001"/>
+        </div>
+        <input type="file" name="archivo"/>
+        <button class="btn btn-primary">Enviar</button>
+    </form>
+
+    {% if contents %}
+    <div>
+        <button class="btn btn-primary contents">Enviar</button>
+        <script>
+        const getElem = selector => document.querySelector(selector)
+        const enviar = getElem('button.contents')
+        const inputFile = getElem('input[name="archivo"]')
+        const porcentaje = getElem('input[name="porcentaje"]')
+
+        enviar.addEventListener('click', () => {
+
+            let json = '{}'
+            if (evaluacion) {
+                porcentaje.value = evaluacion.porcentaje || 0.0
+                json = JSON.stringify(evaluacion.data)
+            }
+
+            const file = new File([json], "data.json", { type:"application/json" })
+            const container = new DataTransfer();
+            container.items.add(file)
+            inputFile.files = container.files
+            document.querySelector('form button').click()
+        })
+        </script>
+    </div>
+    {% endif %}
+
+{% endif %}
+</div>
+{% endblock %}
+

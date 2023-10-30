@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+
+{% block titulo_submodulo %}
+<h3>Crear evaluación/encuesta</h3>
+<hr class="red hr">
+{% endblock %}
+
+{% block content %}
+<style>
+hr.red.hr { margin-bottom: 40px; }
+.alert { font-size: 90%; }
+.alert ul { text-align: left; margin: auto; width: max-content; }
+
+.flex-row { display: flex; flex-direction: row; gap: 20px; }
+.flex-column { display: flex; flex-direction: column; gap: 20px; }
+.start-center { justify-content: start; align-items: center; }
+.grow { flex-grow: 1; }
+
+form { margin-bottom: 60px; }
+button { float: right; }
+details { padding: 10px; }
+details summary { display: list-item; }
+details div { background-color: #eee; padding: 10px; }
+details pre { font-size: 90%; margin: 5px 0 0 0; padding: 5px; }
+a.liga { text-align: right; display: block; margin-bottom: 20px; }
+</style>
+
+<a class="liga" href="/evaluacion/lista">Lista de evaluaciones</a>
+
+{% if errors %}<div class="alert alert-danger">
+    <b>Errores</b><br> {{ errors | safe }}
+</div>{% endif %}
+<form class="flex-column" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="flex-row gap">
+        <div class="grow">
+          <b>Nombre*</b>
+          <input class="form-control" type="text" required maxLength="100" name="nombre"/>
+        </div>
+        
+        <div>
+          <b>Clave*</b>
+          <input class="form-control" type="text" required maxLength="10" name="clave"/>
+        </div>
+    </div>
+    
+    <div class="flex-row gap">
+        <div class="grow">
+          <b>Inicio*</b>
+          <input class="form-control" type="date" required name="inicio"/>
+        </div>
+        
+        <div class="grow">
+          <b>Cierre*</b>
+          <input class="form-control" type="date" required name="cierre"/>
+        </div>
+        
+        <div class="grow">
+          <b>Aprobatorio*</b>
+          <input class="form-control" type="number" min="0" max="1" step="0.001" value="0.6"
+            required name="aprobatorio"/>
+        </div>
+
+        <div class="grow">
+          <b>Intentos*</b>
+          <input class="form-control" type="number" min="1" max="10" value="1"
+            required name="intentos"/>
+        </div>
+    </div>
+
+    <div>
+      <b>Archivo*</b>
+      <input type="checkbox" checked name="renderizable"/> Renderizable
+      <input class="form-control-file" type="file" required name="archivo"/>
+    </div>
+
+    <div class="small">
+        <b>Nota:</b> El archivo es renderizable cuando su terminación es html y
+        este cumple con la <i>interfaz de comunicacion</i>
+
+        <details>
+            <summary>Interfaz de comunicación</summary>
+            <div>
+                Debe de exponer en una variable global <b>evaluacion</b>
+                un objeto con las propiedades<br>
+                porcentaje (decimal de 0 a 1) y data objeto con información extra.
+
+                <pre>var evaluacion = { porcentaje: 0.80, data: any | {} }</pre>
+            </div>
+        </details>
+
+        <button class="btn btn-primary">Enviar</button>
+    </div>
+
+</form>
+
+<script>
+function getElem(selector) { return document.querySelector(selector); }
+const nombre  = getElem('input[name="nombre"]')
+const clave   = getElem('input[name="clave"]')
+const inicio  = getElem('input[name="inicio"]')
+const cierre  = getElem('input[name="cierre"]')
+const archivo = getElem('input[name="archivo"]')
+const intentos = getElem('input[name="intentos"]')
+const aprobatorio = getElem('input[name="aprobatorio"]')
+// const renderizable = getElem('input[name="renderizable"]')
+const btn = getElem('button')
+
+const elems = [nombre, clave, inicio, cierre, archivo, intentos] //, renderizable ]
+
+function validate() {
+    const empty = elems.find( e => !e.value )
+    if (empty) {
+        btn.disabled = true
+        return
+    }
+
+    inicioDate = new Date(inicio.value)
+    cierreDate = new Date(cierre.value)
+    if ( inicioDate.getTime() >= cierreDate.getTime() ) {
+        btn.disabled = true
+        return
+    }
+
+    btn.disabled = false
+}
+validate()
+elems.forEach( elem => elem.addEventListener('input', validate) )
+
+function init() {
+    const decoded = new Date().toString() + 'EvAlU4c10N'
+    const ASCII_START = 48
+    const ASCII_END = 126
+    const RANGE = ASCII_END - ASCII_START
+    crypto.subtle
+        .digest("SHA-256", new TextEncoder().encode(decoded))
+        .then( buff => [...new Uint8Array(buff)] )
+        .then( arr => arr.map(
+            v => String.fromCharCode(v % RANGE + ASCII_START )
+        ).join('') )
+        .then( value => clave.value = value.substring(0, 8) )
+}
+init()
+
+</script>
+{% endblock %}

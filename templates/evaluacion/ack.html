@@ -1,0 +1,33 @@
+{% extends 'base-min.html' %}
+
+{% block head %}
+    <title>Evaluacion - Sistema de Recursos Humanos </title>
+    <style>.container.enc { padding: 10vh 0; }</style>
+{% endblock %}
+
+{% block content %}
+<div class="container enc">
+    <h3>Resultados de evaluacion/encuesta.</h3>
+    <div class="alert alert-info">
+        <b>{{ person.nombres }} {{ person.apellido1 }} {{ person.apellido2 }}</b>
+        has tenido un porcentaje de aprobación del <b>{{ porcentaje }}%</b><br>
+        en la evaluación <b>{{ evaluacion.nombre }}</b>.
+    </div>
+
+    <p>Esta pagina se redireccionara en <span>10</span> segundos.</p>
+</div>
+
+<script>
+const span = document.querySelector('p span')
+setTimeout( () => span.innerText = '9', 1000 )
+setTimeout( () => span.innerText = '8', 2000 )
+setTimeout( () => span.innerText = '7', 3000 )
+setTimeout( () => span.innerText = '6', 4000 )
+setTimeout( () => span.innerText = '5', 5000 )
+setTimeout( () => span.innerText = '4', 6000 )
+setTimeout( () => span.innerText = '3', 7000 )
+setTimeout( () => span.innerText = '2', 8000 )
+setTimeout( () => span.innerText = '1', 9000 )
+setTimeout( () => window.location.href = window.location.href, 10000 )
+</script>
+{% endblock %}

@@ -1,0 +1,1 @@
+select a.nombres, a.apellido1, a.apellido2, a.rfc, a.emergencia_contacto, a.emergencia_telefono, b.nombre as Area, c.nombre as contratacion from people_person as a join people_areaorganigrama as b  on a.cat_area_org_id = b.id  join people_contratacion as c on a.cat_contratacion_id = c.id where a.activo = True ;
