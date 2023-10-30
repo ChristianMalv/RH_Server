@@ -1,0 +1,269 @@
+
+{% extends 'base_dir.html' %}
+  {% csrf_token %}
+{% block content %}
+<div class="container">
+  <div class="row">
+                        <div class="col-md-12 col-lg-12">
+                            <h2>{{area}}</h2>
+                            <hr class="red">
+                        </div>
+                    </div>
+  <div class="col-md-6">
+      <div class="form-group datepicker-group">
+      <label><b>Fecha de Inicio:</b></label>
+      <input class="form-control" id="input1" type="text">
+      <label><b>Fecha Fin:</b></label>
+      <input class="form-control" id="input2" type="text">
+    </div>
+</div>
+<form method="get">
+    <div class="col-md-3">
+      <input name ="q" id="searchPerson" placeholder="Buscar">
+    </div>
+    <div class="col-md-3">
+      <button type="button" class="btn btn-primary btn-lg active" onclick="window.history.back();">Salir</a>
+  </div>
+  </form>
+<hr>
+
+ <input id="matriculaArea" value="{{ matricula }}"  style="display:none">
+
+  
+<div id="RowsSearch"></div>
+<div class ="col-md-12" id="RowsInicio">
+  <table class="table table-bordered" id="bajasList">
+    <thead>
+      <tr>
+        <th>Matricula</th>
+        <th>Nombre</th>
+        <th>Detalle de Incidencias  </th>
+        
+      </tr>
+    </thead>
+      
+    <tbody>
+      
+    
+      {% for person in people %}
+      <tr>
+        <td style="display:none" > {{person.pk}}</td>
+        <td>{{ person.matricula }}</td>
+        <td>  {{ person.nombres  }} {{ person.apellido1  }} {{ person.apellido2 }} </a></td>
+      
+        <td> 
+        {% if person.comision_sindical == False %}
+          
+            <button class="btn btn-default btn-xs consultar" type="button" >
+              Consultar
+              <span class="glyphicon glyphicon-book" aria-hidden="true"></span>   </button>
+           {% else %}
+          <h6>Comision Sindical</h6>
+        {% endif %}
+        </td>
+     
+      </tr>
+    {% empty %}
+        <tr class="table-active">
+          <td colspan="3">No data</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<div id="Pages"> 
+    {% if is_paginated %}
+      <ul class="pagination">
+        {% if page_obj.has_previous %}
+          <li><a href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+        {% else %}
+          <li class="disabled"><span>&laquo;</span></li>
+    {% endif %}
+    
+    {% for i in paginator.page_range %}
+        {% if page_obj.number == i %}
+          <li class="active"><span>{{ i }} <span class="sr-only">(current)</span>     </span></li>
+        {% else %}
+          <li><a href="?page={{ i }}">{{ i }}</a></li>
+        {% endif %}
+    {% endfor %}
+ 
+    {% if page_obj.has_next %}
+      <li><a href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&raquo;</span></li>
+    {% endif %}
+      </ul>
+    {% endif %}
+
+    </div>
+    <div id="imgSpinner1" class="lds-ellipsis"></div>
+   
+
+
+<script>
+ $("#submodulo").text('Consulta de Incidencias');
+
+  $('#input1').datepicker({changeYear: true});
+  $('#input2').datepicker({changeYear: true});
+
+  $("#rangoFechasVac").hide();
+  $("#tipoIncidencia").val(1);
+
+  $.ajaxSetup({
+  data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
+});
+
+$(document).on("click",".imprimir",function(){
+            var this_html=$(this);
+            var id=this_html.parent().parent().children().first().text();
+            console.log(id);
+            var input1 = $('#input1').val();
+            var input2 = $('#input2').val();
+            console.log(input1);
+            console.log(input2);
+            if (input1 == "") {
+              alert("Seleccione una Fecha de Inicio");
+              $('#input1').focus();
+            }
+            else if(input2 == "") {
+              alert("Seleccione una Fecha de Fin");
+              $('#input2').focus();
+            }
+            else{
+              norango=false;
+              if(input2==""){
+                //window.location.href = "imprimir/"+id.trim()+"/"+ input1.replaceAll('/', '-') ;
+                window.open("imprimir/"+id.trim()+"/"+ input1.replaceAll('/', '-'), '_blank');
+              }
+              else
+              {
+                //window.location.href = "imprimir/"+id.trim()+"/"+ input1.replaceAll('/', '-') +"/"+ input2.replaceAll('/', '-') ;
+                window.open("imprimir/"+id.trim()+"/"+ input1.replaceAll('/', '-') +"/"+ input2.replaceAll('/', '-'),  '_blank');
+              }
+           
+            }
+    });
+
+    
+$(document).on("click",".consultar",function(){
+            var this_html=$(this);
+            var id=this_html.parent().parent().children().first().text();
+            console.log(id);
+            var input1 = $('#input1').val();
+            var input2 = $('#input2').val();
+            console.log(input1);
+            console.log(input2);
+            if (input1 == "") {
+              alert("Seleccione una Fecha de Inicio");
+              $('#input1').focus();
+            }
+            else{
+              norango=false;
+              if(input2==""){
+                window.location.href = "../../../incidencias/detalle/admin/"+id.trim()+"/"+ input1.replaceAll('/', '-') ;
+              }
+              else
+              {
+                window.location.href = "../../../incidencias/detalle/admin/"+id.trim()+"/"+ input1.replaceAll('/', '-') +"/"+ input2.replaceAll('/', '-') ;
+              }
+            
+            }
+          });
+
+          
+$('#searchPerson').keyup(function(e){
+  clearTimeout($.data(this, 'timer'));
+  if($("#searchPerson").val()==""){
+      $("#RowsSearch").hide();
+      $("#RowsInicio").show();
+      $("#Pages").show();
+      
+    }
+  else {
+    $(this).data('timer', setTimeout(search, 500));
+}
+
+
+});
+function search(force) {
+  var existingString = $("#searchPerson").val();
+    console.log($("matriculaArea").val());
+      
+    if (!force && existingString.length < 3) return; 
+
+$.ajax({
+      url:"{% url 'search_admin_incidencia' %}",
+      type:'GET',
+      data:{  'q':$("#searchPerson").val(), 'matricula': $('#matriculaArea').val() }
+            })
+    .done(function(response){
+      $("#RowsSearch").show();
+      $("#RowsInicio").hide();
+      $("#Pages").hide();
+      $("#RowsSearch").empty();
+      $("#RowsSearch").append(response);
+      console.log(response)
+      })
+    .fail(function(){
+      $("#RowsSearch").hide();
+      $("#RowsInicio").show();
+      $("#Pages").show();
+      })  
+}                
+
+$('#tipoIncidencia').change(function() {
+  var tipoDate = $("#tipoIncidencia").val();
+  console.log($("#tipoIncidencia").val());
+  if(tipoDate== 1 || tipoDate == 2 ){
+      $("#fechaIncidencia").attr('type','datetime-local'); 
+      $("#textoIncidencia").text("Ingrese una fecha con hora, para registrar Incidencia"); 
+      $("#rangoFechasVac").hide();
+  }
+  else if(tipoDate== 20 || tipoDate == 5 || tipoDate == 6  || tipoDate == 7){
+     $("#fechaIncidencia").attr('type','date'); 
+     $("#textoIncidencia").text("Seleccione el rango de fechas, para registrar Incidencia"); 
+     $("#rangoFechasVac").show();
+  }
+  else{
+     
+       $("#fechaIncidencia").attr('type','date'); 
+        $("#textoIncidencia").text("Ingrese una fecha, para registrar Incidencia");
+        $("#rangoFechasVac").hide();
+  }
+
+ });
+
+
+
+
+
+$(document).ajaxStart(function(){
+           /* try
+            {
+                // showing a modal
+                $("#progressDialog").modal();
+
+                var i = 0;
+                var timeout = 750;
+
+                (function progressbar()
+                {
+                    i++;
+                    if(i < 1000)
+                    {
+                        iterateProgressBar();
+                        setTimeout(progressbar, timeout);
+                    }
+                }
+                )();
+            }
+            catch(err)
+            {
+                alert(err.message);
+            }*/
+        });
+
+</script>
+
+{% endblock %}

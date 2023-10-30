@@ -1,0 +1,57 @@
+{% extends 'base-min.html' %}
+
+{% block head %}
+    <title>Evaluacion - Sistema de Recursos Humanos </title>
+    <style>
+      hr.red.hr { margin-bottom: 60px; }
+      .flex-row { display: flex; flex-direction: row; gap: 20px; }
+      .flex-column { display: flex; flex-direction: column; gap: 20px; }
+      .start-center { justify-content: start; align-items: center; }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="container enc">
+    <h3>Evaluación/encuesta</h3>
+    <hr class="red hr">
+    
+    {% if ack %}
+    <div class="alert alert-info">{{ ack | safe }}</div>
+    {% endif %}
+    
+    {% if error or errors %}
+    <div class="alert alert-danger">{{ error }}{{ errors }}</div>
+    {% endif %}
+
+    
+    <form class="flex-column start-center" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div>
+          <b>Clave*</b>
+          <input class="form-control" type="text" required maxLength="10" name="clave" value="evaluacion" style="pointer-events: none;"/>
+        </div>
+    
+        <div>
+          <b>CURP*</b>
+          <input class="form-control" type="text" required maxLength="20" name="curp"/>
+        </div>
+    
+        <button class="btn btn-primary">Enviar</button>
+    </form>
+    
+    <script>
+    function getElem(selector) { return document.querySelector(selector); }
+    const curp  = getElem('input[name="curp"]')
+    const clave   = getElem('input[name="clave"]')
+    const btn = getElem('button')
+    const elems = [curp, clave]
+    
+    function validate() {
+        const empty = elems.find( e => !e.value )
+        btn.disabled = !!empty
+    }
+    validate()
+    elems.forEach( elem => elem.addEventListener('input', validate) )
+    </script>
+</div>
+{% endblock %}

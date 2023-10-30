@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+{{ form.media.js }}
+  <form method="post" novalidate>
+    {% csrf_token %}
+    <div style="display:none"> {{ form.matricula }}</div>
+    <div class="row">
+      <div class="col-md-4">
+        {{ form.nombres|as_crispy_field }}
+      </div>
+      <div class="col-md-4">
+        {{ form.apellido1|as_crispy_field }}
+      </div>
+      <div class="col-md-4">
+        {{ form.apellido2|as_crispy_field }}
+      </div>
+
+      <div class="col-md-4">
+        {{ form.areaInterna|as_crispy_field }}
+      </div>
+      <div class="col-md-4">
+        {{ form.cat_area_org|as_crispy_field }}
+      </div>
+      <div class="col-md-4">
+        {{ form.puesto|as_crispy_field }}
+      </div>
+     
+    <div class="row">
+        <div class="alert alert-info col-md-8">
+            {{ form.email_institucional|as_crispy_field }}
+        </div>
+        <div class="alert alert-info col-md-4">
+          {{ form.extension_telefonica|as_crispy_field }}
+      </div>
+    </div>
+
+ 
+
+      <div class="row">
+          <div class="col-md-12">
+           
+          </div>
+
+          <div class="col-md-4"></div>
+          <button type="submit" class="btn btn-success">Actualizar Registro</button>
+        </br>
+        </div>
+      </br>
+      </div>
+  </form>
+
+
+{% endblock %}
+

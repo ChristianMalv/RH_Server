@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block titulo_submodulo %}
+<h3>Lista evaluaciones/encuestas</h3>
+<hr class="red hr">
+{% endblock %}
+
+{% block content %}
+<style>
+    .selection { margin-bottom: 30px; display: flex; align-items: center; gap: 10px; }
+    select.form-control { display: inline-block !important; flex-grow: 1; width: auto; }
+    a { display: block; text-align: right; }
+    .list .table { margin: 30px 0 60px 0; }
+</style>
+
+<a href="/evaluacion/crear">Crear evaluacion</a>
+<div class="selection">
+    <b>Evaluacion: </b>
+    <select class="form-control">
+      {% for e in evaluaciones %}
+        <option value="{{ e.id }}">{{ e.nombre }}</option>
+      {% endfor %}
+    </select>
+</div>
+
+<div>
+{% for e in evaluaciones %}
+    <div id="ev{{ e.id }}" class="list">
+        <b>Clave:</b> {{ e.clave }} <br>
+        <b>Renderizable:</b> {{ e.renderizable }} <br>
+        <b>Intentos:</b> {{ e.intentos }} <br>
+        <b>Porcentaje aprobatorio:</b> {{ e.aprobatorio }} <br>
+        <b>Inicio:</b> {{ e.inicio | date }} -
+        <b>Cierre:</b> {{ e.cierre | date }} <br>
+        <b>Creada:</b> {{ e.created }} <br>
+        <b>Ultima modificación:</b> {{ e.modified }}
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Persona</th>
+                    <th>porcentaje</th>
+                    <th>intentos</th>
+                    <th>fecha ultimo intento</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ev in e.evaluacionpersona_set.all %}
+                <tr>
+                    <td>
+                        {{ ev.persona.curp }}<br>
+                        {{ ev.persona.nombres }}
+                        {{ ev.persona.apellido1 }}
+                        {{ ev.persona.apellido2 }}
+                    </td>
+                    <td>{{ ev.porcentaje }}</td>
+                    <td>{{ ev.intentos }}</td>
+                    <td>{{ ev.modified }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endfor %}
+</div>
+
+<script>
+const lists = document.querySelectorAll('.list')
+const select = document.querySelector('select')
+function hideAllBut(selector) {
+    lists.forEach( l => l.style.display = 'none' )
+    document.querySelector(selector).style.display = 'block'
+}
+
+function onSelect() { hideAllBut('#ev' + select.value); }
+
+select.addEventListener('input', onSelect)
+onSelect()
+</script>
+{% endblock %}

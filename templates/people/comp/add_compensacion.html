@@ -1,0 +1,14 @@
+{% block content %}
+   
+    {% for person in people %}
+      <tr>
+        <td style="display:none" > {{person.pk}}</td>
+        <td>{{ person.matricula }}</td>
+        <td> {{ person.nombres  }} {{ person.apellido1  }} {{ person.apellido2 }} </a></td>
+        <td> 
+            <button class="btn btn-default btn-xs" type="button">
+                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button> Agregar 
+            </td>
+      </tr>
+    {% endfor %}
+  {% endblock %}

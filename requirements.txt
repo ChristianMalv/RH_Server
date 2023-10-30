@@ -1,0 +1,12 @@
+Django==2.1
+django-crispy-forms==1.7.2
+Pillow
+django-bootstrap-datepicker-plus
+django-smart-selects
+reportlab
+qrcode
+django-multi-email-field
+psycopg2
+django-alphafilter
+python-vlc
+PyPDF2

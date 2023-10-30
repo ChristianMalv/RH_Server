@@ -1,0 +1,377 @@
+{% extends 'base_dir.html' %}
+
+{% block content %}
+<div class="container">
+   <div class="row">
+                        <div class="col-md-12 col-lg-12">
+                            <h2>Detalle Persona</h2>
+                            <hr class="red">
+                        </div>
+                    </div>
+  <div class="row">
+  <div class="col-md-6">
+    <table>
+    <tr><p><strong>Nombre: </strong> {{ person.nombres  }} {{ person.apellido1  }} {{ person.apellido2 }} </p> </tr>
+    <tr><p><strong>Área de adscripción: </strong> {{person.cat_area_org.nombre}} </p> </tr>
+    <tr><p><strong>RFC: </strong>{{ person.rfc }}</p> </tr>
+    <tr><p><strong>Matrícula: </strong> {{person.matricula}}</p> </tr>
+    <input id="idPerson" value=" {{person.pk}} "  style="display:none"/>
+    <tr><p><strong>Horario: </strong>{{ person.cat_horario.nombre }}</p> </tr>
+    </table>
+  </div>  
+  <div class="col-md-6">
+  {% if person.cat_contratacion.pk == 1 or person.cat_contratacion.pk == 2  %}
+  </div>
+    <h5>Vacaciones disfrutadas: </h5> 
+    <tr><p><strong>{{periodo1}}:</strong> {{ diasVaca1 }} de 10 </p>
+    <tr><p><strong>{{periodo2}}:</strong> {{ diasVaca2 }} de 10 </p>
+    <tr><p><strong>Extraordinarias:</strong>  {% if person.vacaciones_extra %} {{ diasExtra }} de 10 {% else %} No {% endif %} </p>
+    <tr><p><strong>Días económicos distrutados:</strong> {{diasEco}} de 9 </p>
+  </div>  
+  {% endif %}
+<br> 
+<div class="col-md-12">
+  <div class="col-md-6">
+     <button type="button" class="btn btn-default btn-lg active"  onclick="window.history.back();" >Regresar</a>
+  </div>
+</div>
+</div>
+<hr>
+<div class="row">
+<div id="RowsInicio" class="col-md-12">
+<table class="table table-striped" id="tablaPrincipal">
+  <thead>
+    <tr>
+     <th>Día</th>
+      <th>Fecha</th>
+      <th>Registro de entrada</th>
+      <th>Registro de salida</th>
+      <th>Observaciones</th>
+      {% if person.cat_contratacion.pk == 1 or person.cat_contratacion.pk == 2 %}
+      <th>Horas compensación </th>
+      {% else %}
+      <th>Horas extras </th>
+      {% endif %}
+    </tr>
+  </thead>
+  <tbody>  
+
+    {% for incidencia in list %}
+      <tr>
+      <td> {{ incidencia.dia }}</td>
+        <td>{{ incidencia.fecha }}</td>
+        <td style="display:none">{{incidencia.idIn}}</td>
+        {% if incidencia.observacion == " " %}
+        <td  class="editable" data-type="entrada">{% if incidencia.Entrada == "null" %}Sin Registro{% else %}{{ incidencia.Entrada }}{% endif %}</td>
+        {% else %}
+        <td data-type="entrada">{% if incidencia.Entrada == "null" %}Sin Registro{% else %}{{ incidencia.Entrada }}{% endif %}</td>
+        {% endif %}
+
+
+        <td style="display:none" >{{incidencia.idOut}}</td>
+
+        {% if incidencia.observacion == " " %}
+        <td class="editable" data-type="salida">{% if incidencia.Salida == "null" %}Sin Registro{% else %}{{ incidencia.Salida }}{% endif %}</td>  
+        {% else %}
+        <td data-type="salida">{% if incidencia.Salida == "null" %}Sin Registro{% else %}{{ incidencia.Salida }}{% endif %}</td>  
+        {% endif %}
+
+        <td>{% if incidencia.observacion == 0 %} {% else %}{{incidencia.observacion}}{% endif %}</td>
+        <td> {% if incidencia.horas == 0 %} - {% else %} {{incidencia.horas}} </td> {% endif %}
+      
+          
+      </tr>
+    {% empty %}
+      <tr class="table-active">
+        <td colspan="3">No Hay registros en esta fecha</td>
+      </tr>
+    {% endfor %}
+   
+  </tbody>
+  
+</table>
+{% if person.cat_contratacion.pk == 1 or person.cat_contratacion.pk == 2 %}
+ {% if list  %}
+    <p> <strong> Total de horas de compensación: </strong> {{ horasExtras }} </p>
+  {% endif %}
+{% endif %}
+  
+
+<div class="row">
+  <div class="col-lg-12">
+        <div class="alert alert-success" id="upt_success" style="display:none">
+
+        </div>
+         <div class="alert alert-danger" id="upt_error" style="display:none">
+
+        </div>
+  </div>
+</div>
+
+<!-- modificar todo ese divModal -->
+<div class="modal fade"  id="myModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Agregar Incidencia al Personal</h4>
+      </div>
+      <div class="modal-body">
+          <div class="col-md-12">
+           
+            <h6 id="textoIncidencia"> Ingrese una fecha con hora, para registrar Incidencia</h6>
+            <div class="col-md-7">
+              <input id="fechaIncidencia" type="datetime-local">
+            </div>
+            <div class="col-md-7" id="rangoFechas">
+             <h6> al </h6>
+              <input id="rangoFechasVac" type="date">
+            </div>
+            </div>
+          <div class="col-md-12">
+            <tr>
+              <h6> Seleccione tipo de Incidencia</h6>
+             
+          <select class="form-control" id="tipoIncidencia">
+            {% for causa in causaIncidencia %}
+            <option value="{{causa.pk}}">{{ causa.nombre }}</option>
+            {% endfor %}
+          </select>
+          </tr> 
+          </div> 
+      </div>
+      <div class="modal-footer">
+        <div class="col-md-12">
+        <tr>
+          <h6></h6>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-primary" id="insert_btn">Guardar</button>
+         </tr>
+      </div>  
+      </div>
+      <div class="form-group">
+          <div class="alert alert-success" id="ins_success" style="display:none">
+
+          </div>
+           <div class="alert alert-danger" id="ins_error" style="display:none">
+
+          </div>
+      </div>  
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+  <script>
+ $.ajaxSetup({
+  data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
+});
+
+$("#rangoFechas").hide();
+$("#tipoIncidencia").val(1);
+function doSearch(searchText) {
+                var tableReg = document.getElementById('tablaPrincipal');
+                console.log(searchText);
+                for (var i = 1; i < tableReg.rows.length ; i++) {
+                    var cellsOfRow = tableReg.rows[i].getElementsByTagName('td');
+                    var found = false;
+                    for (var j = 0; j < cellsOfRow.length && !found; j++) {
+                        var compareWith = cellsOfRow[j].innerHTML.toLowerCase();
+                        if (searchText.length == 0 || (compareWith.indexOf(searchText) > -1)) {
+                            found = true;
+                        }
+                    }
+                    if (found) {
+                      console.log(tableReg.rows[i]);  
+                      console.log(":)");
+                      tableReg.rows[i].style.display = '';
+                      return i;
+                    } else {
+                      console.log(":(");
+                    }
+                }
+                return 0;
+            }
+
+
+  $("#submodulo").text('Consulta de Incidencias');
+    
+  $('#input1').datepicker({changeYear: true});
+  $('#input2').datepicker({changeYear: true});
+
+
+  $.ajaxSetup({
+  data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
+});
+
+$("#update_btn").click(function(){
+            $("#update_btn").hide();
+            $("#save_btn").show();
+
+       $(".editable").each(function(){
+           var value=$(this).text();
+           var types=$(this).data('type');
+          
+                var html_data="<input type='time' name='"+types+"'  class='form-control input_"+types+" input_data' value='"+value+"'>";
+                $(this).html(html_data);
+          
+        });
+    });
+
+$("#save_btn").click(function(){
+        $("#save_btn").attr("disabled","disabled");
+        $("#save_btn").text("Saving Data....");
+
+        var json_data=[];
+        $(".input_data").each(function(){
+                var value=$(this).val();
+                var parent_html=$(this).parent();
+                parent_html.html(value);
+                $(this).remove();
+         });
+        $("tbody tr").each(function(){
+            var fecha=$(this).children().eq(0).text()
+            var idHrEntrada = $(this).children().eq(1).text()
+            var hrEntrada =   $(this).children().eq(2).text()           
+            var idHrSalida =  $(this).children().eq(3).text()
+            var hrSalida = $(this).children().eq(4).text()
+             var single_data={"fecha":fecha,"idEntrada":idHrEntrada,"idSalida":idHrSalida, "entrada":hrEntrada, "salida" :hrSalida };
+             console.log(single_data);
+             json_data.push(single_data);
+        });
+        console.log(":D");
+        var string_data=JSON.stringify(json_data)
+        console.log(string_data);
+        $.ajax({
+                url:"{% url 'update_Incidencia' %}",
+                type:'POST',
+                data:{ person:$("#idPerson").val(), data:string_data}
+            })
+            .done(function(response){
+                if(response['error']==false){
+                    $("#upt_error").hide();
+                    $("#upt_success").text(response['errorMessage']);
+                    $("#upt_success").show();
+
+                }
+                else{
+                    $("#upt_success").hide();
+                    $("#upt_error").text(response['errorMessage']);
+                    $("#upt_error").show();
+                }
+            })
+            .fail(function(){
+                 $("#upt_success").hide();
+                 $("#upt_error").text("Something Went Wrong!");
+                 $("#upt_error").show();
+            })
+            .always(function(){
+                 $("#save_btn").removeAttr("disabled");
+                 $("#save_btn").text("SAVE ALL");
+                 $("#update_btn").show();
+                 $("#save_btn").hide();
+            })
+
+    });
+
+function convertDate(fecha) {
+  var date = new Date(fecha);
+  var yyyy = date.getFullYear().toString();
+  var mm = (date.getMonth()+1).toString();
+  var dd  = date.getDate().toString();
+
+  var mmChars = mm.split('');
+  var ddChars = dd.split('');
+
+  return  (ddChars[1]?dd:"0"+ddChars[0]) + '/' + (mmChars[1]?mm:"0"+mmChars[0]) + '/' + yyyy ;
+}
+
+$(document).on("click",".eliminar",function(){
+            var this_html=$(this);
+            var fecha = this_html.parent().parent().children().eq(1).text()
+            var idHrEntrada =this_html.parent().parent().children().eq(2).text()
+            var idHrSalida =  this_html.parent().parent().children().eq(4).text()
+            console.log(this_html.parent().parent().children().eq(0).text())
+            var opcion = confirm("Se va a dar eliminar la Incidencia registrada el: "+ fecha +". ¿Es correcto?");
+            if (opcion == true) {
+
+            $.ajax({
+                url:"{% url 'delete_Incidencia' %}",
+                type:'POST',
+                data:{idHrEntrada:idHrEntrada, idHrSalida:idHrSalida }
+            })
+            .done(function(response){
+                if(response['error']==false){
+                    this_html.parent().parent().remove();
+                    $("#upt_error").hide();
+                    $("#upt_success").text(response['errorMessage']);
+                    $("#upt_success").show();
+
+                }
+                else{
+                    $("#upt_success").hide();
+                    $("#upt_error").text(response['errorMessage']);
+                    $("#upt_error").show();
+                }
+               
+            })
+            .fail(function(){
+                 $("#upt_success").hide();
+                 $("#upt_error").text("Something Went Wrong!");
+                 $("#upt_error").show();
+            });
+             setTimeout(() => {
+                  $("#upt_success").hide();
+                  $("#upt_error").hide();  
+                }, 2000);
+          }
+        });
+
+$('#tipoIncidencia').change(function() {
+  var tipoDate = $("#tipoIncidencia").val();
+  console.log($("#tipoIncidencia").val());
+  if(tipoDate== 1 || tipoDate == 2 || tipoDate == 17){
+      $("#fechaIncidencia").attr('type','datetime-local'); 
+      $("#textoIncidencia").text("Ingrese una fecha con hora, para registrar Incidencia"); 
+      $("#rangoFechas").hide();
+  }
+  else if(tipoDate== 20 || tipoDate == 5 || tipoDate == 6  || tipoDate == 7 || tipoDate == 13 || tipoDate==15 || tipoDate ==18){
+     $("#fechaIncidencia").attr('type','date'); 
+     $("#textoIncidencia").text("Seleccione el rango de fechas, para registrar Incidencia"); 
+     $("#rangoFechas").show();
+  }
+  else if(tipoDate== 10){
+    $("#fechaIncidencia").attr('type','datetime-local'); 
+      $("#textoIncidencia").text("Ingrese una fecha con hora, para el rango de fechas de la Incidencia"); 
+      $("#rangoFechasVac").attr('type','datetime-local');
+      $("#rangoFechas").show();
+  }
+  else{
+     
+       $("#fechaIncidencia").attr('type','date'); 
+        $("#textoIncidencia").text("Ingrese una fecha, para registrar Incidencia");
+        $("#rangoFechas").hide();
+  }
+
+ });
+
+$('#fechaIncidencia').change(function() {
+  var arregloFecha = $('#input1').val().split("/");
+  var fecha1 = new Date( arregloFecha[2], arregloFecha[1] - 1, arregloFecha[0]); 
+  var arregloFecha = $('#input2').val().split("/");
+  var fecha2 = new Date( arregloFecha[2], arregloFecha[1] - 1, arregloFecha[0]); 
+  
+  //console.log(fecha1);
+  console.log(fecha2);
+  console.log( $('#fechaIncidencia').val());
+  var fecInci = new Date( $('#fechaIncidencia').val()); 
+  console.log(fecInci);
+    if( (fecInci < fecha1 )|| ( fecInci > fecha2 )){
+        console.log("Aguas");
+    }
+ });
+$('#fechaIncidenciaComp').change(function() {
+
+ });
+
+</script>
+
+{% endblock %}

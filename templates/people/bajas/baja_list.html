@@ -1,0 +1,228 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+  <div class="col-md-6">
+    <p>
+      <a class="btn btn-primary" id="insert_btn"  data-toggle="modal" data-target="#myModal">Dar de baja a Empleado</a>
+    </p>
+  </div>
+  <div id="listaPersonas"></div>
+  <form method="get">
+    <div class="col-md-3">
+      <input name ="q" id="searchBaja" value="{{request.GET.q}}" placeholder="Buscar persona..">
+    </div>
+    <div class="col-md-3">
+      <button id="searchPersonButton" type="submit" class="btn btn-default" type="button">
+        <span class="glyphicon glyphicon-search"></span> Buscar </button>
+    </div>
+  </form>
+  
+
+  
+</div>
+  
+  <table class="table table-bordered" id="bajasList">
+    <thead>
+      <tr>
+        <th>Matricula</th>
+        <th>Nombre</th>
+        <th>Credencial</th>
+        <th>Fecha de Baja</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for person in people %}
+        <tr>
+          <td>{{ person.info_person.matricula }}</td>
+          <td><a href="{% url 'person_edit' person.info_person.pk %}?redirect_page={{ request.GET.page }}" >{{ person.info_person.nombres  }} {{ person.info_person.apellido1  }} {{ person.info_person.apellido2 }} </a></td>
+          {% if perms.catalog.imprimir_credencial %}
+          <td><a href="{% url 'person_print' person.info_person.pk %}"  target="_blank">{{ person.info_person.nombres }}</a></td>
+          {% endif %}
+
+          <td>{{person.created_at}}</td>
+        </tr>
+      {% empty %}
+        <tr class="table-active">
+          <td colspan="3">No data</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+    {% if is_paginated %}
+      <ul class="pagination">
+        {% if page_obj.has_previous %}
+          <li><a href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+        {% else %}
+          <li class="disabled"><span>&laquo;</span></li>
+    {% endif %}
+    
+    {% for i in paginator.page_range %}
+        {% if page_obj.number == i %}
+          <li class="active"><span>{{ i }} <span class="sr-only">(current)</span>     </span></li>
+        {% else %}
+          <li><a href="?page={{ i }}">{{ i }}</a></li>
+        {% endif %}
+    {% endfor %}
+ 
+    {% if page_obj.has_next %}
+      <li><a href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&raquo;</span></li>
+    {% endif %}
+      </ul>
+    {% endif %}
+
+    <div class="modal fade"  id="myModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Baja de Empleado</h4>
+          </div>
+          <div class="modal-body">
+              <div class="col-md-3">
+                  <input name ="person" id="searchPerson" placeholder="Buscar empleado..">
+                </div>
+                <div class="table">
+                  <table class="table" id="persona_buscado">
+                      <thead>
+                      <tr>
+                          <th>Matricula</th>
+                          <th>Nombre</th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                      </tbody>
+                  </table>
+              </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+            <button type="button" class="btn btn-primary">Guardar</button>
+          </div>
+          <div class="form-group">
+              <div class="alert alert-success" id="ins_success" style="display:none">
+
+              </div>
+               <div class="alert alert-danger" id="ins_error" style="display:none">
+
+              </div>
+          </div>  
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <div id="imgSpinner1" class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+    <div class="form-group">
+      <div class="alert alert-success" id="ins_success" style="display:none">
+
+      </div>
+       <div class="alert alert-danger" id="ins_error" style="display:none">
+
+      </div>
+  </div>  
+<script>
+function doSearch() {
+                var tableReg = document.getElementById('persona_buscado');
+                var searchText = document.getElementById('searchPerson').value.toLowerCase();
+                //console.log(tableReg);
+                for (var i = 1; i < tableReg.rows.length ; i++) {
+                    var cellsOfRow = tableReg.rows[i].getElementsByTagName('td');
+                    var found = false;
+                    for (var j = 0; j < cellsOfRow.length && !found; j++) {
+                        var compareWith = cellsOfRow[j].innerHTML.toLowerCase();
+                        if (searchText.length == 0 || (compareWith.indexOf(searchText) > -1)) {
+                            found = true;
+                        }
+                    }
+                    if (found) {
+                        tableReg.rows[i].style.display = '';
+                    } else {
+                        tableReg.rows[i].style.display = 'none';
+                    }
+                }
+            }
+
+document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('input[type=text]').forEach( node => node.addEventListener('keypress', e => {
+        
+      }))
+    });
+
+    $('#searchPerson').keyup(function(e){
+       doSearch();
+   
+});
+
+$('#searchBaja').keyup(function(e){
+  if($("#searchBaja").val()==""){
+    $("#searchPersonButton").click();
+  }
+});
+
+$("#insert_btn").click(function(){
+    if( $("#listaPersonas").val().length == 0)
+    {
+    $.ajax({
+                url:"{% url 'get_Personas' %}",
+                type:'GET',
+                beforeSend: function() {
+                    $("#imgSpinner1").show();
+                  },
+                  complete: function() {
+                    $("#imgSpinner1").hide();
+                  },
+                data:{}
+            })
+            .done(function(response){
+                $("#persona_buscado tbody").append(response);
+              
+            })
+    }
+})
+
+$(document).on("click",".glyphicon-plus",function(){
+            var this_html=$(this);
+            var id=this_html.parent().parent().parent().children().first().text();
+            //console.log(id);
+            var matricula=this_html.parent().parent().parent().children().first().next().text();
+            var nombre = this_html.parent().parent().parent().children().first().next().next().text();
+            var opcion = confirm("Se va a dar de baja al Empleado con Matricula: "+ matricula +", con Nombre: "+nombre+". ¿Es correcto?");
+              if (opcion == true) {
+                $.ajax({
+                url:"{% url 'insert_baja' %}",
+                type:'POST',
+                data:{id:id}
+            })
+            .done(function(response){
+                if(response['error']==false){
+                  this_html.parent().parent().parent().remove();
+                    $("#ins_error").hide();
+                    $("#ins_success").text(response['errorMessage']);
+                    $("#ins_success").show();
+                    var html_data="<tr><td>"+response['matricula']+"</td><td><a href=../" + response['id'] +"/edit/?redirect_page={{ request.GET.page }} > " +response['nombre'] + "</a></td><td><a href=../" + response['id'] + "/print/ target='_blank'>"+response['nombre'] +"</a></td><td>"+response['created_at'] +"</td></tr>";
+                    $("#bajasList  tbody").append(html_data);
+                }
+                else{
+                    $("#ins_success").hide();
+                    $("#ins_error").text(response['errorMessage']);
+                    $("#ins_error").show();
+                }
+            })
+            .fail(function(){
+                 $("#ins_success").hide();
+                 $("#ins_error").text("Something Went Wrong!");
+                 $("#ins_error").show();
+            })
+            
+	            } else {
+	                mensaje = "Has clickado Cancelar";
+	            }
+    });
+
+
+
+
+</script>
+
+{% endblock %}

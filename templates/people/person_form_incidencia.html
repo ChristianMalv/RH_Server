@@ -1,0 +1,308 @@
+{% extends 'base_incidencia.html' %}
+ 
+{% block content %}
+
+  <form method="post" novalidate autocomplete="off">
+    {% csrf_token %}
+    <div class="col-md-8"> 
+      <div id="clock" class="light">
+        <div class="display">
+          <div class="weekdays"></div>
+          <div class="ampm"></div>
+          <div class="alarm"></div>
+          <div class="digits"></div>
+        </div>
+      </div>
+  
+        
+    </div>
+    <div class="col-md-4"> 
+      <img src="" id="imagen_base64" />
+
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <label id="Label1"> <h2>Coloque su credencial frente al lector </h2></label>
+      </div>
+
+    </div>
+   
+    <div class="row">
+      <div class="col-md-12">
+
+ 
+          <input style="font-weight: bold; font-size: 3em; text-align: center; height: 50px;"  type="text" placeholder="Buscar matrícula" id="searchPersonMatricula" minlength="7" maxlength="10" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm" autocomplete="off">
+        
+
+
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="alert alert-success" id="alertSuccess">
+          <div class="row">
+            <label ><h2 id="alertSucessH2"></h2></label>
+          </div>
+          <div class="row"> 
+            <label ><h3 id="alertSucessH3"></h3></label>
+          </div>
+          <div class="row"> 
+            <label ><h4 id="alertSucessH4"> </h4></label>
+          </div>
+        </div>
+        <div class="alert alert-warning" id="alertWarning" >
+          <label ><h4 id="alertWarningH4"> </h4> </label>
+        </div>
+       </div>
+    </div> 
+    <div class="row">
+      <div class="col-12">
+
+        
+          <div class="alert alert-info">
+            <p>
+              “Imagina que todas las personas tienen un letrero en la frente que dice: Hazme sentir importante”.
+            </p>
+          </div>
+          
+      </div>
+    </div>
+    
+    <div id="container"  style="display:none">
+      <video autoplay="true" id="videoElement">
+        <canvas id="canvas" width="720" height="480" style="margin-left: 40px"></canvas>
+      </video>
+    </div>
+
+  </form>
+
+    <script>
+      var video = document.querySelector("#videoElement");
+      var canvas = document.getElementById('canvas');
+     
+  
+
+if (navigator.mediaDevices.getUserMedia) {
+  navigator.mediaDevices.getUserMedia({ video: true })
+    .then(function (stream) {
+      video.srcObject = stream;
+    })
+    .catch(function (err0r) {
+      //console.log("Something went wrong!");
+    });
+}
+
+function takepicture() {
+    canvas.getContext('2d').drawImage(video, 0, 0, 980, 540);
+    var data = canvas.toDataURL('image/png');
+    return data;
+  }
+
+
+
+
+
+$('#searchPersonMatricula').val("").focus();
+$('#Title1').html("<h2>Registro </h2>");
+$('#alertSuccess').hide();
+$('#alertWarning').hide();
+
+document.addEventListener('contextmenu', event => {
+  event.preventDefault()
+})
+
+document.body.addEventListener('keydown', event => {
+  if ( (event.ctrlKey && 'cvxspwuazj'.indexOf(event.key) !== -1) || ( event.ctrlKey && event.shiftKey ) ) {
+    event.preventDefault()
+  }
+})
+
+document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('input[type=text]').forEach( node => node.addEventListener('keypress', e => {
+        if( e.keyCode == 13 ){
+          e.preventDefault();
+          buscarPerson();
+        } 
+      
+      }))
+    });
+
+
+$.ajaxSetup({
+  data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
+});
+
+function cleanForm(){
+  $('#alertSuccess').hide();
+  $('#alertWarning').hide();
+  $('#Label1').html("<h2>Coloque su credencial frente al lector </h2>");
+  $('#imagen_base64').attr('src',"");
+  $('#searchPersonMatricula').val("").focus();
+  
+}
+/*
+setTimeout(function(){ 
+           cleanForm();
+          }, 5000); */
+//$('#searchPersonMatricula').keyup(function(e){
+ function buscarPerson(){ 
+ consulta = $("#searchPersonMatricula").val();
+ dataImagen = takepicture();
+ 
+ $.ajax({
+  data: {'matricula': consulta, 'photo' : dataImagen},
+  url: "{% url 'person_search' %}",
+  type: 'POST'
+  })
+    .done(function(response){
+      if(response['error']==false){
+        $('#alertSuccess').show('slow');
+        $("#alertSucessH3").show();
+        $("#alertSucessH4").text(response['errorMessage']);
+        $("#alertSucessH2").text(response['welcome']);
+        if(response['base']==true){
+          $("#alertSucessH3").text(response['persona']);
+          $('#imagen_base64').attr('src', response['imagen']);
+        }
+        else{
+          $("#alertSucessH3").hide();
+        }
+        setTimeout(function(){ 
+        cleanForm();
+        }, 3000); 
+      }
+      else{
+        $('#alertWarning').show('slow');
+        $("#alertWarningH4").text(response['errorMessage']);
+        setTimeout(function(){ 
+        cleanForm();
+        }, 3000);      
+        }
+                  
+          })
+      .fail(function(){
+        $('#alertWarning').show('slow');
+        $("#alertWarning").text("Hubo un error al procesar el registro, intente nuevamente");
+        setTimeout(function(){ 
+        cleanForm();
+        location.reload();
+        }, 3000);      
+      })
+                   
+        }
+
+
+</script>
+<script>
+
+$(function(){
+
+// Cache some selectors
+
+var clock = $('#clock'),
+    alarm = clock.find('.alarm'),
+    ampm = clock.find('.ampm');
+
+// Map digits to their names (this will be an array)
+var digit_to_name = 'zero one two three four five six seven eight nine'.split(' ');
+
+// This object will hold the digit elements
+var digits = {};
+
+// Positions for the hours, minutes, and seconds
+var positions = [
+    'h1', 'h2', ':', 'm1', 'm2', ':', 's1', 's2'
+];
+
+// Generate the digits with the needed markup,
+// and add them to the clock
+
+var digit_holder = clock.find('.digits');
+
+$.each(positions, function(){
+
+    if(this == ':'){
+        digit_holder.append('<div class="dots">');
+    }
+    else{
+
+        var pos = $('<div>');
+
+        for(var i=1; i<8; i++){
+            pos.append('<span class="d' + i + '">');
+        }
+
+        // Set the digits as key:value pairs in the digits object
+        digits[this] = pos;
+
+        // Add the digit elements to the page
+        digit_holder.append(pos);
+    }
+
+});
+
+// Add the weekday names
+
+var weekday_names = 'Lun Mar Mie Jue Vie Sab Dom'.split(' '),
+    weekday_holder = clock.find('.weekdays');
+
+$.each(weekday_names, function(){
+    weekday_holder.append('<span>' + this + '</span>');
+});
+
+var weekdays = clock.find('.weekdays span');
+
+// Run a timer every second and update the clock
+
+(function update_time(){
+
+    // Use moment.js to output the current time as a string
+    // hh is for the hours in 12-hour format,
+    // mm - minutes, ss-seconds (all with leading zeroes),
+    // d is for day of week and A is for AM/PM
+
+    var now = moment().format("hhmmssdA");
+
+    digits.h1.attr('class', digit_to_name[now[0]]);
+    digits.h2.attr('class', digit_to_name[now[1]]);
+    digits.m1.attr('class', digit_to_name[now[2]]);
+    digits.m2.attr('class', digit_to_name[now[3]]);
+    digits.s1.attr('class', digit_to_name[now[4]]);
+    digits.s2.attr('class', digit_to_name[now[5]]);
+
+    // The library returns Sunday as the first day of the week.
+    // Stupid, I know. Lets shift all the days one position down, 
+    // and make Sunday last
+
+    var dow = now[6];
+    dow--;
+
+    // Sunday!
+    if(dow < 0){
+        // Make it last
+        dow = 6;
+    }
+
+    // Mark the active day of the week
+    weekdays.removeClass('active').eq(dow).addClass('active');
+
+    // Set the am/pm text:
+    ampm.text(now[7]+now[8]);
+
+    // Schedule this function to be run again in 1 sec
+    setTimeout(update_time, 1000);
+
+})();
+
+// Switch the theme
+
+$('a.button').click(function(){
+    clock.toggleClass('light dark');
+});
+
+});
+
+</script>
+{% endblock %}
+
