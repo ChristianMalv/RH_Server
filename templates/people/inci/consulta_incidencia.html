@@ -1,0 +1,146 @@
+{% extends 'base_dir.html' %}
+
+{% block content %}
+  <style>
+  #divContent {
+    height:400px;
+    width:1000px;
+    
+   
+}
+#divCenter {
+    height:400px;
+    width:500px;
+    margin:0px auto;
+}
+  </style>
+
+<div class="col-md-6" id="divContent">
+  <div id="divCenter"> 
+        <div class="form-group" >
+          <label  class="control-label" id="Label1"> Capture su número de matrícula </label>
+          <input  type="text" id="input2" placeholder="Matrícula" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm" autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label><b>Seleccione su fecha de nacimiento:</b></label>
+          <input class="form-control" id="input1" type="text" placeholder="(DD/MM/AAAA)">
+        </div>   
+    <div class="col-md-12"  style="margin:0px auto">
+        </p>
+        <button class="btn btn-primary pull-right" id="validate-asist">Ingresar </a>
+    </div>
+  </div>
+</div>
+<br>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="alert alert-success" id="alertSuccess">
+          <div class="row">
+            <label ><h2 id="alertSucessH2"></h2></label>
+          </div>
+          <div class="row"> 
+            <label ><h3 id="alertSucessH3"></h3></label>
+          </div>
+          <div class="row"> 
+            <label ><h4 id="alertSucessH4"> </h4></label>
+          </div>
+        </div>
+        <div class="alert alert-warning" id="alertWarning" >
+          <label ><h4 id="alertWarningH4"> </h4> </label>
+        </div>
+       </div>
+    </div> 
+
+<script>
+   
+$('#input1').datepicker({changeYear: true,  yearRange: "1930:2025"});
+$('#input1').val("");
+$('#input2').val("");
+$('#alertSuccess').hide();
+$('#alertWarning').hide();
+
+$.ajaxSetup({
+  data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
+});
+
+document.body.addEventListener('keydown', event => {
+  if ( (event.ctrlKey && 'cvxspwuazj'.indexOf(event.key) !== -1) || ( event.ctrlKey && event.shiftKey ) ) {
+    event.preventDefault()
+  }
+})
+
+document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('input[type=text]').forEach( node => node.addEventListener('keypress', e => {
+        if( e.keyCode == 13 ){
+          e.preventDefault();
+          buscarPerson();
+        } 
+      
+      }))
+    });
+
+
+function cleanForm(){
+  $('#alertSuccess').hide();
+  $('#alertWarning').hide();
+  $('#input1').val("");
+  $('#input2').val("");  
+  
+}
+
+$("#validate-asist").click(function(){
+  console.log(":S");
+  var input1 = $('#input1').val();
+  var input2 = $('#input2').val();
+  if (input2 == "" ) {
+    alert("Ingrese la matrícula");
+    $('#input2').focus();
+  }
+  else if(input1 == ""){
+    alert("Seleccione una Fecha de Nacimiento");
+    $('#input1').focus();
+  }
+  else{
+     $.ajax({
+      data: {'fecha': input1, 'matricula' : input2 },
+      url: "{% url 'validate_person' %}",
+      type: 'POST'
+    })
+    .done(function(response){
+      if(response['error']==true){
+        window.open("detail/"+ input2 , '_self'); 
+        setTimeout(function(){ 
+        cleanForm();
+        }, 3000); 
+      }
+      else{
+        $('#alertWarning').show('slow');
+        $("#alertWarningH4").text(response['errorMessage']);
+      
+        setTimeout(function(){ 
+        cleanForm();
+        }, 3000);      
+           
+  
+        }
+                  
+          })
+      .fail(function(){
+        $('#alertWarning').show('slow');
+        $("#alertWarning").text("Hubo un error al procesar el registro, intente nuevamente");
+        setTimeout(function(){ 
+        cleanForm();
+        location.reload();
+        }, 3000);      
+      })
+  }
+});
+/*
+setTimeout(function(){ 
+           cleanForm();
+          }, 5000); */
+//$('#searchPersonMatricula').keyup(function(e){
+ 
+</script>
+{% endblock %}
+

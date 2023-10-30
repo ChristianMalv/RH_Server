@@ -1,0 +1,49 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <script src="https://use.fontawesome.com/releases/v5.11.2/js/all.js" data-auto-replace-svg="nest"></script>
+        <link rel="stylesheet" type="text/css" href="{% static 'css/login.css' %}">
+        <title>Inicio de sesión | Sistema de Credencialización</title>
+    </head>
+    <body>
+        <main class="page">
+            <form method="post" role="form">
+            {% csrf_token %}
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12 col-lg-12">
+                            <h2>Iniciar sesión</h2>
+                            <hr class="red">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-8 col-md-8">
+                            {% if form.errors %}
+                            <div class="alert alert-danger alert-dismissible" role="alert">
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <strong>Error!!!</strong><br />Verifique que la contraseña y el nombre de usuario sean correctos
+                            </div>
+                            {% endif %}
+                            <div class="form-group">
+                                <label for="username">Nombre de usuario:</label>
+                                <input class="form-control" type="text" placeholder="Ingresa el nombre de usuario" id="username" name="username" />
+                            </div>
+                            <div class="form-group">
+                                <label for="password">Contraseña:</label>
+                                <input class="form-control" type="password" placeholder="Ingresa la contraseña" id="password" name="password" />
+                            </div>
+			    <input  id="next" name="next" value="/" type="hidden"/>
+                            <input class="btn btn-primary" value="Entrar" type="submit" />
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </main>
+        <link href="https://framework-gb.cdn.gob.mx/qa/assets/styles/main.css" rel="stylesheet">
+        <script src="https://framework-gb.cdn.gob.mx/qa/gobmx.js"></script>
+    </body>
+</html>

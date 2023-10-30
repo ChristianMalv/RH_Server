@@ -1,0 +1,251 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+  <div class="col-md-6">
+      <div class="form-group datepicker-group">
+      <label><b>Fecha de Inicio:</b></label>
+      <input class="form-control" id="input1" type="text">
+      <label><b>Fecha Fin:</b></label>
+      <input class="form-control" id="input2" type="text">
+     </div>
+
+  
+   
+    </div>
+
+  <form method="get">
+    <div class="col-md-3">
+      <input name ="q" id="searchPerson" placeholder="Buscar">
+    </div>
+    <button type="button" class="btn btn-danger" id="print-all" > Imprimir Listas Personal Base</a>
+  </form>
+  
+
+  
+</div> 
+  
+<div id="RowsSearch"></div>
+      <div id="RowsInicio">
+  <table class="table table-bordered" id="bajasList">
+    <thead>
+      <tr>
+        <th>Matricula</th>
+        <th>Nombre</th>
+        <th>Detalle de Incidencias</th>
+        
+      </tr>
+    </thead>
+      
+    <tbody>
+      
+    
+      {% for person in people %}
+      <tr>
+        <td style="display:none" > {{person.pk}}</td>
+        <td>{{ person.matricula }}</td>
+        <td>  {{ person.nombres  }} {{ person.apellido1  }} {{ person.apellido2 }} </a></td>
+      
+        <td> 
+          <button class="btn btn-default btn-xs consultar" type="button" >
+            Consultar
+            <span class="glyphicon glyphicon-book" aria-hidden="true"></span>   </button>
+          <button class="btn btn-primary btn-xs imprimir" type="button">
+            <span class="glyphicon icon-calendar" aria-hidden="true"></span> Imprimir </button>  
+        </td>
+     
+      </tr>
+    {% empty %}
+        <tr class="table-active">
+          <td colspan="3">No data</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div id="Pages"> 
+    {% if is_paginated %}
+      <ul class="pagination">
+        {% if page_obj.has_previous %}
+          <li><a href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+        {% else %}
+          <li class="disabled"><span>&laquo;</span></li>
+    {% endif %}
+    
+    {% for i in paginator.page_range %}
+        {% if page_obj.number == i %}
+          <li class="active"><span>{{ i }} <span class="sr-only">(current)</span>     </span></li>
+        {% else %}
+          <li><a href="?page={{ i }}">{{ i }}</a></li>
+        {% endif %}
+    {% endfor %}
+ 
+    {% if page_obj.has_next %}
+      <li><a href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&raquo;</span></li>
+    {% endif %}
+      </ul>
+    {% endif %}
+
+    </div>
+    <div id="imgSpinner1" class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+    <div class="form-group">
+      <div class="alert alert-success" id="ins_success" style="display:none">
+
+      </div>
+       <div class="alert alert-danger" id="ins_error" style="display:none">
+
+      </div>
+  </div>  
+<script>
+ $("#submodulo").text('Consulta de Incidencias');
+
+  $('#input1').datepicker({changeYear: true});
+  $('#input2').datepicker({changeYear: true});
+
+
+  $.ajaxSetup({
+  data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
+});
+
+$(document).on("click",".imprimir",function(){
+            var this_html=$(this);
+            var id=this_html.parent().parent().children().first().text();
+            console.log(id);
+            var input1 = $('#input1').val();
+            var input2 = $('#input2').val();
+            console.log(input1);
+            console.log(input2);
+            if (input1 == "") {
+              alert("Seleccione una Fecha de Inicio");
+              $('#input1').focus();
+            }
+            else if(input2 == "") {
+              alert("Seleccione una Fecha de Fin");
+              $('#input2').focus();
+            }
+            else{
+              norango=false;
+              if(input2==""){
+                //window.location.href = "imprimir/"+id.trim()+"/"+ input1.replaceAll('/', '-') ;
+                window.open("imprimir/"+id.trim()+"/"+ input1.replaceAll('/', '-'), '_blank');
+              }
+              else
+              {
+                //window.location.href = "imprimir/"+id.trim()+"/"+ input1.replaceAll('/', '-') +"/"+ input2.replaceAll('/', '-') ;
+                window.open("imprimir/"+id.trim()+"/"+ input1.replaceAll('/', '-') +"/"+ input2.replaceAll('/', '-'),  '_blank');
+              }
+           
+            }
+    });
+
+    
+$(document).on("click",".consultar",function(){
+            var this_html=$(this);
+            var id=this_html.parent().parent().children().first().text();
+            console.log(id);
+            var input1 = $('#input1').val();
+            var input2 = $('#input2').val();
+            console.log(input1);
+            console.log(input2);
+            if (input1 == "") {
+              alert("Seleccione una Fecha de Inicio");
+              $('#input1').focus();
+            }
+            else{
+              norango=false;
+              if(input2==""){
+                window.location.href = "detalle/"+id.trim()+"/"+ input1.replaceAll('/', '-') ;
+              }
+              else
+              {
+                window.location.href = "detalle/"+id.trim()+"/"+ input1.replaceAll('/', '-') +"/"+ input2.replaceAll('/', '-') ;
+              }
+            
+            }
+          });
+
+$("#print-all").click(function(){
+  console.log(":S");
+  var input1 = $('#input1').val();
+  var input2 = $('#input2').val();
+  window.open("imprimir/0/"+ input1.replaceAll('/', '-')+"/"+ input2.replaceAll('/', '-') +"/bases" , '_blank');
+
+});
+
+
+          
+$('#searchPerson').keyup(function(e){
+  clearTimeout($.data(this, 'timer'));
+  if($("#searchPerson").val()==""){
+      $("#RowsSearch").hide();
+      $("#RowsInicio").show();
+      $("#Pages").show();
+      
+    }
+  else {
+    $(this).data('timer', setTimeout(search, 500));
+}
+
+
+});
+function search(force) {
+  var existingString = $("#searchPerson").val();
+    if (!force && existingString.length < 3) return; 
+
+$.ajax({
+      url:"{% url 'search_person_incidencia' %}",
+      type:'GET',
+      data:{q:$("#searchPerson").val()}
+            })
+    .done(function(response){
+      $("#RowsSearch").show();
+      $("#RowsInicio").hide();
+      $("#Pages").hide();
+      $("#RowsSearch").empty();
+      $("#RowsSearch").append(response);
+      console.log(response)
+      })
+    .fail(function(){
+      $("#RowsSearch").hide();
+      $("#RowsInicio").show();
+      $("#Pages").show();
+      })  
+}                
+
+
+
+
+
+
+$(document).ajaxStart(function(){
+           /* try
+            {
+                // showing a modal
+                $("#progressDialog").modal();
+
+                var i = 0;
+                var timeout = 750;
+
+                (function progressbar()
+                {
+                    i++;
+                    if(i < 1000)
+                    {
+                        iterateProgressBar();
+                        setTimeout(progressbar, timeout);
+                    }
+                }
+                )();
+            }
+            catch(err)
+            {
+                alert(err.message);
+            }*/
+        });
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,28 @@
+
+{% block content %}
+  <table class="table table-bordered" id="bajasList">
+    <thead>
+      <tr>
+        <th>Matricula</th>
+        <th>Nombre</th>
+        <th>Categoría</th>
+        
+      </tr>
+    </thead>
+    <tbody>
+      {% for person in people %}
+        <tr>
+          <td style="display:none" > {{person.pk}}</td>
+          <td>{{ person.info_person.matricula }}</td>
+          <td><a href="{% url 'person_edit' person.info_person.pk %}?redirect_page={{ request.GET.page }}" >{{ person.info_person.nombres  }} {{ person.info_person.apellido1  }} {{ person.info_person.apellido2 }} </a></td>
+          <td>{{person.compensacion.nombre}}</td>
+          <td><button class="btn btn-default btn-xs eliminar" type="button"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Eliminar compensacion </button></td>
+        </tr>
+      {% empty %}
+        <tr class="table-active">
+          <td colspan="3">No data</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

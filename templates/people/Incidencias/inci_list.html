@@ -1,0 +1,474 @@
+
+{% extends 'base.html' %}
+  {% csrf_token %}
+{% block content %}
+<div class="container">
+  <div class="col-md-6">
+      <div class="form-group datepicker-group">
+      <label><b>Fecha de Inicio:</b></label>
+      <input class="form-control" id="input1" type="text">
+      <label><b>Fecha Fin:</b></label>
+      <input class="form-control" id="input2" type="text">
+    </div>
+</div>
+<form method="get">
+    <div class="col-md-3">
+      <input name ="q" id="searchPerson" placeholder="Buscar">
+    </div>
+    
+  </form>
+<div class="row">
+  <div class ="col-md-12">
+      <div class="col-md-6">
+          <button type="button" class="btn btn-danger" id="print-all" > Imprimir Listas Personal Base</a>
+      </div>
+      <div class="col-md-6">
+        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#myModal">Agregar Incidencia General</a>
+      </div>
+       <div class="col-md-6">
+          <button type="button" class="btn btn-danger" id="report-inci" > Generar Reporte de Incidencias</a>
+      </div>
+  </div>
+</div>
+<hr>
+
+
+
+  
+<div id="RowsSearch"></div>
+<div class ="col-md-12" id="RowsInicio">
+  <table class="table table-bordered" id="bajasList">
+    <thead>
+      <tr>
+        <th>Matricula</th>
+        <th>Nombre</th>
+        <th>Detalle de Incidencias  </th>
+        
+      </tr>
+    </thead>
+      
+    <tbody>
+      
+    
+      {% for person in people %}
+      <tr>
+        <td style="display:none" > {{person.pk}}</td>
+        <td>{{ person.matricula }}</td>
+        <td>  {{ person.nombres  }} {{ person.apellido1  }} {{ person.apellido2 }} </a></td>
+      
+        <td> 
+        {% if person.comision_sindical == False %}
+          
+            <button class="btn btn-default btn-xs consultar" type="button" >
+              Consultar
+              <span class="glyphicon glyphicon-book" aria-hidden="true"></span>   </button>
+            <button class="btn btn-primary btn-xs imprimir" type="button">
+              <span class="glyphicon icon-calendar" aria-hidden="true"></span> Imprimir </button>  
+           {% else %}
+          <h6>Comision Sindical</h6>
+        {% endif %}
+        </td>
+     
+      </tr>
+    {% empty %}
+        <tr class="table-active">
+          <td colspan="3">No data</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<div id="Pages"> 
+    {% if is_paginated %}
+      <ul class="pagination">
+        {% if page_obj.has_previous %}
+          <li><a href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+        {% else %}
+          <li class="disabled"><span>&laquo;</span></li>
+    {% endif %}
+    
+    {% for i in paginator.page_range %}
+        {% if page_obj.number == i %}
+          <li class="active"><span>{{ i }} <span class="sr-only">(current)</span>     </span></li>
+        {% else %}
+          <li><a href="?page={{ i }}">{{ i }}</a></li>
+        {% endif %}
+    {% endfor %}
+ 
+    {% if page_obj.has_next %}
+      <li><a href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&raquo;</span></li>
+    {% endif %}
+      </ul>
+    {% endif %}
+
+    </div>
+    <div id="imgSpinner1" class="lds-ellipsis"></div>
+   
+
+  <!-- modificar todo ese divModal -->
+<div class="modal fade"  id="myModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Agregar Incidencia al Personal</h4>
+      </div>
+      <div class="modal-body">
+          <div class="col-md-12">
+           
+            <h6 id="textoIncidencia"> Ingrese una fecha con hora, para registrar Incidencia</h6>
+            <div class="col-md-7">
+              <input id="fechaIncidencia" type="datetime-local">
+            </div>
+            <div class="col-md-7" id="rangoFechas">
+             <h6> al </h6>
+              <input id="rangoFechasVac" type="date">
+            </div>
+          </div>
+          <div class="col-md-12">
+            <tr>
+              <h6> Seleccione tipo de Incidencia</h6>
+             
+          <select class="form-control" id="tipoIncidencia">
+            {% for causa in causaIncidencia %}
+            <option value="{{causa.pk}}">{{ causa.nombre }}</option>
+            {% endfor %}
+          </select>
+          </tr> 
+          </div> 
+      </div>
+      <div class="modal-footer">
+        <div class="col-md-12">
+        <tr>
+          <h6></h6>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-primary" id="insert_btn">Guardar</button>
+         </tr>
+        </div>  
+      </div>
+       <div class="form-group">
+      <div class="alert alert-success" id="ins_success" style="display:none">
+
+      </div>
+       <div class="alert alert-danger" id="ins_error" style="display:none">
+
+      </div>
+  </div> 
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+
+<div class="modal fade"  id="incidenciaModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Generar Reporte de Incidencias</h4>
+      </div>
+      <div class="modal-body">
+        <tr>
+              <h6> Seleccione tipo de Incidencia a reportar en el periodo seleccionado</h6>
+             
+          <select class="form-control" id="tipoReporteIncidencia">
+            <option value="0">Sin registro de Entradas o Salidas</option>
+            {% for causa in causaIncidencia %}
+            <option value="{{causa.pk}}">{{ causa.nombre }}</option>
+            {% endfor %}
+          </select>
+          </tr> 
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-primary" id="reporte-generar">Generar</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<script>
+ $("#submodulo").text('Consulta de Incidencias');
+
+  $('#input1').datepicker({changeYear: true});
+  $('#input2').datepicker({changeYear: true});
+
+  $("#rangoFechas").hide();
+  $("#tipoIncidencia").val(1);
+
+  $.ajaxSetup({
+  data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
+});
+
+$(document).on("click",".imprimir",function(){
+            var this_html=$(this);
+            var id=this_html.parent().parent().children().first().text();
+            console.log(id);
+            var input1 = $('#input1').val();
+            var input2 = $('#input2').val();
+            console.log(input1);
+            console.log(input2);
+            if (input1 == "") {
+              alert("Seleccione una Fecha de Inicio");
+              $('#input1').focus();
+            }
+            else if(input2 == "") {
+              alert("Seleccione una Fecha de Fin");
+              $('#input2').focus();
+            }
+            else{
+              norango=false;
+              if(input2==""){
+                //window.location.href = "imprimir/"+id.trim()+"/"+ input1.replaceAll('/', '-') ;
+                window.open("imprimir/"+id.trim()+"/"+ input1.replaceAll('/', '-'), '_blank');
+              }
+              else
+              {
+                //window.location.href = "imprimir/"+id.trim()+"/"+ input1.replaceAll('/', '-') +"/"+ input2.replaceAll('/', '-') ;
+                window.open("imprimir/"+id.trim()+"/"+ input1.replaceAll('/', '-') +"/"+ input2.replaceAll('/', '-'),  '_blank');
+              }
+           
+            }
+    });
+
+    
+$(document).on("click",".consultar",function(){
+            var this_html=$(this);
+            var id=this_html.parent().parent().children().first().text();
+            console.log(id);
+            var input1 = $('#input1').val();
+            var input2 = $('#input2').val();
+            console.log(input1);
+            console.log(input2);
+            if (input1 == "") {
+              alert("Seleccione una Fecha de Inicio");
+              $('#input1').focus();
+            }
+            else{
+              norango=false;
+              if(input2==""){
+                window.location.href = "detalle/"+id.trim()+"/"+ input1.replaceAll('/', '-') ;
+              }
+              else
+              {
+                window.location.href = "detalle/"+id.trim()+"/"+ input1.replaceAll('/', '-') +"/"+ input2.replaceAll('/', '-') ;
+              }
+            
+            }
+          });
+
+$("#print-all").click(function(){
+  console.log(":S");
+  var input1 = $('#input1').val();
+  var input2 = $('#input2').val();
+     if (input1 == "" ) {
+              alert("Seleccione una Fecha de Inicio");
+              $('#input1').focus();
+            }
+      else if(input2 == ""){
+            alert("Seleccione una Fecha Fin");
+              $('#input2').focus();
+            }
+      else{
+          window.open("imprimir/0/"+ input1.replaceAll('/', '-')+"/"+ input2.replaceAll('/', '-') +"/bases" , '_blank'); 
+      }
+});
+
+$("#report-inci").click(function(){
+  console.log(":S");
+  var input1 = $('#input1').val();
+  var input2 = $('#input2').val();
+     if (input1 == "" ) {
+              alert("Seleccione una Fecha de Inicio");
+              $('#input1').focus();
+            }
+      else if(input2 == ""){
+            alert("Seleccione una Fecha Fin");
+              $('#input2').focus();
+            }
+      else{
+         $('#incidenciaModal').modal()                      // initialized with defaults
+         $('#incidenciaModal').modal('show') 
+      }
+});
+
+
+$("#reporte-generar").click(function(){
+  console.log(":S");
+  var incidencia = $('#tipoReporteIncidencia').val();
+  var input1 = $('#input1').val();
+  var input2 = $('#input2').val();
+  console.log(incidencia);
+  window.open("reporte/"+ incidencia + "/"+input1.replaceAll('/', '-')+"/"+ input2.replaceAll('/', '-') , '_self'); 
+  console.log(":D");
+});
+
+
+
+
+
+$('#searchPerson').keyup(function(e){
+  clearTimeout($.data(this, 'timer'));
+  if($("#searchPerson").val()==""){
+      $("#RowsSearch").hide();
+      $("#RowsInicio").show();
+      $("#Pages").show();
+      
+    }
+  else {
+    $(this).data('timer', setTimeout(search, 500));
+}
+
+
+});
+function search(force) {
+  var existingString = $("#searchPerson").val();
+    if (!force && existingString.length < 3) return; 
+
+$.ajax({
+      url:"{% url 'search_person_incidencia' %}",
+      type:'GET',
+      data:{q:$("#searchPerson").val()}
+            })
+    .done(function(response){
+      $("#RowsSearch").show();
+      $("#RowsInicio").hide();
+      $("#Pages").hide();
+      $("#RowsSearch").empty();
+      $("#RowsSearch").append(response);
+      console.log(response)
+      })
+    .fail(function(){
+      $("#RowsSearch").hide();
+      $("#RowsInicio").show();
+      $("#Pages").show();
+      })  
+}                
+
+
+$("#insert_btn").click(function(){
+  console.log($("#fechaIncidencia").val())
+  console.log($("#tipoIncidencia").val())
+
+  var tipoDate = $("#tipoIncidencia").val();
+  if( (( tipoDate == 1 || tipoDate == 2 || tipoDate == 17) &&  validarFecha($("#fechaIncidencia").val(), 2)) || ( ( tipoDate == 10) && validarFecha($("#rangoFechasVac").val(), 2) || (validarFecha($("#fechaIncidencia").val(), 2) ) )
+   ||( (tipoDate== 20 || tipoDate == 5 || tipoDate == 6  || tipoDate == 7 || tipoDate == 13 || tipoDate==15 || tipoDate ==18) && validarFecha($("#rangoFechasVac").val(), 1) || (validarFecha($("#fechaIncidencia").val(), 1) ) )  ){
+    var opcion = confirm("Se va a agregar incidencia general: "+ $("#tipoIncidencia option:selected").text() +". ¿Es correcto?");
+            if (opcion == true) {
+
+            $.ajax({
+              url:"{% url 'add_Incidencia' %}",
+              type:'POST',
+              data:{ fechaIncidencia:$("#fechaIncidencia").val(), tipoIncidencia:$("#tipoIncidencia").val(), fechaIncidenciaComp:$("#rangoFechasVac").val()}
+              })
+            .done(function(response){
+              if(response['error']==false){ 
+                  $("#ins_error").hide();
+                  $("#ins_success").text(response['errorMessage']);
+                  $("#ins_success").show();
+                  $("#noData").hide();
+                }
+                else{
+                  $("#ins_success").hide();
+                  $("#ins_error").text(response['errorMessage']);
+                  $("#ins_error").show();
+                  }
+                })
+                .fail(function(){
+                  $("#ins_success").hide();
+                  $("#ins_error").text("Something Went Wrong!");
+                  $("#ins_error").show();
+                })
+                .always(function(){
+                  $(".btn-insert-data").removeAttr("disabled");
+                  $(".btn-insert-data").text("INSERT STUDENT");
+                      })
+              setTimeout(() => {
+                            $("#ins_success").hide();
+                            $("#ins_error").hide();  
+                          }, 2000);
+            }
+  }
+});
+
+function validarFecha(testDate, tipo){
+  var datetime_regex = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2})$/;
+  var date_regex = /^(\d{4}-\d{2}-\d{2})$/;
+        if (tipo == 1 && date_regex.test(testDate)) {
+           return true;
+        }
+        else if (tipo == 2 && datetime_regex.test(testDate)){
+          return true;
+        }
+        else{
+          $("#ins_error").text("La fecha y hora ingresada es incorrecta!");
+          $("#ins_error").show();
+            setTimeout(function(){ 
+             $("#ins_error").hide();
+            }, 1000); 
+          return false;
+        }
+}
+
+$('#tipoIncidencia').change(function() {
+  var tipoDate = $("#tipoIncidencia").val();
+  console.log($("#tipoIncidencia").val());
+  if(tipoDate== 1 || tipoDate == 2 || tipoDate == 17){
+      $("#fechaIncidencia").attr('type','datetime-local'); 
+      $("#textoIncidencia").text("Ingrese una fecha con hora, para registrar Incidencia"); 
+      $("#rangoFechas").hide();
+  }
+  else if(tipoDate== 20 || tipoDate == 5 || tipoDate == 6  || tipoDate == 7 || tipoDate == 13 || tipoDate==15 || tipoDate ==18){
+     $("#fechaIncidencia").attr('type','date'); 
+     $("#textoIncidencia").text("Seleccione el rango de fechas, para registrar Incidencia"); 
+      $("#rangoFechasVac").attr('type','date'); 
+     $("#rangoFechas").show();
+  }
+  else if(tipoDate== 10){
+      $("#fechaIncidencia").attr('type','datetime-local'); 
+      $("#textoIncidencia").text("Ingrese una fecha con hora, para el rango de fechas de la Incidencia"); 
+      $("#rangoFechasVac").attr('type','datetime-local');
+      $("#rangoFechas").show();
+  }
+  else{
+     
+       $("#fechaIncidencia").attr('type','date'); 
+        $("#textoIncidencia").text("Ingrese una fecha, para registrar Incidencia");
+        $("#rangoFechas").hide();
+  }
+
+ });
+
+
+
+
+
+$(document).ajaxStart(function(){
+           /* try
+            {
+                // showing a modal
+                $("#progressDialog").modal();
+
+                var i = 0;
+                var timeout = 750;
+
+                (function progressbar()
+                {
+                    i++;
+                    if(i < 1000)
+                    {
+                        iterateProgressBar();
+                        setTimeout(progressbar, timeout);
+                    }
+                }
+                )();
+            }
+            catch(err)
+            {
+                alert(err.message);
+            }*/
+        });
+
+</script>
+
+{% endblock %}

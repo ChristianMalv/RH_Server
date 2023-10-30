@@ -1,0 +1,35 @@
+{% block content %}     
+<table class="table table-bordered" id="bajasList">
+    <thead>
+      <tr>
+        <th>Matricula</th>
+        <th>Nombre</th>
+        <th>Detalle de Incidencias</th>
+        
+      </tr>
+    </thead>
+      
+    <tbody>  
+    {% for person in people %}
+    <tr>
+      <td style="display:none" > {{person.pk}}</td>
+      <td>{{ person.matricula }}</td>
+      <td> {{ person.nombres  }} {{ person.apellido1  }} {{ person.apellido2 }} </a></td>
+    
+      <td> 
+        <button class="btn btn-default btn-xs consultar" type="button" >
+          Consultar
+          <span class="glyphicon glyphicon-book" aria-hidden="true"></span>   </button>
+        <button class="btn btn-primary btn-xs imprimir" type="button">
+          <span class="glyphicon icon-calendar" aria-hidden="true"></span> Imprimir </button>  
+      </td>
+   
+    </tr>
+    {% empty %}
+      <tr class="table-active">
+        <td colspan="3">No data</td>
+      </tr>
+    {% endfor %}
+</tbody>
+</table>
+{% endblock %}

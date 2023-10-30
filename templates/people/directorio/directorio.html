@@ -1,0 +1,16 @@
+{% block content %}       
+{% for person in people %}
+    <div>
+        <h4>{{ person.apellido1  }} {{ person.apellido2 }}, {{ person.nombres  }}</h4>
+
+        {{ person.areaInterna.nombre }}  
+        <h6>{{ person.puesto }} </h6>
+        {% if person.extension_telefonica %}
+    <h6 id="heading"> Extensión <span> {{ person.extension_telefonica }} </span></h6> 
+        {% endif %}
+        <h6 id="email">{{ person.email_institucional|join:" </p> " }}</h6>
+    
+    <hr class="red">
+    </div>
+    {% endfor %}
+{% endblock %}

@@ -1,0 +1,243 @@
+{% extends 'base_dir.html' %}
+
+{% block content %}
+
+<style>
+  #heading { color: #545454; }
+  span { color: #000000 }
+  #email { color: #4D92DF; }
+  
+      .cards {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .cards > * {
+        flex: 1 1 350px;
+        width: 350px;
+        margin: 10px;
+       
+
+      }
+
+      .cards * { font-size: 14px; }
+      .cards h4 { font-size: 18px; }
+
+
+</style>
+<div class="col-md-8>">
+  <select class="form-control" id="areaOrganigramaID"  >
+      <option value=""> Buscar por Área</option>
+      {% for area in areas %}
+      <option value="{{ area.id }}">{{ area.nombre }}</option>
+      {% endfor %}
+  </select>
+</div>
+<hr>
+<div class="container">
+
+  <div class="col-md-8" >
+      <h6> Índice por Apellido </h6> 
+       <p id="alphasearch"> 
+      </p>
+    </div>
+    <div class="col-md-2">
+      <h6>  </h6> 
+      <input name ="q" id="searchPerson" value="{{request.GET.q}}" placeholder="Buscar">
+    </div>
+  
+  
+</div>
+<hr>
+
+
+      <div class="cards" id="CardsSearch"></div>
+      <div class="cards" id="CardsInicio">
+        
+      {% for person in people %}
+      <div>
+          <h4>{{ person.apellido1  }} {{ person.apellido2 }}, {{ person.nombres  }}</h4>
+
+           {{ person.areaInterna.nombre }} 
+           <h6>{{ person.puesto }} </h6>
+          {% if person.extension_telefonica %}
+         <h6 id="heading"> Extensión <span> {{ person.extension_telefonica }} </span></h6> 
+          {% endif %}
+          <h6 id="email">{{ person.email_institucional|join:" </p> " }}</h6>
+        
+        <hr class="red">
+      </div>
+      {% empty %}
+        <tr class="table-active" id="noData">
+          <td colspan="3">No data</td>
+        </tr>
+      {% endfor %}
+    </div>
+    <div id="Pages"> 
+          {% if is_paginated %}
+      <ul class="pagination">
+        {% if page_obj.has_previous %}
+          <li><a href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+        {% else %}
+          <li class="disabled"><span>&laquo;</span></li>
+    {% endif %}
+    
+    {% for i in paginator.page_range %}
+        {% if page_obj.number == i %}
+          <li class="active"><span>{{ i }} <span class="sr-only">(current)</span>     </span></li>
+        {% else %}
+          <li><a href="?page={{ i }}">{{ i }}</a></li>
+        {% endif %}
+    {% endfor %}
+ 
+    {% if page_obj.has_next %}
+      <li><a href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&raquo;</span></li>
+    {% endif %}
+      </ul>
+    {% endif %}
+  </div>
+
+
+
+<script>
+function createLinks(){
+  var html = '<a href="#" id="all" class="myIndice" >Todos </a> |';
+  for (var i = 65; i <= 90; i++) {
+      chr = String.fromCharCode(i);
+      html+= '<a href="#" id="'+ chr +'" class="myIndice" >'+ chr +'</a> |';
+    }
+  $("#alphasearch").append(html);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('input[type=text]').forEach( node => node.addEventListener('keypress', e => {
+      }))
+      createLinks();
+
+      $('.myIndice').on('click',function(event){
+      event.preventDefault();
+      var id = $(this).attr('id');
+      if(id!='all')
+      { 
+        searchIndice(id);
+      }else
+      {
+        $("#CardsSearch").hide();
+       $("#Pages").show();
+       $("#CardsInicio").show();
+        $("#areaOrganigramaID").val('');
+        $("#searchPerson").val('')
+      }
+ })
+ 
+    $('select').on('change', function() {
+      event.preventDefault();
+      var id = $("#areaOrganigramaID").val();
+      if(id !=''){
+        searchArea(id);
+      }
+    else
+      {
+        $("#CardsSearch").hide();
+       $("#Pages").show();
+       $("#CardsInicio").show();
+        $("#searchPerson").val('')
+      }
+
+     
+  })
+    });
+
+   
+function searchArea(filter){
+  $.ajax({
+      url:"{% url 'search_directory' %}",
+      type:'GET',
+      data:{area:filter}
+            })
+    .done(function(response){
+      $("#CardsSearch").show();
+      $("#CardsInicio").hide();
+      $("#Pages").hide();
+      $("#CardsSearch").empty();
+      $("#CardsSearch").append(response);
+      $("#searchPerson").val('')
+      })
+    .fail(function(){
+      $("#CardsSearch").hide();
+      $("#Pages").show();
+      $("#CardsInicio").show();
+      $("#areaOrganigramaID").val('');
+      })          
+
+}
+
+
+
+function searchIndice(filter){
+  $.ajax({
+      url:"{% url 'search_directory' %}",
+      type:'GET',
+      data:{a:filter}
+            })
+    .done(function(response){
+      $("#CardsSearch").show();
+      $("#CardsInicio").hide();
+      $("#Pages").hide();
+      $("#CardsSearch").empty();
+      $("#CardsSearch").append(response);
+      $("#areaOrganigramaID").val('');   
+      })
+    .fail(function(){
+      $("#CardsSearch").hide();
+      $("#Pages").show();
+      $("#CardsInicio").show();
+      })          
+
+}
+
+$('#searchPerson').keyup(function(e){
+  clearTimeout($.data(this, 'timer'));
+  if($("#searchPerson").val()==""){
+      $("#CardsSearch").hide();
+      $("#CardsInicio").show();
+      $("#Pages").show();
+      $("#areaOrganigramaID").val('');
+  }
+  else {
+    $(this).data('timer', setTimeout(search, 500));
+}
+
+
+});
+function search(force) {
+  var existingString = $("#searchPerson").val();
+    if (!force && existingString.length < 3) return; 
+
+$.ajax({
+      url:"{% url 'search_directory' %}",
+      type:'GET',
+      data:{q:$("#searchPerson").val()}
+            })
+    .done(function(response){
+      $("#CardsSearch").show();
+      $("#CardsInicio").hide();
+      $("#Pages").hide();
+      $("#CardsSearch").empty();
+      $("#CardsSearch").append(response);
+      $("#areaOrganigramaID").val('');        
+      })
+    .fail(function(){
+      $("#CardsSearch").hide();
+      $("#Pages").show();
+      $("#CardsInicio").show();
+      $("#areaOrganigramaID").val('');
+      })  
+}      
+</script>
+
+{% endblock %}
