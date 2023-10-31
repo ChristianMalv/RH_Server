@@ -3,8 +3,7 @@ from django.contrib import admin
 from django.urls import re_path
 from django.conf.urls import include
 from people.views import PersonListView, PersonCreateView, PersonUpdateView, ReportePersonasPDF, PersonCheckView, searchPerson, saveCheckedPerson, PersonBajaListView, GetPersonas, InsertBaja, DirectoryListView, GetPersonasDirectory, GetCompPersonas, InsertComp, PersonCompListView, DetalleIncidencias, PersonInciListView, ReporteIncidenciasPDF, UpdateIncidencia, GetPersonasIncidencia, AddIncidencia, DeleteIncidencia, PersonDirectoryUpdateView, DeleteComp, AreasListView, json_to_pdf, GetPersonasCompensacion, compensacionesArea, IncidenciaConsulta, ValidatePersonIncidencia, DetailPersonIncidencia, GetIncidenciaTable, \
-    loginAdmin, AdminConsulta, AdminInciListView, GetAdminIncidencia, reporteIncidencias, PersonAyudaListView, GetAyudaPersonas, InsertAyuda, DeleteAyuda, GetPersonasAyuda, DashboardCheck, UpdateDashboard, \
-        GetPersonaAyuda,  SersocListView, SersocCreateView, CreateSersocPerson, AddAyuda, DeleteAyudaMonto
+    loginAdmin, AdminConsulta, AdminInciListView, GetAdminIncidencia, reporteIncidencias
 from django.contrib.auth import views
 from django.contrib.auth.decorators import login_required
 urlpatterns = [
@@ -51,9 +50,7 @@ urlpatterns = [
     path('incidencia/admin/search', GetAdminIncidencia, name='search_admin_incidencia'),
     path('incidencias/detalle/<str:admin>/<int:pk>/<str:fechaInicio>/<str:fechaFin>', DetalleIncidencias.as_view(), name="admin_detalle_incidencia_rango"),
     path('incidencias/reporte/<int:incidencia>/<str:fechaInicio>/<str:fechaFin>', reporteIncidencias, name="reporte_incidencia"),
-    path('incidencia/admin/dashboard',DashboardCheck.as_view(), name="dashboard_admin"),
-    path('incidencia/admin/update_dashboard', UpdateDashboard , name='update_dashboard'),
-   
+    
 
     path('admin/', admin.site.urls),
     path('add/', PersonCreateView.as_view(), name='person_add'),
@@ -76,22 +73,7 @@ urlpatterns = [
     path('<int:pk>/directory/edit/', PersonDirectoryUpdateView.as_view(), name='person_directory_edit'),    
 
     #Areas
-    path('areas', AreasListView.as_view(), name='areas_list' ),
+    path('areas', AreasListView.as_view(), name='areas_list' )
 
-    ##Ayudas
-    path('ayuda/personas', PersonAyudaListView.as_view(), name='ayuda_list' ),
-    path('get_personas_ayuda/', GetAyudaPersonas, name="get_PersonasAyuda"),
-    path('ayuda/agregar/', AddAyuda, name='add_ayuda'),
-    path('ayuda/insert/', InsertAyuda, name="insert_ayuda"),
-    path('ayuda/delete', DeleteAyuda, name='delete_ayuda' ),
-    path('ayuda/monto/delete', DeleteAyudaMonto, name='delete_ayuda_monto'),
-    path('search_ayuda/', GetPersonasAyuda, name='search_person_ayuda'),
-    path('search/ayuda/area', GetPersonaAyuda, name="get_PersonaAyuda"),
-
-    #Servicio Social
-    #path('add/sersoc/', SersocCreateView.as_view(), name='sersoc_add'),
-    path('add/sersoc/', CreateSersocPerson, name='sersoc_add'),
-    path('<int:pk>/edit/sersoc/', CreateSersocPerson, name='sersoc_edit'),
-    path('<int:pk>/<int:sersoc>/print/sersoc/', ReportePersonasPDF.as_view(), name='sersoc_print'),
-    path('sersoc/', SersocListView.as_view(), name='sersoc_list'),
+    ############
 ]   
