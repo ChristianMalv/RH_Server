@@ -10,3 +10,5 @@ psycopg2
 django-alphafilter
 python-vlc
 PyPDF2
+pyreportjasper
+ldap3
