@@ -61,6 +61,7 @@ def get_attributes(user, pwd):
                 surname = user_data["entries"][index]["attributes"]["sn"]
                 mail = user_data["entries"][index]["attributes"]["mail"]
                 company = user_data["entries"][index]["attributes"]["company"]
+                print(':O')
         login_data={"error":False,"nombre": first_name, "apellidos": surname, "company": company}
       
     except Exception as e:

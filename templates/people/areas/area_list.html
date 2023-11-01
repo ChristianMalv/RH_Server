@@ -1,0 +1,295 @@
+
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+  <div class="col-md-6">
+    <p>
+      <a class="btn btn-primary" id="insert_btn"  data-toggle="modal" data-target="#myModal">Agregar Empleado a Compensaciones</a>
+    </p>
+  </div>
+  <div id="listaPersonas"></div>
+  <form method="get">
+    <div class="col-md-3">
+      <input name ="q" id="searchBaja" value="{{request.GET.q}}" placeholder="Buscar persona..">
+    </div>
+    <div class="col-md-3">
+      <button id="searchPersonButton" type="submit" class="btn btn-default" type="button">
+        <span class="glyphicon glyphicon-search"></span> Buscar </button>
+    </div>
+  </form>
+  
+
+  
+</div>
+  
+  <table class="table table-bordered" id="bajasList">
+    <thead>
+      <tr>
+        <th>Area Interna</th>
+        </tr>
+    </thead>
+    <tbody>
+      {% for area in areaInterna %}
+        <tr>
+          <td style="display:none" > {{area.pk}}</td>
+          <td>{{ area.nombre }}</td>
+             {% for areaO in areaOrganigrama %}   
+              {% if areaO.areaInterna.pk == area.pk %}
+                <td>{{ areaO.nombre }}</td> 
+               {% endif %}    
+          </tr>
+      {% empty %}
+        <tr class="table-active">
+          <td colspan="3">No data</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+    {% if is_paginated %}
+      <ul class="pagination">
+        {% if page_obj.has_previous %}
+          <li><a href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+        {% else %}
+          <li class="disabled"><span>&laquo;</span></li>
+    {% endif %}
+    
+    {% for i in paginator.page_range %}
+        {% if page_obj.number == i %}
+          <li class="active"><span>{{ i }} <span class="sr-only">(current)</span>     </span></li>
+        {% else %}
+          <li><a href="?page={{ i }}">{{ i }}</a></li>
+        {% endif %}
+    {% endfor %}
+ 
+    {% if page_obj.has_next %}
+      <li><a href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&raquo;</span></li>
+    {% endif %}
+      </ul>
+    {% endif %}
+
+    <div class="modal fade"  id="myModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Alta de Empleado a Compensaciones</h4>
+          </div>
+          <div class="modal-body">
+                <div class="col-md-12">
+                <h4> Nombre de la Actividad </h4>
+                 <select class="form-control" id='compensacion'>
+                {% for compen in compensacion %}
+                  <option value='{{compen.id}}'> {{ compen.nombre }} </option>
+                {% endfor %}
+                </select>
+                <hr>
+               </div> 
+             
+              <div class="col-md-3">
+                  <input name ="person" id="searchPerson" placeholder="Buscar empleado..">
+                </div>
+            
+                <div class="table">
+                  <table class="table" id="persona_buscado">
+                      <thead>
+                      <tr>
+                          <th>Matricula</th>
+                          <th>Nombre</th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                      </tbody>
+                  </table>
+              </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+            <button type="button" class="btn btn-primary">Guardar</button>
+          </div>
+          <div class="form-group">
+              <div class="alert alert-success" id="ins_success" style="display:none">
+
+              </div>
+               <div class="alert alert-danger" id="ins_error" style="display:none">
+
+              </div>
+          </div>  
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+<div class="row">
+  <div class="col-lg-12">
+        <div class="alert alert-success" id="upt_success" style="display:none">
+
+        </div>
+         <div class="alert alert-danger" id="upt_error" style="display:none">
+
+        </div>
+  </div>
+</div>
+   
+
+
+<script>
+function doSearch() {
+                var tableReg = document.getElementById('persona_buscado');
+                var searchText = document.getElementById('searchPerson').value.toLowerCase();
+                //console.log(tableReg);
+                for (var i = 1; i < tableReg.rows.length ; i++) {
+                    var cellsOfRow = tableReg.rows[i].getElementsByTagName('td');
+                    var found = false;
+                    for (var j = 0; j < cellsOfRow.length && !found; j++) {
+                        var compareWith = cellsOfRow[j].innerHTML.toLowerCase();
+                        if (searchText.length == 0 || (compareWith.indexOf(searchText) > -1)) {
+                            found = true;
+                        }
+                    }
+                    if (found) {
+                        tableReg.rows[i].style.display = '';
+                    } else {
+                        tableReg.rows[i].style.display = 'none';
+                    }
+                }
+            }
+
+document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('input[type=text]').forEach( node => node.addEventListener('keypress', e => {
+        
+      }))
+    });
+
+    $('#searchPerson').keyup(function(e){
+       doSearch();
+   
+});
+
+$('#searchBaja').keyup(function(e){
+  if($("#searchBaja").val()==""){
+    $("#searchPersonButton").click();
+  }
+});
+
+$("#insert_btn").click(function(){
+    if( $("#listaPersonas").val().length == 0)
+    {
+    $.ajax({
+                url:"{% url 'get_PersonasComp' %}",
+                type:'GET',
+                beforeSend: function() {
+                    $("#imgSpinner1").show();
+                  },
+                  complete: function() {
+                    $("#imgSpinner1").hide();
+                  },
+                data:{}
+            })
+            .done(function(response){
+                $("#persona_buscado tbody").append(response);
+              
+            })
+    }
+})
+
+$(document).on("click",".glyphicon-plus",function(){
+            var this_html=$(this);
+            var id=this_html.parent().parent().parent().children().first().text();
+            var compen =  $("#compensacion").val();
+            console.log(id);
+            console.log(compen);
+            var matricula=this_html.parent().parent().parent().children().first().next().text();
+            var nombre = this_html.parent().parent().parent().children().first().next().next().text();
+            $.ajax({
+                url:"{% url 'insert_comp' %}",
+                type:'POST',
+                data:{id:id, compen:compen}
+            })
+            .done(function(response){
+                if(response['error']==false){
+                    var texto =  $("#compensacion option[value="+compen +"]").text().split("(");
+                    var numero = texto[1].split(")");
+                    var number = numero[0];
+                    var iNum = parseInt(number);
+                    iNum = iNum - 1;
+                    $("#compensacion option[value="+compen +"]").text(texto[0]+"("+ iNum +")" );
+
+                  this_html.parent().parent().parent().remove();
+                    $("#ins_error").hide();
+                    $("#ins_success").text(response['errorMessage']);
+                    $("#ins_success").show();
+                    var html_data="<tr><td style='display:none'> "+response['id']+"</td>  <td>"+response['matricula']+"</td><td><a href=../" + response['id'] +"/edit/?redirect_page={{ request.GET.page }} > " +response['nombre'] + "</a></td><td>"+ response['compensacion']+ " </td> <td><button class='btn btn-default btn-xs eliminar' type='button'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span> Eliminar compensacion </button></td>   </tr>";
+                    $("#bajasList  tbody").append(html_data);
+                }
+                else{
+                    $("#ins_success").hide();
+                    $("#ins_error").text(response['errorMessage']);
+                    if(response['message']==true){
+                      alert(response['errorMessage']+' para '+texto[0] ) ;
+                    }
+                    $("#ins_error").show();
+                }
+            })
+            .fail(function(){
+                 $("#ins_success").hide();
+                 $("#ins_error").text("Something Went Wrong!");
+                 $("#ins_error").show();
+            })
+            
+	         
+    });
+
+$(document).on("click",".eliminar",function(){
+            var this_html=$(this);
+            var empleado = this_html.parent().parent().children().eq(2).text()
+            var id =this_html.parent().parent().children().eq(0).text()
+            console.log(this_html.parent().parent().children().eq(0).text())
+            var opcion = confirm("Se va a dar eliminar la Compensacion registrada al empleado: "+ empleado +". ¿Es correcto?");
+            if (opcion == true) {
+
+            $.ajax({
+                url:"{% url 'delete_Compensacion' %}",
+                type:'POST',
+                data:{id:id}
+            })
+            .done(function(response){
+                if(response['error']==false){
+                    this_html.parent().parent().remove();
+                    var id = response['compensacion'];
+                    console.log(id);
+                    var texto =  $("#compensacion option[value="+id +"]").text().split("(");
+                    var numero = texto[1].split(")");
+                    var number = numero[0];
+                    var iNum = parseInt(number);
+                    iNum = iNum + 1;
+                    $("#compensacion option[value="+id +"]").text(texto[0]+"("+ iNum +")" );
+                   
+                    $("#upt_error").hide();
+                    $("#upt_success").text(response['errorMessage']);
+                    $("#upt_success").show();
+
+                }
+                else{
+                    $("#upt_success").hide();
+                    $("#upt_error").text(response['errorMessage']);
+                    $("#upt_error").show();
+                }
+               
+            })
+            .fail(function(){
+                 $("#upt_success").hide();
+                 $("#upt_error").text("Something Went Wrong!");
+                 $("#upt_error").show();
+            });
+             setTimeout(() => {
+                  $("#upt_success").hide();
+                  $("#upt_error").hide();  
+                }, 2000);
+          }
+        });
+
+
+
+</script>
+
+{% endblock %}

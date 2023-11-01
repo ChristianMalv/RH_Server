@@ -2,15 +2,12 @@
 
 {% load crispy_forms_tags %}
 
-
- 
 {% block content %}
 
 {{ form.media.js }}
-{{ form.media.js }}
   <form method="post" novalidate>
     {% csrf_token %}
-    
+    <div style="display:none"> {{ form.matricula }}</div>
     <div class="row">
       <div class="col-md-4">
         {{ form.nombres|as_crispy_field }}
@@ -21,6 +18,9 @@
       <div class="col-md-4">
         {{ form.apellido2|as_crispy_field }}
       </div>
+
+      {% if perms.people.datos_personales %}
+             
       <div class="col-md-6">
         {{ form.curp|as_crispy_field }}
       </div>
@@ -30,6 +30,11 @@
       <div class="col-md-4">
         {{ form.cat_contratacion|as_crispy_field }}
       </div>
+
+    
+      {% endif %}
+   
+
       <div class="col-md-4">
         {{ form.areaInterna|as_crispy_field }}
       </div>
@@ -46,28 +51,39 @@
       <div class="col-md-4">
         {{ form.cat_nombramiento|as_crispy_field }}
       </div>
-      
-     
     </div>
     <div class="row">
-      <div class="col-md-4  alert alert-info">
+        <div class="col-md-4 alert alert-info">
           {{ form.cat_horario|as_crispy_field }}
-      </div>
+        </div>
        <div class="col-md-4 alert alert-info">
           {{ form.horario_finde|as_crispy_field }}
       </div>
-     
-     
-    </div>
-    <div class="row">
-      <div class="alert alert-info col-md-8">
-          {{ form.email_institucional|as_crispy_field }}
+      {% if form.cat_contratacion.value == 1 or form.cat_contratacion.value == 2  %}
+      <div class="col-md-4 alert alert-info">
+         {{ form.comision_sindical|as_crispy_field }}
       </div>
-      <div class="alert alert-info col-md-4">
-        {{ form.extension_telefonica|as_crispy_field }}
+      {% endif %}
+     
     </div>
+     {% if form.cat_contratacion.value == 1 or form.cat_contratacion.value == 2  %}
+    <div class="row">
+       <div class="col-md-12 alert alert-info">
+         {{ form.clave_presupuestal|as_crispy_field }}
+      </div>
+    </div>
+      {% endif %}
+    <div class="row">
+        <div class="alert alert-info col-md-8">
+            {{ form.email_institucional|as_crispy_field }}
+        </div>
+        <div class="alert alert-info col-md-4">
+          {{ form.extension_telefonica|as_crispy_field }}
+      </div>
     </div>
 
+    {% if perms.people.datos_personales %}
+  
     <div class="row">
       <div class="col-md-3">
         {{ form.cat_entidades_federativas|as_crispy_field }}
@@ -117,47 +133,54 @@
       <div class="col-md-6">
         {{ form.emergencia_telefono|as_crispy_field }}
       </div> 
-      
+     
+      {% endif %}      
     </div>
-    
       <div class="row" >
           <div class="col-md-4"></div>
           <div class="col-md-4">
+           
               <h5><i class="fa fa-video"></i>Fotografía</h5>
               <input type="hidden" name="fotografia" id="id_fotografia">
-                                        <button id="snap" type="button" class="btn btn-warning"><i class="fa fa-camera"></i> Tomar fotografía
+              {% if perms.people.tomar_fotografia %}
+                  <button id="snap" type="button" class="btn btn-warning"><i class="fa fa-camera"></i> Tomar fotografía
                                         </button>
-                                        
-              <div style="display:none"> {{ form.info_person.imagen_base64 }}</div>
-
+              {% endif %}                          
+              <div style="display:none"> {{ form.imagen_base64 }}</div>
+           
             </div>
+          </div>
+            <div class="row" >
+           
+
           </div>
         </div>
       </div>
-      <div class="row" >
-      </br>
+    </div>
+        <div class="row" >
+          <div class="col-md-6">
+            <video id="video" width="640" height="480" autoplay></video>
+        </div>
+        
         <div class="col-md-6">
-              <video id="video" width="640" height="480" autoplay></video>
-          </div>
-          <div class="col-md-12">
-
+          <img src="{{ form.imagen_base64.value }}" />
+        </div>
+        <div class="col-md-12">
           <canvas id="canvas" width="640" height="480" style="margin-left: 40px"></canvas>
-
-
-
-          </div>
-
-
-          <div class="col-md-4"></div>
-
-          <div class="col-md-4">
-            <button type="submit" class="btn btn-success">Guardar</button>
-          </div>
+        </div>
       </div>
 
-      
-    </br>
+      <div class="row">
+          <div class="col-md-12">
+           
+          </div>
 
+          <div class="col-md-4"></div>
+          <button type="submit" class="btn btn-success">Actualizar Registro</button>
+        </br>
+        </div>
+      </br>
+      </div>
   </form>
 
     <script>
@@ -170,22 +193,20 @@ let shouldStop = false;
 let stopped = false;
 let recordedChunks;
 
-
-var video = document.getElementById('video');
+var video = document.querySelector("video");
 var canvas = document.getElementById('canvas');
 var context = canvas.getContext('2d');     
-  
 
 if (navigator.mediaDevices.getUserMedia) {
   navigator.mediaDevices.getUserMedia({ video: true })
     .then(function (stream) {
       video.srcObject = stream;
+      video.play();
     })
     .catch(function (err0r) {
       //console.log("Something went wrong!");
     });
 }
-
 
 document.getElementById("snap").addEventListener("click", function() {
         context.drawImage(video, 0, 0, 640, 480);
@@ -194,6 +215,8 @@ document.getElementById("snap").addEventListener("click", function() {
     });
 
 
-    </script>
+</script>
+
+
 {% endblock %}
 

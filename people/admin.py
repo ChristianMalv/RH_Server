@@ -1,6 +1,7 @@
 from django.contrib import admin
 # Register your models here.
-from .models import AreaInterna, AreaOrganigrama, Bajas, ClavePuesto, Compensacion, Compensaciones, Contratacion, Filiacion, Horarios, Incidencia, Person, EntidadFederativa,  Nivel, NivelSueldo, Nombramiento, Pais, Puesto, TipoRelacion, TipoVia, Horarios, CausaIncidencia, Compensaciones
+from .models import AreaInterna, AreaOrganigrama, Bajas, ClavePuesto, Compensacion, Compensaciones, Contratacion, Filiacion, Horarios, Incidencia, Person, EntidadFederativa, \
+      Nivel, NivelSueldo, Nombramiento, Pais, Puesto, TipoRelacion, TipoVia, Horarios, CausaIncidencia, Compensaciones, MultipleOrganigrama, ServicioSocial
 
 admin.site.register(Nombramiento)
 admin.site.register(Nivel)
@@ -20,6 +21,8 @@ admin.site.register(Filiacion)
 admin.site.register(ClavePuesto)
 admin.site.register(CausaIncidencia)
 admin.site.register(Compensaciones)
+admin.site.register(MultipleOrganigrama)
+admin.site.register(ServicioSocial)
 @admin.register(Incidencia)
 class IncidenciaAdmin(admin.ModelAdmin):
     readonly_fields = ('created_at', )
@@ -40,7 +43,7 @@ class OrgqanigramaAdmin(admin.ModelAdmin):
     pass
 
 class CompensacionAdmin(admin.ModelAdmin):
-    list_display = ('nombre', 'numero', 'montoUnitario') 
+    list_display = ('nombre', 'numero', 'montoUnitario', 'codigo') 
 
     pass
 

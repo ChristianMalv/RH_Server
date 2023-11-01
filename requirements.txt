@@ -12,3 +12,7 @@ python-vlc
 PyPDF2
 pyreportjasper
 ldap3
+django-smart-selects
+django-crispy-forms
+django-multi-email-field
+django-alphafilter

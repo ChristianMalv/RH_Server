@@ -1,0 +1,27 @@
+<table class="table table-striped" id="tablaAyudasPersona">
+  <thead>
+    <tr>
+      <th>Fecha de Salida</th>
+      <th>Destino</th>
+      <th>Servicio</th>
+     </tr>
+  </thead>
+  <tbody>  
+
+    {% for ayuda in ayudaPersona %}
+      <tr>
+      <td style="display:none">{{ayuda.id}}</td>
+      <td> {{ ayuda.created_date|date:'d-m-Y' }}</td>
+      <td> {{ayuda.destino}} </td> 
+      <td> {{ayuda.servicio}} </td>  
+      <td><button class='btn btn-default btn-xs eliminar' type='button'><span class='glyphicon glyphicon-trash' aria-hidden='true'></span> </button></td> 
+      </tr>
+    {% empty %}
+      <tr class="table-active">
+        <td colspan="3">No Hay registros para esta persona</td>
+      </tr>
+    {% endfor %}
+   
+  </tbody>
+  
+</table>

@@ -3,7 +3,7 @@ from django.http.response import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.views.generic import ListView, CreateView, UpdateView
 from django.views.generic import View
-from people.models import AreaOrganigrama, Compensacion, Compensaciones, Person, Incidencia, Bajas, AreaInterna, CausaIncidencia
+from people.models import AreaOrganigrama, Compensacion, Compensaciones, Person, Incidencia, Bajas, AreaInterna, CausaIncidencia, MultipleOrganigrama, Ayudas, PersonaAyuda
 from django.conf import settings
 from reportlab.pdfgen import canvas
 import textwrap, operator, base64, json, datetime
@@ -24,7 +24,7 @@ from django.http import FileResponse, Http404
 import math
 from django.core.files.base import ContentFile
 from django.shortcuts import redirect
-
+from django.core.paginator import Paginator
 from .ldapView import get_attributes
 #import vlc
 @method_decorator(login_required, name='dispatch')
@@ -33,7 +33,7 @@ class PersonInciListView(ListView):
     paginate_by = 50
 
     def get(self, request, *args, **kwargs):
-        queryset = Person.objects.filter( Q(activo=True) )
+        queryset = Person.objects.filter( Q(activo=True) & ~Q(cat_contratacion__pk =6) )
         causaIncidencia = CausaIncidencia.objects.all()
         
         #t = get_template('people/Incidencias/inci_list.html')
@@ -1033,7 +1033,7 @@ def DeleteIncidencia(request):
 def GetPersonasIncidencia(request):
   
     q=request.GET.get("q")
-    queryset = Person.objects.filter(activo=True).order_by('apellido1')
+    queryset = Person.objects.filter(Q(activo=True) & ~Q(cat_contratacion__pk =6)).order_by('apellido1')
     if q and q !=" ":
         q =q.split(" ")
         query = reduce(operator.and_, ((Q(nombres__unaccent__icontains=item) | Q(apellido1__unaccent__icontains=item) | Q(apellido2__unaccent__icontains=item) | Q(matricula__icontains=item) ) for item in q))
@@ -1184,29 +1184,66 @@ def loginAdmin(request):
         print(e)          
     return HttpResponse(status=404)
 
+def getAllPersonas(matricula):
+    person = Person.objects.get(matricula=matricula)
+    multipleAreas = MultipleOrganigrama.objects.filter(info_person = person).values('areasInternas')
+    if person.areaInterna.pk ==1:
+        queryset = Person.objects.filter( Q(activo=True) & ~Q(cat_contratacion__pk =6)).order_by('apellido1')
+    elif multipleAreas.count() > 0:
+        queryset = Person.objects.filter( Q(activo=True) & ~Q(cat_contratacion__pk =6))
+        query = reduce(operator.or_, ((Q(areaInterna__pk=item['areasInternas'])) for item in multipleAreas))
+        queryset = queryset.filter(query).order_by('apellido1')     
+    else:
+        queryset = Person.objects.filter( Q(activo=True) & Q(areaInterna=person.areaInterna) & ~Q(cat_contratacion__pk =6) ).order_by('apellido1')
+        
+    return queryset, person
+
+class AyudaToShow:  
+    def __init__(self, id, matricula, nombre, MontoXDia, MontoActual):
+        self.id = id
+        self.matricula = matricula
+        self.nombre = nombre
+        self.montoXDia = MontoXDia
+        self.montoActual = MontoActual
+
 class AdminInciListView(ListView):
     model = Person
-    paginate_by = 50
-
+   # paginate_by = 50
+    import locale
+    locale.setlocale(locale.LC_TIME, '')
     def get(self, request, *args, **kwargs):
-        person = Person.objects.get(matricula=self.kwargs['matricula'])
-        if person.areaInterna.pk ==1:
-            queryset = Person.objects.filter( Q(activo=True))
-        else:
-            queryset = Person.objects.filter( Q(activo=True) & Q(areaInterna=person.areaInterna) )
-        
-            content = {
+        queryset, person = getAllPersonas(self.kwargs['matricula'])
+        querysetPerson = queryset.values('matricula')
+        query = reduce(operator.or_, ((Q(info_person__matricula=item['matricula'])) for item in querysetPerson))
+        querysetAyuda = Ayudas.objects.filter(query) 
+        now = datetime.datetime.now()
+        list = [] 
+        dashboard = False 
+        if self.kwargs['matricula'] == ('H210527' or 'M210276' or 'M210668'):
+            dashboard = True
+        for ayuda in querysetAyuda:
+            personaConAyuda=PersonaAyuda.objects.filter(Q(ayuda = ayuda) & Q(created_at__month = now.month) & Q(created_at__year = now.year) )
+            monto = (ayuda.montoXDia)*personaConAyuda.count()
+            list.append(AyudaToShow(ayuda.pk, ayuda.info_person.matricula, ayuda.info_person.nombres + ' ' + ayuda.info_person.apellido1 + ' '+ ayuda.info_person.apellido2, ayuda.montoXDia,  monto ))    
+
+        content = {
                 'people': queryset, 
                 'matricula': self.kwargs['matricula'],
                 'area': person.areaInterna.nombre,
-            }
+                'ayudas': list,
+                'mes': now.strftime("%B"),
+                'dashboard': dashboard,
+                }
         return render(request, 'people/inci/administradores/inci_list.html' , content)
+
+
+
+
 @csrf_exempt
 def GetAdminIncidencia(request):
   
     q=request.GET.get("q")
-    person = Person.objects.get(matricula=request.GET.get("matricula"))
-    queryset = Person.objects.filter( Q(activo=True) & Q(areaInterna=person.areaInterna)).order_by('apellido1')
+    queryset, person = getAllPersonas(request.GET.get("matricula"))
     if q and q !=" ":
         q =q.split(" ")
         query = reduce(operator.and_, ((Q(nombres__unaccent__icontains=item) | Q(apellido1__unaccent__icontains=item) | Q(apellido2__unaccent__icontains=item) | Q(matricula__icontains=item) ) for item in q))

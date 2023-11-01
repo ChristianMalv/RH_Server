@@ -57,7 +57,7 @@ class DirectoryListView(ListView):
     #querysetBajas = Bajas.objects.all().values("info_person__pk", "info_person__matricula", "info_person__nombres","info_person__apellido1", "info_person__apellido2")
     #querysetPersons = Person.objects.all().values("pk", "matricula", "nombres", "apellido1", "apellido2")    
     #queryset = querysetPersons.difference(querysetBajas)  
-    queryset = Person.objects.filter(activo=True).order_by('apellido1')
+    queryset = Person.objects.filter(Q(activo=True) & ~Q(cat_contratacion__pk =6)).order_by('apellido1')
     paginate_by = 50
 
     def get_queryset(self, *args, **kwargs):
@@ -85,7 +85,7 @@ def GetPersonasDirectory(request):
     q=request.GET.get("q")
     a=request.GET.get("a")
     area = request.GET.get("area")
-    queryset = Person.objects.filter(activo=True).order_by('apellido1')
+    queryset = Person.objects.filter(Q(activo=True) & ~Q(cat_contratacion__pk =6)).order_by('apellido1')
     if q and q !=" ":
         q =q.split(" ")
         query = reduce(operator.and_, ((Q(nombres__unaccent__icontains=item) | Q(apellido1__unaccent__icontains=item) | Q(apellido2__unaccent__icontains=item) | Q(email_institucional__icontains=item)  | Q(extension_telefonica__icontains=item) | Q(cat_area_org__nombre__unaccent__icontains=item) | Q(puesto__unaccent__icontains=item) ) for item in q))

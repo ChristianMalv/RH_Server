@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+  <div class="col-md-6">
+    <p>
+      <a href="{% url 'sersoc_add' %}" class="btn btn-primary">Agregar</a>
+     </p>
+  </div>
+
+  <form method="get">
+    <div class="col-md-3">
+      <input name ="q" id="searchPerson" value="{{request.GET.q}}" placeholder="Buscar persona..">
+    </div>
+    <div class="col-md-3">
+      <button id="searchPersonButton" type="submit" class="btn btn-default" type="button">
+        <span class="glyphicon glyphicon-search"></span> Buscar </button>
+    </div>
+  </form>
+  
+
+  
+</div>
+  
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Escuela</th>
+        <th>Nombre</th>
+        <th>Periodo</th>
+        <th>Credencial</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for person in people %}
+        <tr>
+          <td>{{ person.escuela_procedencia }}</td>
+          <td><a href="{% url 'sersoc_edit' person.info_person.pk %}?redirect_page={{ request.GET.page }}" >{{ person.info_person.nombres  }} {{ person.info_person.apellido1  }} {{ person.info_person.apellido2 }} </a></td>
+          <td>{{ person.periodo }}</a></td>
+          <td><button type="button" class="btn btn-default" onclick="location.href='{% url 'sersoc_print' person.info_person.pk person.pk %}?redirect_page={{ request.GET.page }}';"> <span class="glyphicon glyphicon-qrcode"></span> Credencial</button> </td>
+        </tr>
+      {% empty %}
+        <tr class="table-active">
+          <td colspan="3">No data</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+    {% if is_paginated %}
+      <ul class="pagination">
+        {% if page_obj.has_previous %}
+          <li><a href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+        {% else %}
+          <li class="disabled"><span>&laquo;</span></li>
+    {% endif %}
+    
+    {% for i in paginator.page_range %}
+        {% if page_obj.number == i %}
+          <li class="active"><span>{{ i }} <span class="sr-only">(current)</span>     </span></li>
+        {% else %}
+          <li><a href="?page={{ i }}">{{ i }}</a></li>
+        {% endif %}
+    {% endfor %}
+ 
+    {% if page_obj.has_next %}
+      <li><a href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&raquo;</span></li>
+    {% endif %}
+      </ul>
+    {% endif %}
+
+
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('input[type=text]').forEach( node => node.addEventListener('keypress', e => {
+        
+      }))
+    });
+
+
+
+$('#searchPerson').keyup(function(e){
+  console.log(":)");
+  if($("#searchPerson").val()==""){
+    $("#searchPersonButton").click();
+  }
+});
+</script>
+
+{% endblock %}

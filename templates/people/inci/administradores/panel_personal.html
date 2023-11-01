@@ -1,0 +1,133 @@
+{% extends 'base_dir.html' %}
+
+{% block content %}
+<div class="container">
+
+  <div class="row">
+    <div class="col-md-12">
+     <h2>Asistencias actuales</h2>
+      <hr class="red">
+      <div class="form-group datepicker-group">
+          <label><b>Fecha de Revisión de Asistencias:</b></label>
+          <input class="form-control" id="input1" type="text">
+      </div>
+    </div>
+  </div>
+  <div class="row">
+   <div class="col-md-3">
+    <h4> General </h4>
+      <canvas id="myChart2"></canvas>
+    </div>
+    <div class="col-md-9"> 
+      <h4> Por Dirección </h4>  
+      <canvas id="myChart"></canvas>
+    </div>
+   
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+ 
+  $('#input1').datepicker({changeYear: true});
+ 
+  console.log("{{fecha|escapejs}}");
+  const ctx = document.getElementById('myChart');
+  const ctx1 = document.getElementById('myChart2');
+   $('#input1').val("{{fecha|escapejs}}".replace(/['"]+/g, ''));
+    function getData(dataToProcess){
+      var data = JSON.parse(dataToProcess);
+      let labels =[];
+      for(var x in data){
+        labels.push(data[x]);
+      }
+    console.log(labels);  
+    return labels;
+  }
+
+
+const myLineChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      //
+      //labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+      labels: getData("{{listName|escapejs}}"),
+      datasets: [{
+        label: 'Con asistencia',
+        data: getData("{{listChecked|escapejs}}"),
+        borderWidth: 1,
+        borderColor: '#36A2EB',
+        backgroundColor: '#9BD0F5',
+      }, 
+      {
+        label: 'Sin asistencia',
+        data: getData("{{listPerson|escapejs}}"),
+        borderWidth: 1,
+        borderColor: '#FF6384',
+        backgroundColor: '#FFB1C1',
+      },]
+    },
+    options: {
+      scales: {
+      x: {
+        stacked: true,
+      },
+      y: {
+        stacked: true
+      }
+    }
+    }
+  });
+
+const myPieChart =  new Chart(ctx1, {
+    type: 'pie',
+    data: {
+       labels: [
+        'Con Asistencia',
+          'Sin Registrar',
+        ],
+  datasets: [{
+    label: 'Registro de Asistencia',
+    data: ["{{totalCheck|escapejs}}", "{{totalNoCheck|escapejs}}"],
+    //data: [300, 50],
+    backgroundColor: [
+      'rgb(75, 192, 192)',
+      'rgb(255, 205, 86)'
+    ],
+    hoverOffset: 4
+  }]  
+    }
+    
+  });
+
+$('#input1').change(function(){
+     //Change code!
+     console.log(".D");
+  $.ajax({
+      url:"{% url 'update_dashboard' %}",
+      type:'GET',
+      data:{  'fecha':$("#input1").val() }
+            })
+    .done(function(response){
+       //response["listCheck"] response["listPerson"] response["totalCheck"] response["totalNoCheck"]
+      myLineChart.data.labels =  response["listName"];
+      myLineChart.data.datasets[0].data = response["listCheck"];
+      myLineChart.data.datasets[1].data = response["listPerson"];
+      myLineChart.update(); // Calling update now animates the position of March from 90 to 50.
+      
+      myPieChart.data.datasets[0].data = [response["totalCheck"], response["totalNoCheck"]];
+      myPieChart.update();
+      console.log("update");
+      })
+    .fail(function(){
+      $("#RowsSearch").hide();
+      $("#RowsInicio").show();
+      $("#Pages").show();
+      })  
+});
+
+
+</script>
+
+{% endblock %}
