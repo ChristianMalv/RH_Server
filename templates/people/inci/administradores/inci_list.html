@@ -2,29 +2,49 @@
 {% extends 'base_dir.html' %}
   {% csrf_token %}
 {% block content %}
+
 <div class="container">
+
   <div class="row">
                         <div class="col-md-12 col-lg-12">
                             <h2>{{area}}</h2>
                             <hr class="red">
                         </div>
                     </div>
-  <div class="col-md-6">
-      <div class="form-group datepicker-group">
-      <label><b>Fecha de Inicio:</b></label>
-      <input class="form-control" id="input1" type="text">
-      <label><b>Fecha Fin:</b></label>
-      <input class="form-control" id="input2" type="text">
+  
+  <ul class="nav nav-tabs">
+  <li id="liIncidencias" class="tablinks"><a data-toggle="tab" onclick="openCity(event, 'Incidencias')" id="defaultOpen">Incidencias</a></li>
+  <li id="liAyudas" class="tablinks"><a data-toggle="tab" onclick="openCity(event, 'Ayudas')">Ayudas</a></li>
+  </ul>
+<div id="Incidencias" class="tabcontent">  
+     <div class="col-md-6">
+          <div class="form-group datepicker-group">
+          <label><b>Fecha de Inicio:</b></label>
+          <input class="form-control" id="input1" type="text">
+          <label><b>Fecha Fin:</b></label>
+          <input class="form-control" id="input2" type="text">
+        </div>
     </div>
-</div>
-<form method="get">
-    <div class="col-md-3">
-      <input name ="q" id="searchPerson" placeholder="Buscar">
+  <form method="get">
+      <div class="col-md-3">
+        <input name ="q" id="searchPerson" placeholder="Buscar">
+      </div>
+      <div class="col-md-3">
+        <button type="button" class="btn btn-primary btn-lg active" onclick="window.history.back();">Salir</a>
     </div>
     <div class="col-md-3">
-      <button type="button" class="btn btn-primary btn-lg active" onclick="window.history.back();">Salir</a>
-  </div>
-  </form>
+    <p></p>
+    </div>
+    <div class="col-md-3">
+      <p><p>
+      {% if dashboard == True %}
+        <button class="btn btn-default" type="button" onclick="window.open('../../admin/dashboard' , '_blank');">
+        <span class="glyphicon glyphicon-dashboard"></span>
+          Dashboard </button>
+        </p></p>
+      {% endif %}
+    </div>
+    </form>
 <hr>
 
  <input id="matriculaArea" value="{{ matricula }}"  style="display:none">
@@ -71,41 +91,227 @@
     </tbody>
   </table>
 </div>
-<div id="Pages"> 
-    {% if is_paginated %}
-      <ul class="pagination">
-        {% if page_obj.has_previous %}
-          <li><a href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>
-        {% else %}
-          <li class="disabled"><span>&laquo;</span></li>
-    {% endif %}
-    
-    {% for i in paginator.page_range %}
-        {% if page_obj.number == i %}
-          <li class="active"><span>{{ i }} <span class="sr-only">(current)</span>     </span></li>
-        {% else %}
-          <li><a href="?page={{ i }}">{{ i }}</a></li>
-        {% endif %}
-    {% endfor %}
- 
-    {% if page_obj.has_next %}
-      <li><a href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
-    {% else %}
-      <li class="disabled"><span>&raquo;</span></li>
-    {% endif %}
-      </ul>
-    {% endif %}
+</div>
 
-    </div>
+<div id="Ayudas" class="tabcontent">
+<p>
+    <div class="col-md-6">
+      <div class="form-group datepicker-group">
+        <button type="button" class="btn btn-primary btn-lg active" data-toggle="modal" data-target="#myModalSalida"> Agregar Salida</a>
+      </div>
+  </div>
+<div class ="col-md-12" id="RowsInicio">
+  <table class="table table-bordered" id="AyudasList">
+    <thead>
+      <tr>
+        <th>Matricula</th>
+        <th>Nombre</th>
+        <th>Monto por día</th>
+        <th>Monto mes {{mes}} </th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for persona in ayudas %}
+        <tr>
+          <td style="display:none" > {{persona.id}}</td>
+          <td>{{ persona.matricula }}</td>
+          <td>{{ persona.nombre}} </td>
+          <td>{{persona.montoXDia }}</td>
+          <td>{{persona.montoActual }}</td>
+          <td><button class="btn btn-default btn-xs addAyuda" data-toggle="modal" data-target="#myModal" type="button"><span aria-hidden="true"></span> Agregar ayuda mes {{mes}} </button></td>
+          <td><button class="btn btn-default btn-xs getAyuda" data-toggle="modal" data-target="#myModalConsulta" type="button"><span aria-hidden="true"></span> Consultar {{mes}} </button></td>
+        
+        </tr>
+      {% empty %}
+        <tr class="table-active">
+          <td colspan="3">No data</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- modificar todo ese divModal -->
+<div class="modal fade"  id="myModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Agregar Ayuda al Personal</h4>
+      </div>
+      <div class="modal-body">
+          <div class="col-md-12">
+            <input id="idayuda" style="display:none" type="text">
+            <h6 id="textoIncidencia"> Fecha de Salida</h6>
+            <div class="col-md-7">
+              <input class="form-control" id="input3" type="text">
+            </div>
+          </div>
+          <div class="col-md-12">
+              <h6 >Salida:</h6>
+              <div class="col-md-7">
+              <input name="monto" id="servicio" placeholder="Servicio">
+              </div>
+          </div>  <tr></tr>
+          <div class="col-md-12">
+             <h6 >Destino:</h6>
+              <div class="col-md-7">
+              <textarea name="Text1"  id="destino" placeholder="Destino" cols="40" rows="5"></textarea>
+              </div>
+          </div>
+          
+      </div>
+      <div class="modal-footer">
+        <div class="col-md-12">
+        <tr>
+          <h6></h6>
+        <button type="button" class="btn btn-default" data-dismiss="modal" id="close_modal">Cerrar</button>
+        <button type="button" class="btn btn-primary" id="insert_btn">Guardar</button>
+         </tr>
+      </div>  
+      </div>
+      <div class="form-group">
+          <div class="alert alert-success" id="ins_success" style="display:none">
+
+          </div>
+           <div class="alert alert-danger" id="ins_error" style="display:none">
+
+          </div>
+      </div>  
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<!-- modificar todo ese divModal -->
+<div class="modal fade"  id="myModalConsulta">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Consulta Ayuda al Personal</h4>
+      </div>
+      <div class="modal-body">
+          
+        <div class="row">
+          <div class="col-md-12">
+            Persona: <label id="modal-nombre"></label>
+          </div>
+           <div class="col-md-12">
+            Monto por día: <label id="modal-montodia"></label>
+          </div>
+           <div class="col-md-12">
+            Monto mes actual: <label id="modal-montomes"></label>
+          </div>
+          <div class="col-md-12"  id="modal-consulta">
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <div class="col-md-12">
+        <tr>
+          <h6></h6>
+        <button type="button" class="btn btn-default" data-dismiss="modal" id="close_modal">Cerrar</button>
+        <button type="button" class="btn btn-primary" id="insert_btn">Guardar</button>
+         </tr>
+      </div>  
+      </div>
+      <div class="form-group">
+          <div class="alert alert-success" id="ins_success" style="display:none">
+
+          </div>
+           <div class="alert alert-danger" id="ins_error" style="display:none">
+
+          </div>
+      </div>  
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<!-- modificar todo ese divModal -->
+<div class="modal fade"  id="myModalSalida">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Agregar Salida del Personal</h4>
+      </div>
+      <div class="modal-body">
+          <div class="col-md-12">
+            <input id="idayuda" style="display:none" type="text">
+            <h6 id="textoIncidencia"> Fecha de Salida</h6>
+            <div class="col-md-7">
+              <input class="form-control" id="input4" type="text">
+            </div>
+          </div>
+          <div class="col-md-12">
+              <h6 >Salida:</h6>
+              <div class="col-md-7">
+              <input name="monto" id="servicio1" placeholder="Servicio">
+              </div>
+          </div>  <tr></tr>
+          <div class="col-md-12">
+             <h6 >Destino:</h6>
+              <div class="col-md-7">
+              <textarea name="Text1"  id="destino1" placeholder="Destino" cols="40" rows="5"></textarea>
+              </div>
+          </div>
+          <div class="col-md-12">
+             <h6 >Selecciona las personas para esta salida.</h6>
+          </div>
+           <div class="table">
+                  <table class="table" id="salida">
+                      <tbody>
+           {% for persona in ayudas %}
+              <tr>
+                <td style="display:none" > {{persona.id}}</td>
+                <td>{{ persona.matricula }}</td>
+                <td>{{ persona.nombre}} </td>
+              </tr>
+            {% endfor %}
+            </tbody>
+            </table>
+            </div>
+      </div>
+      <div class="modal-footer">
+        <div class="col-md-12">
+        <tr>
+          <h6></h6>
+        <button type="button" class="btn btn-default" data-dismiss="modal" id="close_modal">Cerrar</button>
+        <button type="button" class="btn btn-primary" id="salida_insert">Guardar</button>
+         </tr>
+      </div>  
+      </div>
+      <div class="form-group">
+          <div class="alert alert-success" id="ins_success_salida" style="display:none">
+
+          </div>
+           <div class="alert alert-danger" id="ins_error_salida" style="display:none">
+
+          </div>
+      </div>  
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
     <div id="imgSpinner1" class="lds-ellipsis"></div>
-   
+
+ <style type="text/css">
+  td {border: 1px #DDD solid; padding: 5px; cursor: pointer;}
+
+.selected {
+    background-color: #4D92DF;
+    color: #FFF;
+}
+ </style>
+
 
 
 <script>
+ document.getElementById("defaultOpen").click();
  $("#submodulo").text('Consulta de Incidencias');
 
   $('#input1').datepicker({changeYear: true});
   $('#input2').datepicker({changeYear: true});
+  $('#input3').datepicker({changeMonth: false, changeYear: false, stepMonths: 0});
+  $('#input4').datepicker({changeMonth: false, changeYear: false, stepMonths: 0});
 
   $("#rangoFechasVac").hide();
   $("#tipoIncidencia").val(1);
@@ -113,6 +319,71 @@
   $.ajaxSetup({
   data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
 });
+
+
+function openCity(evt, cityName) {
+  // Declare all variables
+  var i, tabcontent, tablinks;
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+
+  tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
+  }
+
+  document.getElementById(cityName).style.display = "block";
+  document.getElementById('li'+cityName).className += " active";  
+  //evt.currentTarget.className += " active";
+}
+
+
+function doSearch(searchText, value) {
+    var tableReg = document.getElementById('AyudasList');
+    console.log(searchText);
+    for (var i = 1; i < tableReg.rows.length ; i++) {
+        var cellsOfRow = tableReg.rows[i].getElementsByTagName('td');
+        var found = false;
+        for (var j = 0; j < cellsOfRow.length && !found; j++) {
+            var compareWith = cellsOfRow[j].innerHTML.toUpperCase();
+            if (searchText.length == 0 || (compareWith.indexOf(searchText) > -1)) {
+                found = true;
+            }
+        }
+        if (found) {
+          console.log(tableReg.rows[i]);  
+          console.log(":)");
+          var cellsOfRow = tableReg.rows[i].getElementsByTagName('td');
+          cellsOfRow[4].innerHTML = value;
+          return i;
+        } else {
+          console.log(":(");
+        }
+    }
+    return 0;
+}
+
+  function validaDatos(fecha, servicio, destino){
+     if ($(fecha).val() == "") {
+      alert("Seleccione una Fecha de Inicio");
+      $(fecha).focus();
+      return false;
+      }
+    else if ($(servicio).val() == "") {
+      alert("Ingrese detalle del servicio");
+      $(servicio).focus();
+      return false;
+      }
+    else if ($(destino).val() == "") {
+      alert("Ingrese destino");
+      $(destino).focus();
+      return false;
+      }
+    return true;
+  }
+
 
 $(document).on("click",".imprimir",function(){
             var this_html=$(this);
@@ -147,31 +418,63 @@ $(document).on("click",".imprimir",function(){
 
     
 $(document).on("click",".consultar",function(){
-            var this_html=$(this);
-            var id=this_html.parent().parent().children().first().text();
-            console.log(id);
-            var input1 = $('#input1').val();
-            var input2 = $('#input2').val();
-            console.log(input1);
-            console.log(input2);
-            if (input1 == "") {
-              alert("Seleccione una Fecha de Inicio");
-              $('#input1').focus();
-            }
-            else{
-              norango=false;
-              if(input2==""){
-                window.location.href = "../../../incidencias/detalle/admin/"+id.trim()+"/"+ input1.replaceAll('/', '-') ;
-              }
-              else
-              {
-                window.location.href = "../../../incidencias/detalle/admin/"+id.trim()+"/"+ input1.replaceAll('/', '-') +"/"+ input2.replaceAll('/', '-') ;
-              }
-            
-            }
-          });
+  var this_html=$(this);
+  var id=this_html.parent().parent().children().first().text();
+  console.log(id);
+  var input1 = $('#input1').val();
+  var input2 = $('#input2').val();
+  console.log(input1);
+  console.log(input2);
+  if (input1 == "") {
+    alert("Seleccione una Fecha de Inicio");
+    $('#input1').focus();
+  }
+  else{
+    norango=false;
+    if(input2==""){
+      window.location.href = "../../../incidencias/detalle/admin/"+id.trim()+"/"+ input1.replaceAll('/', '-') ;
+    }
+    else
+    {
+      window.location.href = "../../../incidencias/detalle/admin/"+id.trim()+"/"+ input1.replaceAll('/', '-') +"/"+ input2.replaceAll('/', '-') ;
+    }
+  
+  }
+});
 
-          
+
+$(document).on("click",".addAyuda",function(){
+  var this_html=$(this);
+  const id=this_html.parent().parent().children().first().text();
+  console.log(id);
+  $("#idayuda").val(id);
+ });
+$(document).on("click",".getAyuda",function(){
+  var this_html=$(this);
+  const id=this_html.parent().parent().children().first().text();
+  console.log(id);
+  $.ajax({
+      url:"{% url 'get_PersonaAyuda' %}",
+      type:'GET',
+      data:{  'id':id }
+            })
+    .done(function(response){
+      $("#modal-consulta").empty();
+      $("#modal-consulta").append(response['content']);
+      $("#modal-nombre").empty();
+      $("#modal-nombre").append(response['persona']);
+      $("#modal-montodia").empty();
+      $("#modal-montodia").append("$ "+response['montodia']);
+      $("#modal-montomes").empty();
+      $("#modal-montomes").append("$ "+response['montomes']);
+      console.log(response)
+      })
+    .fail(function(){
+     
+      })    
+ });
+
+        
 $('#searchPerson').keyup(function(e){
   clearTimeout($.data(this, 'timer'));
   if($("#searchPerson").val()==""){
@@ -234,7 +537,172 @@ $('#tipoIncidencia').change(function() {
 
  });
 
+$("#insert_btn").click(function(){
+console.log($("#input3").val())
+console.log($("#servicio").val())
+console.log($("#destino").val())
+console.log($("#idayuda").val());
+if(validaDatos('#input3', '#servicio', '#destino')){
+$.ajax({
+  url:"{% url 'insert_ayuda' %}",
+  type:'POST',
+  data:{ id:$("#idayuda").val(), fechaAyuda:$("#input3").val(), servicio:$("#servicio").val(), destino:$("#destino").val()}
+  })
+.done(function(response){
+  if(response['error']==false){ 
+      $("#ins_error").hide();
+      $("#ins_success").text(response['errorMessage']);
+      $("#ins_success").show();
+      $("#noData").hide();
+      console.log(response['matricula']);
+      pos=doSearch(response['matricula'], response['monto']);
+    
+    
+      /*  var html_data=response['tabla'];
+        $("#tablaPrincipal tbody").append(html_data);
+        var tableReg = document.getElementById('tablaPrincipal');
+        tableReg.rows[pos].remove();
+        var newRow = tableReg.insertRow(pos)
+        newRow.innerHTML =response['tabla'];*/
+        console.log(":D");
+          $("#servicio").val('');
+          $("#destino").val('');
+      }
+      else{
+      $("#ins_success").hide();
+      $("#ins_error").text(response['errorMessage']);
+      $("#ins_error").show();
+    $("#input3").focus();
+      }
+    })
+    .fail(function(){
+      $("#ins_success").hide();
+      $("#ins_error").text("Something Went Wrong!");
+      $("#ins_error").show();
+    })
+    .always(function(){
+      $(".btn-insert-data").removeAttr("disabled");
+      $(".btn-insert-data").text("INSERT STUDENT");
+      setTimeout(() => {
+                $("#ins_success").hide();
+                $("#ins_error").hide(); 
+              }, 2000);
+          })
+    }
+});
 
+$(document).on("click",".eliminar",function(){
+  var this_html=$(this);
+  const id=this_html.parent().parent().children().first().text();
+  console.log(id);
+  var empleado = $("#modal-nombre").html();
+  var dia = this_html.parent().parent().children().eq(1).text()
+  var opcion = confirm("Se va a eliminar la Ayuda registrada al empleado: "+ empleado +" del día "+ dia +". ¿Es correcto?");
+    if (opcion == true) {
+       $.ajax({
+    url:"{% url 'delete_ayuda_monto' %}",
+    type:'POST',
+    data:{ id:id}
+    })
+   .done(function(response){
+    if(response['error']==false){ 
+        $("#ins_error").hide();
+        $("#ins_success").text(response['errorMessage']);
+        $("#ins_success").show();
+        $("#noData").hide();
+        this_html.parent().parent().remove();
+        pos=doSearch(response['matricula'], response['monto']);
+        $("#modal-montomes").empty();
+        $("#modal-montomes").append("$ "+response['monto']);
+        }
+        else{
+        $("#ins_success").hide();
+        $("#ins_error").text(response['errorMessage']);
+        $("#ins_error").show();
+       $("#input3").focus();
+         }
+       })
+      .fail(function(){
+        $("#ins_success").hide();
+        $("#ins_error").text("Something Went Wrong!");
+        $("#ins_error").show();
+      })
+      .always(function(){
+        setTimeout(() => {
+                  $("#ins_success").hide();
+                  $("#ins_error").hide(); 
+                }, 2000);
+            })  
+      
+    }
+ });
+
+$("#salida tr").click(function(){
+  if ($(this).attr('class') == 'selected'){
+     $(this).removeClass('selected');
+  }
+  else{
+    $(this).addClass('selected'); 
+  }
+});
+$("#salida_insert").click(function(){
+  let persons =[];
+  var time=1;
+  var cusid_ele = document.getElementsByClassName('selected');
+  if (cusid_ele.length ==0){
+    alert("Seleccione al menos una persona para esta salida");
+  }
+  else{
+  for (var i = 0; i < cusid_ele.length; ++i) {
+    var item = cusid_ele[i];  
+    persons.push(item.cells[0].innerHTML);
+   }
+  console.log(persons);
+  if(validaDatos('#input4', '#servicio1', '#destino1')){
+     $.ajax({
+        url:"{% url 'insert_ayuda' %}",
+        type:'POST',
+        data:{ personas:JSON.stringify(persons), fechaAyuda:$("#input4").val(), servicio:$("#servicio1").val(), destino:$("#destino1").val()}
+        })
+      .done(function(response){
+        console.log(response.length);
+        for (var i = 0; i < response.length; ++i) {
+          console.log(response[i]['error']);
+          time = response.length;
+          if(response[i]['error']==false){ 
+            //$("#ins_error_salida").hide();
+            $("#ins_success_salida").append(response[i]['errorMessage']+'</p>');
+            $("#ins_success_salida").show();
+            $("#noData").hide();
+            console.log(response[i]['matricula']);
+            pos=doSearch(response[i]['matricula'], response[i]['monto']);
+            console.log(":D");
+                $("#servicio").val('');
+                $("#destino").val('');
+            }
+          else{
+           // $("#ins_success_salida").hide();
+            $("#ins_error_salida").append(response[i]['errorMessage']+'</p>');
+            $("#ins_error_salida").show();
+          }
+        }
+          })
+          .fail(function(){
+            $("#ins_success_salida").hide();
+            $("#ins_error_salida").text("Something Went Wrong!");
+            $("#ins_error_salida").show();
+          })
+          .always(function(){
+            setTimeout(() => {
+                      $("#ins_success_salida").hide();
+                      $("#ins_error_salida").hide(); 
+                      $("#ins_success_salida").text('');
+                      $("#ins_error_salida").text(''); 
+                    }, (2000*time));
+                })  
+      }
+  } 
+});
 
 
 
@@ -265,5 +733,16 @@ $(document).ajaxStart(function(){
         });
 
 </script>
+<style type="text/css">
 
+.tabcontent {
+  animation: fadeEffect 1s; /* Fading effect takes 1 second */
+}
+
+/* Go from zero to full opacity */
+@keyframes fadeEffect {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}
+</style>
 {% endblock %}

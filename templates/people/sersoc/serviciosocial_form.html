@@ -10,7 +10,7 @@
 {{ form.media.js }}
   <form method="post" novalidate>
     {% csrf_token %}
-    
+   
     <div class="row">
       <div class="col-md-4">
         {{ form.nombres|as_crispy_field }}
@@ -27,47 +27,32 @@
       <div class="col-md-6">
         {{ form.rfc|as_crispy_field }}
       </div>
-      <div class="col-md-4">
-        {{ form.cat_contratacion|as_crispy_field }}
-      </div>
+      <div class="alert alert-info col-md-12">
+      <h4> Especifique área donde se realizará el Servicio Social </h4>
       <div class="col-md-4">
         {{ form.areaInterna|as_crispy_field }}
       </div>
-      <div class="col-md-4">
+       <div class="col-md-4" >
         {{ form.cat_area_org|as_crispy_field }}
       </div>
-      <div class="col-md-4">
-        {{ form.puesto|as_crispy_field }}
       </div>
-     
-      <div class="col-md-4">
-        {{ form.fecha_ingreso|as_crispy_field }}
-      </div>
-      <div class="col-md-4">
-        {{ form.cat_nombramiento|as_crispy_field }}
-      </div>
+    </div>
       
-     
-    </div>
-    <div class="row">
-      <div class="col-md-4  alert alert-info">
-          {{ form.cat_horario|as_crispy_field }}
+     <!--  -->
+      <div style="display:none">
+        <div class="col-md-4">
+          {{ form.puesto|as_crispy_field }}
+        </div>
+        <div class="col-md-4">
+          {{ form.cat_contratacion|as_crispy_field }}
+        </div>
+        <div class="col-md-4">
+          {{ form.fecha_ingreso|as_crispy_field }}
+        </div>
+        <div class="alert alert-info col-md-8">
+            {{ form.email_institucional|as_crispy_field }}
+        </div>
       </div>
-       <div class="col-md-4 alert alert-info">
-          {{ form.horario_finde|as_crispy_field }}
-      </div>
-     
-     
-    </div>
-    <div class="row">
-      <div class="alert alert-info col-md-8">
-          {{ form.email_institucional|as_crispy_field }}
-      </div>
-      <div class="alert alert-info col-md-4">
-        {{ form.extension_telefonica|as_crispy_field }}
-    </div>
-    </div>
-
     <div class="row">
       <div class="col-md-3">
         {{ form.cat_entidades_federativas|as_crispy_field }}
@@ -117,9 +102,46 @@
       <div class="col-md-6">
         {{ form.emergencia_telefono|as_crispy_field }}
       </div> 
+    
+      <div class="col-md-6">
+        {{  sersoc_form.tipo_sangre|as_crispy_field }}
+      </div> 
       
     </div>
+   
+    <div class="row">  
+      <div class="col-md-6">
+        {{ sersoc_form.escuela_procedencia|as_crispy_field }}
+      </div>
+       <div class="col-md-6">
+        {{ sersoc_form.carrera|as_crispy_field }}
+      </div> 
+      <div class="col-md-12">
+        {{ sersoc_form.escuela_domicilio|as_crispy_field }}
+      </div>
+      <div class="col-md-6">
+        {{ sersoc_form.creditos_cursados|as_crispy_field }}
+      </div> 
+       <div class="col-md-6">
+        {{ sersoc_form.numero_matricula|as_crispy_field }}
+      </div>   
+       <div class="col-md-6">
+        {{ sersoc_form.telefono_escuela|as_crispy_field }}
+      </div> 
+    </div>
     
+    <div class="row">  
+      <div class="col-md-6">
+        {{ sersoc_form.periodo|as_crispy_field }}
+      </div>
+       <div class="col-md-6">
+        {{ sersoc_form.horario|as_crispy_field }}
+      </div>
+       <div class="col-md-6">
+        {{ sersoc_form.description|as_crispy_field }}
+      </div>
+    </div>
+
       <div class="row" >
           <div class="col-md-4"></div>
           <div class="col-md-4">
@@ -128,17 +150,21 @@
                                         <button id="snap" type="button" class="btn btn-warning"><i class="fa fa-camera"></i> Tomar fotografía
                                         </button>
                                         
-              <div style="display:none"> {{ form.info_person.imagen_base64 }}</div>
+             <div style="display:none"> {{ form.imagen_base64 }}</div>
 
             </div>
           </div>
         </div>
       </div>
       <div class="row" >
+       <div class="col-md-6">
+            <img src="{{ form.imagen_base64.value }}" />
+          </div>
       </br>
         <div class="col-md-6">
               <video id="video" width="640" height="480" autoplay></video>
           </div>
+         
           <div class="col-md-12">
 
           <canvas id="canvas" width="640" height="480" style="margin-left: 40px"></canvas>

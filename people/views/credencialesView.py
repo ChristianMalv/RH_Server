@@ -9,7 +9,7 @@ from django.urls.base import reverse
 from django.views.generic import ListView, CreateView, UpdateView
 from django.urls import reverse_lazy
 from django.views.generic import View
-from people.models import AreaOrganigrama, Compensacion, Compensaciones, Person, Incidencia, Bajas, AreaInterna, CausaIncidencia
+from people.models import AreaOrganigrama, Compensacion, Compensaciones, Person, Incidencia, Bajas, AreaInterna, CausaIncidencia, ServicioSocial
 from people.forms import IncidenciaForm, PersonForm, DirectorioUpdateForm
 from django.conf import settings
 from reportlab.pdfgen import canvas
@@ -102,9 +102,18 @@ class ReportePersonasPDF(View):
 
     def get(self, request, *args, **kwargs):
         person = Person.objects.get(pk=self.kwargs['pk'])
+        if 'sersoc' in kwargs:
+            sersoc= self.kwargs['sersoc']
+        else: 
+            sersoc= None
         #response = HttpResponse(content_type='application/pdf')
-        CreateJsonCredencial(person)
-        json_to_Credencialpdf()
+        if sersoc:
+            sersoc = ServicioSocial.objects.get(pk=sersoc)
+            CreateJsonCredencial(person, sersoc)
+            json_to_Credencialpdf(sersoc)
+        else:
+            CreateJsonCredencial(person, None)
+            json_to_Credencialpdf(None)
         buffer = BytesIO()
         #
         pdfTexto = settings.MEDIA_ROOT+ '/Formatos/Credencial/CredencialFinal.pdf'
@@ -198,7 +207,7 @@ class ReportePersonasPDF(View):
 
 
     
-def CreateJsonCredencial(person):
+def CreateJsonCredencial(person, sersoc):
     data = {}
     data['credencial']=[]
     imagen = person.imagen_base64
@@ -219,6 +228,12 @@ def CreateJsonCredencial(person):
         gafete = 'Gafete de control de acceso a las instalaciones de la SEP'
         frase =  'Agradecemos a las autoridades civiles y militares, otorguen a la persona portadora del presente, todas las facilidades para la prestación de sus servicios por honorarios. Este gafete de control de acceso a las instalaciones de la SEP es propiedad de la Dirección General @prende.mx, es intransferible y será responsabilidad de la persona prestadora de servicios profesionales por honorarios impedir o evitar su divulgación, sustracción, destrucción, ocultamiento o inutilización indebidos.'
         vigencia = ''
+    elif person.cat_contratacion.pk == 6:
+        cargo = 'Servicio Social en '+ person.cat_area_org.nombre
+        vigencia = sersoc.periodo
+        gafete = ''
+        frase = ''
+        
     else:
         cargo = person.puesto
         gafete = 'GAFETE'
@@ -253,8 +268,11 @@ def pdf_view(file, texto):
 
 
 @csrf_exempt      
-def json_to_Credencialpdf():
-    input_file = settings.MEDIA_ROOT+ '/Formatos/Credencial/Credencial.jasper'
+def json_to_Credencialpdf(sersoc):
+    if sersoc: 
+        input_file = settings.MEDIA_ROOT+ '/Formatos/Credencial/Credencialss.jasper'
+    else:
+        input_file = settings.MEDIA_ROOT+ '/Formatos/Credencial/Credencial.jasper'
     conn = {
       'driver': 'json',
       'data_file': settings.MEDIA_ROOT+ '/Formatos/Credencial/dataCredencial.json',
@@ -272,8 +290,10 @@ def json_to_Credencialpdf():
     
     pyreportjasper.process_report()
 
-
-    input_file = settings.MEDIA_ROOT+ '/Formatos/Credencial/Credencial1.jasper'
+    if sersoc: 
+        input_file = settings.MEDIA_ROOT+ '/Formatos/Credencial/Credencial1ss.jasper'
+    else:
+        input_file = settings.MEDIA_ROOT+ '/Formatos/Credencial/Credencial1.jasper'
     conn = {
       'driver': 'json',
       'data_file': settings.MEDIA_ROOT+ '/Formatos/Credencial/dataCredencial.json',
@@ -391,7 +411,7 @@ class PersonListView(ListView):
     #querysetBajas = Bajas.objects.all().values("info_person__pk", "info_person__matricula", "info_person__nombres","info_person__apellido1", "info_person__apellido2")
     #querysetPersons = Person.objects.all().values("pk", "matricula", "nombres", "apellido1", "apellido2")    
     #queryset = querysetPersons.difference(querysetBajas)  
-    queryset = Person.objects.filter(activo=True).order_by('created_at')
+    queryset = Person.objects.filter(Q(activo=True) & ~Q(cat_contratacion__pk =6)).order_by('created_at')
     paginate_by = 50
 
     def get_queryset(self, *args, **kwargs):

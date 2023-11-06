@@ -72,7 +72,7 @@ def InsertComp(request):
 def GetCompPersonas(request):
    
     querysetComp = Compensaciones.objects.all().values("info_person__pk", "info_person__matricula", "info_person__nombres","info_person__apellido1", "info_person__apellido2")
-    querysetPersons = Person.objects.filter(activo=True).values("pk", "matricula", "nombres", "apellido1", "apellido2")    
+    querysetPersons = Person.objects.filter(Q(activo=True) & ~Q(cat_contratacion__pk =6)).values("pk", "matricula", "nombres", "apellido1", "apellido2")    
     persons_data = querysetPersons.difference(querysetComp)  
      #persons_data= Person.objects.all()  
     t = get_template('people/comp/add_compensacion.html')
@@ -289,7 +289,7 @@ def CreateJsonReport(dateInicio, dateFin, incidencia):
 def CreateJsonReportNoData(dateInicio, dateFin):
     data = {}
     data['incidencia']=[]
-    querysetPersons = Person.objects.filter(activo=True)    
+    querysetPersons = Person.objects.filter(Q(activo=True) & ~Q(cat_contratacion__pk =6))    
     for i in range(int((dateFin - dateInicio).days)+1):
         for persona in querysetPersons:
             print(persona.matricula)

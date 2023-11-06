@@ -18,10 +18,10 @@
   {% if person.cat_contratacion.pk == 1 or person.cat_contratacion.pk == 2  %}
   </div>
     <h5>Vacaciones disfrutadas: </h5> 
-    <tr><p><strong>{{periodo1}}:</strong> {{ diasVaca1 }} de 10 </p>
-    <tr><p><strong>{{periodo2}}:</strong> {{ diasVaca2 }} de 10 </p>
-    <tr><p><strong>Extraordinarias:</strong>  {% if person.vacaciones_extra %} {{ diasExtra }} de 10 {% else %} No {% endif %} </p>
-    <tr><p><strong>Días económicos distrutados:</strong> {{diasEco}} de 9 </p>
+    <tr><p>{{periodo1}}: <label id="diasVaca1"> <strong>{{ diasVaca1 }} de 10 </strong></label> </p>
+    <tr><p>{{periodo2}}: <label id="diasVaca2"><strong> {{ diasVaca2 }} de 10 </strong> </label> </p>
+    <tr><p>Extraordinarias: <label id="diasExtra"><strong> {% if person.vacaciones_extra %} {{ diasExtra }} de 10 {% else %} No {% endif %} </strong></label></p>
+    <tr><p>Días económicos distrutados: <label id="diasEco"> <strong>{{diasEco}} de 9 </strong></label></p>
   </div>  
   {% endif %}
 <br> 
@@ -144,7 +144,7 @@
         <div class="col-md-12">
         <tr>
           <h6></h6>
-        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal" id="close_modal">Cerrar</button>
         <button type="button" class="btn btn-primary" id="insert_btn">Guardar</button>
          </tr>
       </div>  
@@ -216,6 +216,15 @@ $("#update_btn").click(function(){
           
         });
     });
+
+
+
+$("#save_btn").click(function(){
+    $("#ins_success").hide();
+    $("#ins_success").text("");
+    $("#ins_error").text("");
+    $("#ins_error").hide();  
+});
 
 $("#save_btn").click(function(){
         $("#save_btn").attr("disabled","disabled");
@@ -293,7 +302,21 @@ $("#insert_btn").click(function(){
         $("#noData").hide();
         console.log(convertDate($("#fechaIncidencia").val()));
         pos=doSearch(convertDate($("#fechaIncidencia").val()));
-        if(pos==0 ||  (tipoDate== 20 || tipoDate == 5 || tipoDate == 6  || tipoDate == 7 || tipoDate == 10 || tipoDate == 13 || tipoDate==15 || tipoDate ==18)){
+        console.log('TipoDate' + tipoDate);
+        console.log('pos' + pos);
+        if (tipoDate == 3){
+            $("#diasEco").innerText=response['diasEco'];
+        }
+        if(tipoDate == 6){
+            $("#diasExtra").innerText=response['diasExtra'];
+        }
+        if(tipoDate== 20 ){
+          $("#diasVaca2").innerText=response['diasVaca2'];
+        }
+        if(tipoDate == 5 ){
+          $("#diasVaca1").innerText=response['diasVaca1'];
+        }
+        if(pos==0 && ( tipoDate == 6  || tipoDate == 7 || tipoDate == 10 || tipoDate == 13 || tipoDate==15 || tipoDate ==18)){
           var html_data=response['tabla'];
           $("#tablaPrincipal tbody").append(html_data);
         }
@@ -319,11 +342,12 @@ $("#insert_btn").click(function(){
       .always(function(){
         $(".btn-insert-data").removeAttr("disabled");
         $(".btn-insert-data").text("INSERT STUDENT");
-            })
-     setTimeout(() => {
+         setTimeout(() => {
                   $("#ins_success").hide();
                   $("#ins_error").hide();  
                 }, 2000);
+            })
+    
   }
 });
 

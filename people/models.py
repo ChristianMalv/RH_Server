@@ -236,3 +236,59 @@ class InfoPersonalAdd(models.Model):
     sueldo_total = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True, verbose_name="Sueldo Total")
     sueldo_neto_nivel = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True, verbose_name="Sueldo Neto Nivel")
     sueldo_neto_trab = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True, verbose_name="Sueldo Neto Trabajador")
+
+class Ayudas(models.Model):
+    info_person = models.ForeignKey(Person, on_delete=models.DO_NOTHING)
+    created_by = models.CharField(max_length=255, blank=False, verbose_name="User")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    montoXDia =  models.DecimalField(max_digits=12, decimal_places=2, null=False, blank=False, verbose_name="Monto Unitario")
+    def __str__(self):
+         return "%s - %s %s %s " %(self.info_person.matricula, self.info_person.apellido1, self.info_person.apellido2, self.info_person.nombres)
+    class Meta:
+        verbose_name = "Ayuda"
+        verbose_name_plural = "Ayudas"
+
+
+class PersonaAyuda(models.Model):
+    ayuda = models.ForeignKey(Ayudas,  on_delete=models.CASCADE)
+    created_date = models.DateTimeField(blank=True)
+    servicio = models.CharField(max_length=255, blank=False, verbose_name="Servicio")
+    destino = models.CharField(max_length=255, blank=False, verbose_name="Destino")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+         return "%s - %s %s %s " %(self.info_person.matricula, self.info_person.apellido1, self.info_person.apellido2, self.info_person.nombres)
+    class Meta:
+        verbose_name = "Persona con acceso a Ayuda"
+        verbose_name_plural = "Personas con Ayudas"
+        permissions = (("asignar_ayudas", "Puede asignar ayudas"), )
+
+
+class MultipleOrganigrama(models.Model):
+    info_person = models.ForeignKey(Person, on_delete=models.DO_NOTHING)
+    areasInternas = models.ForeignKey(AreaInterna, on_delete=models.DO_NOTHING, related_name="multiples_areas")
+
+
+class Salidas(models.Model):
+    personas = models.ForeignKey(PersonaAyuda, on_delete=models.DO_NOTHING)
+   
+class ServicioSocial(models.Model):
+    info_person = models.ForeignKey(Person, on_delete=models.CASCADE)
+    tipo_sangre = models.CharField(max_length=14, blank=False, verbose_name="Tipo de Sangre")
+    escuela_procedencia = models.CharField(max_length=255, blank=False, verbose_name="Escuela de Procedencia")
+    escuela_domicilio = models.CharField(max_length=255, blank=False, verbose_name="Domicilio de la Escuela")
+    carrera = models.CharField(max_length=255, blank=False, verbose_name="Carrera o Especialidad")
+    creditos_cursados = models.CharField(max_length=20, blank=False, verbose_name="Total de Créditos Cursados")
+    numero_matricula = models.CharField(max_length=20, blank=False, verbose_name="Número de Matrícula")
+    telefono_escuela = models.CharField(max_length=14, blank=False, verbose_name="Teléfono de la Escuela")
+    periodo = models.CharField(max_length=255, blank=False, verbose_name="Periodo en el que se realizará el Servicio")
+    horario = models.CharField(max_length=255, blank=False, verbose_name="Horario de desempeño de las actividades")
+    description = models.TextField(max_length=250, blank=True, verbose_name="Actividades")
+    class Meta:
+        verbose_name = "Servicio social"
+        verbose_name_plural = "Servicios sociales"
+        permissions = (("servicio_social", "Puede ver, crear y editar servicios sociales"), )
+
+
