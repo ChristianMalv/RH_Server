@@ -88,12 +88,15 @@
           <label id="Title1"> <h1> Sistema de Recursos Humanos </h1></label>
           </div>
           <div class="btn-group" role="group" >
+           {% if perms.people.dar_baja and perms.people.asignar_comp and perms.people.ver_incidencias and perms.people.asignar_ayudas %}
             <button id="btnGroupVerticalDrop1" type="button" class="btn btn-primary btn-lg active dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                     Personal
                     <span class="caret"></span>
             </button>
+
               <ul class="dropdown-menu" role="menu" aria-labelledby="btnGroupVerticalDrop1">
               <li><a href="{% url 'person_list' %}">Activo</a></li>
+             {% endif %}  
               {% if perms.people.dar_baja %}
                 <li><a href="{% url 'baja_list' %}">Bajas</a></li>
               {% endif %}  

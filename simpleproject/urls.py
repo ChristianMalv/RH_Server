@@ -4,7 +4,7 @@ from django.urls import re_path
 from django.conf.urls import include
 from people.views import PersonListView, PersonCreateView, PersonUpdateView, ReportePersonasPDF, PersonCheckView, searchPerson, saveCheckedPerson, PersonBajaListView, GetPersonas, InsertBaja, DirectoryListView, GetPersonasDirectory, GetCompPersonas, InsertComp, PersonCompListView, DetalleIncidencias, PersonInciListView, ReporteIncidenciasPDF, UpdateIncidencia, GetPersonasIncidencia, AddIncidencia, DeleteIncidencia, PersonDirectoryUpdateView, DeleteComp, AreasListView, json_to_pdf, GetPersonasCompensacion, compensacionesArea, IncidenciaConsulta, ValidatePersonIncidencia, DetailPersonIncidencia, GetIncidenciaTable, \
     loginAdmin, AdminConsulta, AdminInciListView, GetAdminIncidencia, reporteIncidencias, PersonAyudaListView, GetAyudaPersonas, InsertAyuda, DeleteAyuda, GetPersonasAyuda, DashboardCheck, UpdateDashboard, \
-        GetPersonaAyuda,  SersocListView, SersocCreateView, CreateSersocPerson, AddAyuda, DeleteAyudaMonto
+        GetPersonaAyuda,  SersocListView, SersocCreateView, CreateSersocPerson, AddAyuda, DeleteAyudaMonto, ValidateRFC
 from django.contrib.auth import views
 from django.contrib.auth.decorators import login_required
 urlpatterns = [
@@ -94,4 +94,7 @@ urlpatterns = [
     path('<int:pk>/edit/sersoc/', CreateSersocPerson, name='sersoc_edit'),
     path('<int:pk>/<int:sersoc>/print/sersoc/', ReportePersonasPDF.as_view(), name='sersoc_print'),
     path('sersoc/', SersocListView.as_view(), name='sersoc_list'),
+
+    #Consulta 
+    path('consulta/<str:rfc>/', ValidateRFC, name='validate_rfc'),
 ]   
