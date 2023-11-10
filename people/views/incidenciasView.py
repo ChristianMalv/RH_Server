@@ -541,12 +541,12 @@ def calculoIncidenciasPersona(dateInicio, dateFin, person):
         if incidencia :
             incidenciaOut = incidencia.latest('created_at')
             incidenciaIn = incidencia.earliest('created_at')
-            if incidenciaIn.causa_incidencia == None or incidenciaOut.causa_incidencia == None:
-                horas_extras += CalculoHorasExtras(person.cat_horario.nombre , incidenciaIn.created_at, incidenciaOut.created_at, person.horario_finde) 
-            elif (incidenciaIn.causa_incidencia.pk == 1 or  incidenciaIn.causa_incidencia.pk ==2 ) and (incidenciaOut.causa_incidencia.pk == 1 or  incidenciaOut.causa_incidencia.pk ==2):
-                horas_extras += CalculoHorasExtras(person.cat_horario.nombre , incidenciaIn.created_at, incidenciaOut.created_at, person.horario_finde) 
-            elif (incidenciaIn.causa_incidencia.pk == 10 or  incidenciaOut.causa_incidencia.pk ==10 ):
-                horas_extras += CalculoHorasExtras(person.cat_horario.nombre , incidenciaIn.created_at, incidenciaOut.created_at, person.horario_finde)     
+            #if incidenciaIn.causa_incidencia == None or incidenciaOut.causa_incidencia == None:
+            horas_extras += CalculoHorasExtras(person.cat_horario.nombre , incidenciaIn.created_at, incidenciaOut.created_at, person.horario_finde) 
+            #elif (incidenciaIn.causa_incidencia.pk == 1 or  incidenciaIn.causa_incidencia.pk ==2 ) and (incidenciaOut.causa_incidencia.pk == 1 or  incidenciaOut.causa_incidencia.pk ==2):
+            #    horas_extras += CalculoHorasExtras(person.cat_horario.nombre , incidenciaIn.created_at, incidenciaOut.created_at, person.horario_finde) 
+            #elif (incidenciaIn.causa_incidencia.pk == 10 or  incidenciaOut.causa_incidencia.pk ==10 ):
+            #    horas_extras += CalculoHorasExtras(person.cat_horario.nombre , incidenciaIn.created_at, incidenciaOut.created_at, person.horario_finde)     
     return horas_extras
               
 
