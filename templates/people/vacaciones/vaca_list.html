@@ -1,0 +1,381 @@
+
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+<form method="get">
+    <div class="col-md-12">
+      <input name ="q" id="searchVaca" value="{{request.GET.q}}" placeholder="Buscar persona..">
+  </div>
+ </form>
+ <div id="listaPersonas"></div>
+    
+  <div id="RowsSearch"></div>
+<div class ="col-md-12" id="RowsInicio">
+  <table class="table table-bordered" id="vacaList">
+    <thead>
+      <tr>
+        <th>Matricula</th>
+        <th>Nombre</th>
+        <th>Días Economicos</th>
+        <th> {{ periodo1 }}</th>
+        <th> {{ periodo2 }}</th>
+        <th>Días Extra disponibles</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for person in people %}
+        <tr>
+          <td style="display:none" > {{person.pk}}</td>
+          <td>{{person.matricula}}</td>
+          <td>{{person.nombre}} </td>
+          <td>{{person.eco}}</td>
+          <td>{{person.vaca1}}</td>
+          <td>{{person.vaca2}}</td>
+          <td>{{person.extra}}</td>
+          <td><button class="btn btn-default btn-xs" data-toggle="modal" data-target="#myModal" type="button"><span class="glyphicon glyphicon-plus" aria-hidden="true" ></span> Agregar Vacaciones </button>
+           <button class="btn btn-default btn-xs consultar" data-toggle="modal" data-target="#Consulta" type="button" >
+            Consultar Vacaciones
+            <span class="glyphicon glyphicon-book" aria-hidden="true"></span>   </button></td>
+        </tr>
+      {% empty %}
+        <tr class="table-active">
+          <td colspan="3">No data</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <div id="Pages"> 
+    {% if is_paginated %}
+      <ul class="pagination">
+        {% if page_obj.has_previous %}
+          <li><a href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+        {% else %}
+          <li class="disabled"><span>&laquo;</span></li>
+    {% endif %}
+    
+    {% for i in paginator.page_range %}
+        {% if page_obj.number == i %}
+          <li class="active"><span>{{ i }} <span class="sr-only">(current)</span>     </span></li>
+        {% else %}
+          <li><a href="?page={{ i }}">{{ i }}</a></li>
+        {% endif %}
+    {% endfor %}
+ 
+    {% if page_obj.has_next %}
+      <li><a href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&raquo;</span></li>
+    {% endif %}
+      </ul>
+    {% endif %}
+  </div>
+    <div class="modal fade"  id="myModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Agregar vacaciones a Empleado</h4>
+          </div>
+          <div class="modal-body">
+            <div class="col-md-12">
+              <h6 id="nombreEmpleado"> </h6>
+              <input id="idEmpleado" type="hidden">
+            </div>
+            <div class="col-md-12">
+              <h6 id="textoIncidencia"> Ingrese una fecha con hora, para registrar Incidencia</h6>
+              <div class="col-md-7">
+                <input id="fechaIncidencia" type="datetime-local">
+              </div>
+              <div class="col-md-7" id="rangoFechas">
+              <h6> al </h6>
+                <input id="rangoFechasVac" type="date">
+              </div>
+            </div>
+            <div class="col-md-12">
+              <h6> Seleccione tipo de Incidencia</h6>
+              <select class="form-control" id="tipoIncidencia">
+                {% for causa in causaIncidencia %}
+                <option value="{{causa.pk}}">{{ causa.nombre }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <div class="col-md-12">
+             <br>
+            </div>
+            <div class="col-md-12">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+              <button type="button" class="btn btn-primary" id="insert_btn">Guardar</button>
+            </div>
+              <div class="col-md-12">
+             <br>
+            </div>
+            <div class="col-md-12">
+              <div class="alert alert-success" id="ins_success" style="display:none">
+              </div>
+              <div class="alert alert-danger" id="ins_error" style="display:none">
+              </div>
+            </div>  
+          </div>
+
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+<div class="modal fade"  id="Consulta">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Consulta vacaciones a Empleado</h4>
+          </div>
+          <div class="modal-body">
+            <div class="col-md-12">
+              <h6 id="nombreEmpleadoCons"> </h6>
+              <input id="idEmpleadoCons" type="hidden">
+            </div>
+            <div class="col-md-12">
+              <h6 id="textoIncidencia"> Ingrese una fecha con hora, para registrar Incidencia</h6>
+              <div class="col-md-7">
+                <input id="fechaIncidencia" type="datetime-local">
+              </div>
+              <div class="col-md-7" id="rangoFechas">
+              <h6> al </h6>
+                <input id="rangoFechasVac" type="date">
+              </div>
+            </div>
+            <div class="col-md-12">
+              <h6> Seleccione tipo de Incidencia</h6>
+              <select class="form-control" id="tipoIncidencia">
+                {% for causa in causaIncidencia %}
+                <option value="{{causa.pk}}">{{ causa.nombre }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <div class="col-md-12">
+             <br>
+            </div>
+            <div class="col-md-12">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+              <button type="button" class="btn btn-primary" id="insert_btn">Guardar</button>
+            </div>
+              <div class="col-md-12">
+             <br>
+            </div>
+            <div class="col-md-12">
+              <div class="alert alert-success" id="ins_success" style="display:none">
+              </div>
+              <div class="alert alert-danger" id="ins_error" style="display:none">
+              </div>
+            </div>  
+          </div>
+
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+
+<div class="row">
+  <div class="col-lg-12">
+        <div class="alert alert-success" id="upt_success" style="display:none">
+
+        </div>
+         <div class="alert alert-danger" id="upt_error" style="display:none">
+
+        </div>
+  </div>
+</div>
+   
+
+
+<script>
+$("#tipoIncidencia").val(1);
+$('#input1').datepicker({changeYear: true});
+$('#input2').datepicker({changeYear: true});
+
+function doSearch(searchText, eco, v1, v2, ex) {
+    console.log(searchText);
+    $("#vacaList tbody tr").each(function() {
+                var rowText = $(this).text();
+                if (rowText.indexOf(searchText) > -1) {
+                    $(this).find("td").eq(3).text(eco);
+                    $(this).find("td").eq(4).text(v1);
+                    $(this).find("td").eq(5).text(v2);
+                    $(this).find("td").eq(6).text(ex);
+                    return false; 
+                  }
+            });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('input[type=text]').forEach( node => node.addEventListener('keypress', e => {
+        
+      }))
+    });
+
+    $('#searchPerson').keyup(function(e){
+       doSearch();
+   
+});
+
+$('#searchVaca').keyup(function(e){
+  clearTimeout($.data(this, 'timer'));
+  if($("#searchVaca").val()==""){
+      $("#RowsSearch").hide();
+      $("#RowsInicio").show();
+      $("#Pages").show();
+      
+    }
+  else {
+    $(this).data('timer', setTimeout(search, 500));
+}
+
+
+});
+function search(force) {
+  var existingString = $("#searchVaca").val();
+    if (!force && existingString.length < 3) return; 
+
+$.ajax({
+      url:"{% url 'search_person_vacacion' %}",
+      type:'GET',
+      data:{q:$("#searchVaca").val()}
+            })
+    .done(function(response){
+      $("#RowsSearch").show();
+      $("#RowsInicio").hide();
+      $("#Pages").hide();
+      $("#RowsSearch").empty();
+      $("#RowsSearch").append(response);
+      console.log(response)
+      })
+    .fail(function(){
+      $("#RowsSearch").hide();
+      $("#RowsInicio").show();
+      $("#Pages").show();
+      })  
+}                
+
+
+
+$("#insert_btn").click(function(){
+  console.log($("#fechaIncidencia").val())
+  console.log($("#tipoIncidencia").val())
+
+  var tipoDate = $("#tipoIncidencia").val();
+  if( (( tipoDate == 1 || tipoDate == 2 || tipoDate == 17) &&  validarFecha($("#fechaIncidencia").val(), 2)) || ( ( tipoDate == 10) && validarFecha($("#rangoFechasVac").val(), 2) || (validarFecha($("#fechaIncidencia").val(), 2) ) )
+   ||( (tipoDate== 20 || tipoDate == 5 || tipoDate == 6  || tipoDate == 7 || tipoDate == 13 || tipoDate==15 || tipoDate ==18) && validarFecha($("#rangoFechasVac").val(), 1) || (validarFecha($("#fechaIncidencia").val(), 1) ) )  ){
+    var opcion = confirm("Se va a agregar incidencia general: "+ $("#tipoIncidencia option:selected").text() +". ¿Es correcto?");
+            if (opcion == true) {
+
+            $.ajax({
+              url:"{% url 'add_Incidencia' %}",
+              type:'POST',
+              data:{ fechaIncidencia:$("#fechaIncidencia").val(), tipoIncidencia:$("#tipoIncidencia").val(), fechaIncidenciaComp:$("#rangoFechasVac").val(), person:$("#idEmpleado").val(), return:true}
+              })
+            .done(function(response){
+              if(response['error']==false){ 
+                  $("#ins_error").hide();
+                  $("#ins_success").text(response['errorMessage']);
+                  $("#ins_success").show();
+                  $("#noData").hide();
+                  doSearch(response['persona'], response['diasEco'], response['diasVaca1'], response['diasVaca2'], response['diasExtra']);
+                }
+                else{
+                  $("#ins_success").hide();
+                  $("#ins_error").text(response['errorMessage']);
+                  $("#ins_error").show();
+                  }
+                })
+                .fail(function(){
+                  $("#ins_success").hide();
+                  $("#ins_error").text("Something Went Wrong!");
+                  $("#ins_error").show();
+                })
+                .always(function(){
+                  $(".btn-insert-data").removeAttr("disabled");
+                  $(".btn-insert-data").text("INSERT STUDENT");
+                      })
+              setTimeout(() => {
+                            $("#ins_success").hide();
+                            $("#ins_error").hide();  
+                          }, 2000);
+            }
+  }
+});
+function getAndShowId(this_html, nombre, id){
+  var id=this_html.parent().parent().children().first().text();
+  console.log(id);
+  var matricula=this_html.parent().parent().children() .first().next().text();
+  var nombre = this_html.parent().parent().children().first().next().next().text();
+  console.log(nombre);
+  return {
+        nombre: matricula + '-' + nombre,
+        id: id
+    };
+ 
+}
+$(document).on("click",".btn-xs",function(){
+  var this_html=$(this);
+  $("#nombreEmpleado").text(getAndShowId(this_html).nombre);
+  $("#idEmpleado").val(getAndShowId(this_html).id);
+  });
+
+$(document).on("click",".glyphicon-book",function(){
+  var this_html=$(this);
+   $("#nombreEmpleadoCons").text(getAndShowId(this_html).nombre);
+  $("#idEmpleadoCons").val(getAndShowId(this_html).id);
+  });
+
+$('#tipoIncidencia').change(function() {
+  var tipoDate = $("#tipoIncidencia").val();
+  console.log($("#tipoIncidencia").val());
+  if(tipoDate== 1 || tipoDate == 2 || tipoDate == 17){
+      $("#fechaIncidencia").attr('type','datetime-local'); 
+      $("#textoIncidencia").text("Ingrese una fecha con hora, para registrar Incidencia"); 
+      $("#rangoFechas").hide();
+  }
+  else if(tipoDate== 20 || tipoDate == 5 || tipoDate == 6  || tipoDate == 7 || tipoDate == 13 || tipoDate==15 || tipoDate ==18){
+     $("#fechaIncidencia").attr('type','date'); 
+     $("#textoIncidencia").text("Seleccione el rango de fechas, para registrar Incidencia"); 
+      $("#rangoFechasVac").attr('type','date'); 
+     $("#rangoFechas").show();
+  }
+  else if(tipoDate== 10){
+      $("#fechaIncidencia").attr('type','datetime-local'); 
+      $("#textoIncidencia").text("Ingrese una fecha con hora, para el rango de fechas de la Incidencia"); 
+      $("#rangoFechasVac").attr('type','datetime-local');
+      $("#rangoFechas").show();
+  }
+  else{
+     
+       $("#fechaIncidencia").attr('type','date'); 
+        $("#textoIncidencia").text("Ingrese una fecha, para registrar Incidencia");
+        $("#rangoFechas").hide();
+  }
+
+ });
+
+function validarFecha(testDate, tipo){
+  var datetime_regex = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2})$/;
+  var date_regex = /^(\d{4}-\d{2}-\d{2})$/;
+        if (tipo == 1 && date_regex.test(testDate)) {
+           return true;
+        }
+        else if (tipo == 2 && datetime_regex.test(testDate)){
+          return true;
+        }
+        else{
+          $("#ins_error").text("La fecha y hora ingresada es incorrecta!");
+          $("#ins_error").show();
+            setTimeout(function(){ 
+             $("#ins_error").hide();
+            }, 1000); 
+          return false;
+        }
+}
+
+</script>
+
+{% endblock %}
