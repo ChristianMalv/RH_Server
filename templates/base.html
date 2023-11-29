@@ -103,6 +103,9 @@
               {% if perms.people.asignar_comp %}
                 <li><a href="{% url 'comp_list' %}">Compensaciones</a></li>
                 {% endif %}  
+              {% if perms.people.ver_vacaciones %}
+                <li><a href="{% url 'vacaciones_list' %}">Vacaciones</a></li>
+              {% endif %}
                 {% if perms.people.ver_incidencias  %}
                   <li><a href="{% url 'inci_list' %}">Incidencias</a></li>
                 {% endif %}  
