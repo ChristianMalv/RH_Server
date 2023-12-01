@@ -174,13 +174,13 @@ class ReporteIncidenciasPDF(View):
                             incidenciaIn = incidencia.earliest('created_at')
                             if incidenciaOut.causa_incidencia != None:
                                 print(observacion)
-                                if incidenciaOut.causa_incidencia.pk != 1 or incidenciaOut.causa_incidencia.pk !=2 : 
+                                if incidenciaOut.causa_incidencia.pk != 1 or incidenciaOut.causa_incidencia.pk !=2 or incidenciaOut.causa_incidencia.pk !=10 : 
                                     can.drawCentredString(355, 507-(y), "--:--" )
                                     can.drawCentredString(230, 507-(y), "--:--" )
                                     can.drawCentredString(560, 507-(y), "-")
                                     observacion = incidenciaOut.causa_incidencia.nombre
                             elif incidenciaIn.causa_incidencia != None:
-                                    if incidenciaIn.causa_incidencia.pk != 1 or incidenciaIn.causa_incidencia.pk !=2:
+                                    if incidenciaIn.causa_incidencia.pk != 1 or incidenciaIn.causa_incidencia.pk !=2 or incidenciaIn.causa_incidencia.pk !=10:
                                         can.drawCentredString(355, 507-(y), "--:--" )
                                         can.drawCentredString(230, 507-(y), "--:--" )
                                         can.drawCentredString(560, 507-(y), "-")
@@ -198,7 +198,7 @@ class ReporteIncidenciasPDF(View):
                             incicenciaFirst = incidencia.first()
                             can.drawCentredString(560, 507-(y), "-")
                             if  incicenciaFirst.causa_incidencia != None:
-                                if incidenciaOut.causa_incidencia.pk != 1 or incidenciaOut.causa_incidencia.pk !=2: 
+                                if incidenciaOut.causa_incidencia.pk != 1 or incidenciaOut.causa_incidencia.pk !=2 or incidenciaOut.causa_incidencia.pk !=10: 
                                     can.drawCentredString(230, 507-(y), "--:--" )
                                     can.drawCentredString(355, 507-(y), "--:--")
                                     observacion = incidenciaOut.causa_incidencia.nombre
@@ -345,7 +345,7 @@ class ReporteIncidenciasPDF(View):
                     if incidencia.count()>1:
                         incidenciaIn = incidencia.earliest('created_at')
                         if  incidenciaIn.causa_incidencia != None : 
-                            if incidenciaIn.causa_incidencia.pk != 1 and  incidenciaIn.causa_incidencia.pk !=2 :
+                            if incidenciaIn.causa_incidencia.pk != 1 and incidenciaIn.causa_incidencia.pk !=2 and incidenciaIn.causa_incidencia.pk !=10 :
                                 can.drawCentredString(230, 507-(y), "--:--" )
                                 can.drawCentredString(355, 507-(y), "--:--" )
                                 #can.drawString(430, 507-(y), incidenciaIn.causa_incidencia.nombre)
@@ -380,7 +380,7 @@ class ReporteIncidenciasPDF(View):
 
 
                         if  incicenciaFirst.causa_incidencia != None :
-                            if incicenciaFirst.causa_incidencia.pk != 1 and  incicenciaFirst.causa_incidencia.pk !=2 :
+                            if incicenciaFirst.causa_incidencia.pk != 1 and  incicenciaFirst.causa_incidencia.pk !=2 and incicenciaFirst.causa_incidencia.pk !=10 :
                                 #list.append( IncidenciaToShow(nombreDias[int( incicenciaFirst.created_at.strftime("%w"))] ,  incicenciaFirst.created_at.strftime("%d/%m/%Y"),  incicenciaFirst.pk, "--:--",  incicenciaFirst.pk, "--:--",  incicenciaFirst.causa_incidencia.nombre , "-")) 
                                 can.drawCentredString(230, 507-(y), "--:--" )
                                 can.drawCentredString(355, 507-(y), "--:--" )
@@ -909,7 +909,7 @@ def AddIncidenciaPerson(person, tipo, fecha, fechaComp):
             #Registro de Entrada y Registro de Salida 1 dd/mm/aaa --:-- ----
             fecha=  datetime.datetime.strptime(fecha, "%Y-%m-%dT%H:%M")
             return JsonResponse(AddOneDate(person, fecha, tipo),safe=False)
-        case 3 | 8 | 9 | 11| 12 | 14 | 16 | 19 | 21 | 22 | 23 | 24:
+        case 3 | 8 | 9 | 11| 12 | 14 | 16 | 19 | 21 | 22 | 23 | 24 | 25:
             #Permiso dia economica 1 dd/mm/aaaa
             fecha=  datetime.datetime.strptime(fecha, "%Y-%m-%d")
             return JsonResponse(AddOneDate(person, fecha, tipo),safe=False)
@@ -979,9 +979,17 @@ def AddIncidencia(request):
         stuent_data={"error":False,"errorMessage":"Incidencia aplicada al Personal"}
         return JsonResponse(stuent_data,safe=False)
     else:
-        person =  Person.objects.get(pk=request.POST.get("person"))
+        person =  Person.objects.get(pk=(request.POST.get("person").strip()))
         fecha = request.POST.get("fechaIncidencia")
         fechaComp = request.POST.get("fechaIncidenciaComp")
+        if request.POST.get("return"):
+            AddIncidenciaPerson(person, tipo, fecha, fechaComp) 
+            diasEco = getDiasEconomicos(person)
+            diasVaca1 = getVacaciones(person, 20)
+            diasVaca2 = getVacaciones(person, 5)
+            diasExtra = 10 - getVacaciones(person, 6)  if person.vacaciones_extra else 0
+            stuent_data={"error":False,"errorMessage":"Incidencia aplicada al Personal", "persona": person.matricula, "diasEco": diasEco, "diasVaca1":diasVaca1, "diasVaca2": diasVaca2, "diasExtra":diasExtra}
+            return JsonResponse(stuent_data,safe=False)
         return AddIncidenciaPerson(person, tipo, fecha, fechaComp) 
        # if tipo.pk == 1 or tipo.pk ==2:
            

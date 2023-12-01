@@ -228,18 +228,22 @@ def CreateJsonCredencial(person, sersoc):
         gafete = 'Gafete de control de acceso a las instalaciones de la SEP'
         frase =  'Agradecemos a las autoridades civiles y militares, otorguen a la persona portadora del presente, todas las facilidades para la prestación de sus servicios por honorarios. Este gafete de control de acceso a las instalaciones de la SEP es propiedad de la Dirección General @prende.mx, es intransferible y será responsabilidad de la persona prestadora de servicios profesionales por honorarios impedir o evitar su divulgación, sustracción, destrucción, ocultamiento o inutilización indebidos.'
         vigencia = ''
+        bg = settings.MEDIA_ROOT+'/imagenes/fondoguinda.png'
+        logoaprende = settings.MEDIA_ROOT+'/imagenes/LogoFull.png'
     elif person.cat_contratacion.pk == 6:
         cargo = 'Servicio Social en '+ person.cat_area_org.nombre
         vigencia = sersoc.periodo
         gafete = ''
         frase = ''
-        
+        bg = settings.MEDIA_ROOT+'/imagenes/LOGO-SEP.png'
+        logoaprende = settings.MEDIA_ROOT+'/imagenes/logo-aprendemx.png'
     else:
         cargo = person.puesto
         gafete = 'GAFETE'
         frase = 'Agradecemos a las autoridades civiles y militares, otorguen a la persona portadora del presente, todas las facilidades para el mejor desempeño de sus funciones. Esta credencial es propiedad de la Dirección General @prende.mx, es intrasferible y tendrá vigencia en el periodo estipulado.'
         vigencia = 'VIGENCIA: DICIEMBRE 2025'
-    
+        bg = settings.MEDIA_ROOT+'/imagenes/fondoguinda.png'
+   
     data['credencial'].append({'Photo': filename,
                                'Nombre': person.nombres + ' ' + person.apellido1 + ' ' + person.apellido2,
                                'cargo':cargo,
@@ -248,8 +252,8 @@ def CreateJsonCredencial(person, sersoc):
                   'qr': settings.MEDIA_ROOT+'/Formatos/Credencial/qr.png' ,
                 'firma': settings.MEDIA_ROOT+'/imagenes/firma.png', 
                 'frase': frase,
-                'logoaprende': settings.MEDIA_ROOT+'/imagenes/LogoFull.png',
-                'bg': settings.MEDIA_ROOT+'/imagenes/fondoguinda.png',
+                'logoaprende': logoaprende,
+                'bg': bg,
                 'firma': settings.MEDIA_ROOT+'/imagenes/FirmaR.png',
                 'vigencia': vigencia,
                 })
@@ -508,7 +512,7 @@ class PersonBajaListView(ListView):
 @csrf_exempt
 def GetPersonas(request):
     querysetBajas = Bajas.objects.all().values("info_person__pk", "info_person__matricula", "info_person__nombres","info_person__apellido1", "info_person__apellido2")
-    querysetPersons = Person.objects.all().values("pk", "matricula", "nombres", "apellido1", "apellido2")    
+    querysetPersons = Person.objects.all().values("pk", "matricula", "nombres", "apellido1", "apellido2").filter( ~Q(cat_contratacion__pk =6))    
     persons_data = querysetPersons.difference(querysetBajas)  
     #persons_data= Person.objects.all()  
     t = get_template('people/bajas/persona_baja_list.html')

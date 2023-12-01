@@ -178,7 +178,7 @@ class Person(models.Model):
     class Meta:
         verbose_name = "Persona"
         verbose_name_plural = "Personas"
-        permissions = (("datos_personales", "Puede ver datos personales"),   ("tomar_fotografia", "Puede tomar fotografía"),   ("imprimir_credencial", "Puede imprimir credencial"), ("dar_baja", "Puede dar de baja"), ("modificar_directorio", "Puede modificar directorio"),  )   
+        permissions = (("datos_personales", "Puede ver datos personales"),   ("tomar_fotografia", "Puede tomar fotografía"),   ("imprimir_credencial", "Puede imprimir credencial"), ("dar_baja", "Puede dar de baja"), ("modificar_directorio", "Puede modificar directorio"), ("ver_vacaciones", "Puede modificar vacaciones"), )   
        
 class Bajas(models.Model):
     info_person = models.ForeignKey(Person, on_delete=models.DO_NOTHING)

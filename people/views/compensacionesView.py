@@ -43,7 +43,7 @@ from django.http import FileResponse, Http404
 from pyreportjasper import PyReportJasper
 import json 
 from .incidenciasView import calculoIncidenciasPersona, revisarFecha
-from PyPDF2 import PdfMerger
+from PyPDF2 import PdfFileMerger
 @csrf_exempt
 def InsertComp(request):
     id=request.POST.get("id").strip()
@@ -174,7 +174,7 @@ def compensacionesArea(request,fechaInicio,fechaFin, folio ):
             )
             pyreportjasper.process_report()
             print('Result is the file below.')
-    merger = PdfMerger()
+    merger = PdfFileMerger()
     for x in range(i):
         existing_pdf = settings.MEDIA_ROOT+ '/Formatos/Compensacion/Area/ReporteCompensacion '+ str(x) +'.pdf' 
         outputfinal = settings.MEDIA_ROOT+ '/Formatos/Compensacion/Area/ReporteCompensacionGeneral '+fechaInicio+' al '+fechaFin+'.pdf'
