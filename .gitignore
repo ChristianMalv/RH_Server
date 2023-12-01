@@ -1,6 +1,7 @@
 media/
 env/
 myvenv/
+people/migrations/
 **/__pycache__/
 *.dump
 *.sqlite3
