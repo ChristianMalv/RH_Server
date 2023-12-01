@@ -8,8 +8,8 @@ from people.views import PersonListView, PersonCreateView, PersonUpdateView, Rep
 from django.contrib.auth import views
 from django.contrib.auth.decorators import login_required
 urlpatterns = [
-    path('accounts/login/', views.LoginView.as_view(), name='login'),
-    path('accounts/logout/', views.LogoutView.as_view(next_page='/'), name='logout'),
+    path('login/', views.LoginView.as_view(), name='login'),
+    path('logout/', views.LogoutView.as_view(next_page='/'), name='logout'),
     
     path('', PersonListView.as_view(), name='person_list'),
     path('activos/personas',PersonListView.as_view(), name='activos_list'),
