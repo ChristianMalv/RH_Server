@@ -91,11 +91,7 @@ class PersonVacacionesListView(ListView):
 def GetPersonasVacacion(request):
   
     q=request.GET.get("q")
-<<<<<<< HEAD
-    people = Person.objects.filter( Q(activo=True) & ~Q(cat_contratacion__pk =6) )
-=======
     people = Person.objects.filter( Q(activo=True) & (Q(cat_contratacion__pk =1) | Q(cat_contratacion__pk =2)) & Q(comision_sindical=False)  )
->>>>>>> 01bf18c0bf05e189612f0c0b40387138b556cb6e
     periodo1 = CausaIncidencia.objects.get(pk=5)
     periodo2= CausaIncidencia.objects.get(pk=20)
     if q and q !=" ":
