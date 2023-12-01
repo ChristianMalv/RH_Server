@@ -81,6 +81,10 @@
 
 
 <script>
+
+{% if perms.people.servicio_social and not perms.people.datos_personales %}
+  window.open("sersoc/", '_self');
+{% endif %}
 document.addEventListener('DOMContentLoaded', () => {
       document.querySelectorAll('input[type=text]').forEach( node => node.addEventListener('keypress', e => {
         
