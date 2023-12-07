@@ -203,10 +203,19 @@ class Compensaciones(models.Model):
         permissions = (("asignar_comp", "Puede asignar compensaciones"), )
 
 class CausaIncidencia(Catalogo):
+    isVisible= models.BooleanField(default=True)
     class Meta:
         verbose_name = "Causa Incidencia"
         verbose_name_plural = "Causas Incidencias"
     pass
+
+class PeriodosVacaciones(Catalogo):
+    periodo= models.ForeignKey(CausaIncidencia, on_delete=models.DO_NOTHING, related_name="periodo_vacaciones")
+    idPeriodo= models.IntegerField()
+    dateInicio = models.DateTimeField()
+    dateFin =  models.DateTimeField()
+    pass
+    
 class Incidencia(models.Model):
     matriculaCredencial = models.ForeignKey(Person, on_delete=models.DO_NOTHING, related_name="Credencial")
     created_at = models.DateTimeField(blank=True, null=True)

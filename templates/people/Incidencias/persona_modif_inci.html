@@ -108,6 +108,8 @@
         </div>
   </div>
 </div>
+<input id="periodo1_pk" value="{{periodo1.pk}}"  style="display:none"/>
+<input id="periodo2_pk" value="{{periodo2.pk}}"  style="display:none"/>
 
 <!-- modificar todo ese divModal -->
 <div class="modal fade"  id="myModal">
@@ -287,7 +289,7 @@ $("#insert_btn").click(function(){
   console.log($("#tipoIncidencia").val())
   var tipoDate = $("#tipoIncidencia").val();
   if( (( tipoDate == 1 || tipoDate == 2 || tipoDate==17 ) &&  validarFecha($("#fechaIncidencia").val(), 2)) || ( ( tipoDate == 10) && validarFecha($("#rangoFechasVac").val(), 2) || (validarFecha($("#fechaIncidencia").val(), 2) ) )
-    || ( (tipoDate== 20 || tipoDate == 5 || tipoDate == 6  || tipoDate == 7 || tipoDate == 13 || tipoDate==15 || tipoDate ==18) && validarFecha($("#rangoFechasVac").val(), 1) || (validarFecha($("#fechaIncidencia").val(), 1) ) )  ){
+    || ( (tipoDate== $("#periodo1_pk").val() || tipoDate == $("#periodo2_pk").val() || tipoDate == 6  || tipoDate == 7 || tipoDate == 13 || tipoDate==15 || tipoDate ==18) && validarFecha($("#rangoFechasVac").val(), 1) || (validarFecha($("#fechaIncidencia").val(), 1) ) )  ){
   
   $.ajax({
     url:"{% url 'add_Incidencia' %}",
@@ -310,10 +312,10 @@ $("#insert_btn").click(function(){
         if(tipoDate == 6){
             $("#diasExtra").innerText=response['diasExtra'];
         }
-        if(tipoDate== 20 ){
+        if(tipoDate== $("#periodo2_pk").val() ){
           $("#diasVaca2").innerText=response['diasVaca2'];
         }
-        if(tipoDate == 5 ){
+        if(tipoDate == $("#periodo1_pk").val() ){
           $("#diasVaca1").innerText=response['diasVaca1'];
         }
         if(pos==0 && ( tipoDate == 6  || tipoDate == 7 || tipoDate == 10 || tipoDate == 13 || tipoDate==15 || tipoDate ==18)){
@@ -431,7 +433,7 @@ $('#tipoIncidencia').change(function() {
       $("#textoIncidencia").text("Ingrese una fecha con hora, para registrar Incidencia"); 
       $("#rangoFechas").hide();
   }
-  else if(tipoDate== 20 || tipoDate == 5 || tipoDate == 6  || tipoDate == 7 || tipoDate == 13 || tipoDate==15 || tipoDate ==18){
+  else if(tipoDate== $("#periodo1_pk").val() || tipoDate == $("#periodo2_pk").val() || tipoDate == 6  || tipoDate == 7 || tipoDate == 13 || tipoDate==15 || tipoDate ==18){
      $("#fechaIncidencia").attr('type','date'); 
      $("#textoIncidencia").text("Seleccione el rango de fechas, para registrar Incidencia"); 
       $("#rangoFechasVac").attr('type','date'); 

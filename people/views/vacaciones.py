@@ -12,7 +12,7 @@ from django.urls.base import reverse
 from django.views.generic import ListView, CreateView, UpdateView
 from django.urls import reverse_lazy
 from django.views.generic import View
-from people.models import AreaOrganigrama, Compensacion, Compensaciones, Person, Incidencia, Bajas, AreaInterna, CausaIncidencia
+from people.models import AreaOrganigrama, Compensacion, Compensaciones, Person, Incidencia, Bajas, AreaInterna, CausaIncidencia, PeriodosVacaciones
 from people.forms import IncidenciaForm, PersonForm, DirectorioUpdateForm
 from django.conf import settings
 from reportlab.pdfgen import canvas
@@ -63,24 +63,23 @@ class PersonVacacionesListView(ListView):
     paginate_by = 50
     def get(self, request, *args, **kwargs):
         list = []  
-        people = Person.objects.filter( Q(activo=True) & ~Q(cat_contratacion__pk =6) )
-        #periodo1 = CausaIncidencia.objects.get(pk=5)
-        #periodo2= CausaIncidencia.objects.get(pk=20)
-        causas = CausaIncidencia.objects.filter(Q(pk=5) | Q(pk = 20) | Q(pk = 6) | Q(pk = 3 ))
-        periodo1 = causas.filter(pk=5)
-        periodo2= causas.filter(pk=20)
+        people = Person.objects.filter( Q(activo=True) & ~Q(cat_contratacion__pk =6) & (Q(cat_contratacion__pk =1) | Q(cat_contratacion__pk =2)| Q(cat_contratacion__pk =3) ))
+        periodo1 = PeriodosVacaciones.objects.get(idPeriodo=1).periodo
+        periodo2= PeriodosVacaciones.objects.get(idPeriodo=2).periodo
+        causas = CausaIncidencia.objects.filter(Q(pk=periodo1.pk) | Q(pk = periodo2.pk) | Q(pk = 6) | Q(pk = 3 ))
+       
         for i, person in enumerate(people):
             list.append( VacacionesToShow(person.pk, person.matricula, person.nombres+' '+person.apellido1+' '+person.apellido2, person.areaInterna.nombre, 
                         str(getDiasEconomicos(person)),
-                        str(getVacaciones(person, 5)), 
-                        str(getVacaciones(person, 20)), 
+                        str(getVacaciones(person, periodo1.pk)), 
+                        str(getVacaciones(person, periodo2.pk)), 
                         str(10 - getVacaciones(person, 6)) )) 
                           
         #t = get_template('people/Incidencias/inci_list.html')
         content = {
                 'people': list, 
-                'periodo1': periodo1[0].nombre, 
-                'periodo2': periodo2[0].nombre,
+                'periodo1': periodo1, 
+                'periodo2': periodo2,
                 'causaIncidencia': causas,
             }
         
@@ -89,11 +88,10 @@ class PersonVacacionesListView(ListView):
 
 @csrf_exempt
 def GetPersonasVacacion(request):
-  
+    periodo1 = PeriodosVacaciones.objects.get(idPeriodo=1).periodo
+    periodo2= PeriodosVacaciones.objects.get(idPeriodo=2).periodo
     q=request.GET.get("q")
-    people = Person.objects.filter( Q(activo=True) & (Q(cat_contratacion__pk =1) | Q(cat_contratacion__pk =2)) & Q(comision_sindical=False)  )
-    periodo1 = CausaIncidencia.objects.get(pk=5)
-    periodo2= CausaIncidencia.objects.get(pk=20)
+    people = Person.objects.filter( Q(activo=True) & (Q(cat_contratacion__pk =1) | Q(cat_contratacion__pk =2) | Q(cat_contratacion__pk =3)) & Q(comision_sindical=False) & ~Q(cat_contratacion__pk =6) )
     if q and q !=" ":
         q =q.split(" ")
         query = reduce(operator.and_, ((Q(nombres__unaccent__icontains=item) | Q(apellido1__unaccent__icontains=item) | Q(apellido2__unaccent__icontains=item) | Q(matricula__icontains=item) ) for item in q))
@@ -103,16 +101,21 @@ def GetPersonasVacacion(request):
     for i, person in enumerate(people):
             list.append( VacacionesToShow(person.pk, person.matricula, person.nombres+' '+person.apellido1+' '+person.apellido2, person.areaInterna.nombre, 
                         str(getDiasEconomicos(person)),
-                        str(getVacaciones(person, 5)), 
-                        str(getVacaciones(person, 20)), 
+                        str(getVacaciones(person, periodo1.pk)), 
+                        str(getVacaciones(person, periodo2.pk)), 
                         str(10 - getVacaciones(person, 6)) )) 
 
     t = get_template('people/vacaciones/vaca_search.html')
     content = t.render(
     {
         'people': list, 
-        'periodo1': periodo1.nombre, 
-        'periodo2': periodo2.nombre,
+        'periodo1': PeriodosVacaciones.objects.get(idPeriodo=1).nombre, 
+        'periodo2': PeriodosVacaciones.objects.get(idPeriodo=2).nombre,
           
     })
     return HttpResponse(content)
+
+
+@csrf_exempt
+def GetDetalleVacacion(request):
+    q=request.GET.get("q")
