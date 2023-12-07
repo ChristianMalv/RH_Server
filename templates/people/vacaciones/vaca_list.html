@@ -17,9 +17,9 @@
         <th>Matricula</th>
         <th>Nombre</th>
         <th>Días Economicos</th>
-        <th> {{ periodo1 }}</th>
-        <th> {{ periodo2 }}</th>
-        <th>Días Extra disponibles</th>
+        <th> {{ periodo1.nombre }}</th>
+        <th> {{ periodo2.nombre }}</th>
+        <th>Vacaciones Extraordinarias disponibles</th>
       </tr>
     </thead>
     <tbody>
@@ -32,10 +32,10 @@
           <td>{{person.vaca1}}</td>
           <td>{{person.vaca2}}</td>
           <td>{{person.extra}}</td>
-          <td><button class="btn btn-default btn-xs" data-toggle="modal" data-target="#myModal" type="button"><span class="glyphicon glyphicon-plus" aria-hidden="true" ></span> Agregar Vacaciones </button>
+          <td><button class="btn btn-default btn-xs" data-toggle="modal" data-target="#myModal" type="button">
+          <span class="glyphicon glyphicon-plus" aria-hidden="true" ></span> Agregar Vacaciones </button>
            <button class="btn btn-default btn-xs consultar" data-toggle="modal" data-target="#Consulta" type="button" >
-            Consultar Vacaciones
-            <span class="glyphicon glyphicon-book" aria-hidden="true"></span>   </button></td>
+          <span class="glyphicon glyphicon-book" aria-hidden="true"></span> Consultar Vacaciones </button></td>
         </tr>
       {% empty %}
         <tr class="table-active">
@@ -68,6 +68,7 @@
     {% endif %}
       </ul>
     {% endif %}
+  </div>
   </div>
     <div class="modal fade"  id="myModal">
       <div class="modal-dialog">
@@ -134,22 +135,20 @@
               <input id="idEmpleadoCons" type="hidden">
             </div>
             <div class="col-md-12">
-              <h6 id="textoIncidencia"> Ingrese una fecha con hora, para registrar Incidencia</h6>
-              <div class="col-md-7">
-                <input id="fechaIncidencia" type="datetime-local">
-              </div>
-              <div class="col-md-7" id="rangoFechas">
-              <h6> al </h6>
-                <input id="rangoFechasVac" type="date">
-              </div>
+              <h6>  Días Economicos</h6>
+              <div id="diasEco"></div>
             </div>
             <div class="col-md-12">
-              <h6> Seleccione tipo de Incidencia</h6>
-              <select class="form-control" id="tipoIncidencia">
-                {% for causa in causaIncidencia %}
-                <option value="{{causa.pk}}">{{ causa.nombre }}</option>
-                {% endfor %}
-              </select>
+              <h6>{{ periodo1.nombre }}</h6>
+              <div id="vaca1"></div>
+            </div>
+            <div class="col-md-12">
+              <h6>{{ periodo2.nombre }}</h6>
+              <div id="vaca2"></div>
+            </div>
+            <div class="col-md-12">
+              <h6>Vacaciones Extraordinarias</h6>
+              <div id="extra"></div>
             </div>
           </div>
           <div class="modal-footer">
@@ -175,6 +174,8 @@
       </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
 
+<input id="periodo1_pk" value="{{periodo1.pk}}"  style="display:none"/>
+<input id="periodo2_pk" value="{{periodo2.pk}}"  style="display:none"/>
 
 <div class="row">
   <div class="col-lg-12">
@@ -248,7 +249,6 @@ $.ajax({
       $("#Pages").hide();
       $("#RowsSearch").empty();
       $("#RowsSearch").append(response);
-      console.log(response)
       })
     .fail(function(){
       $("#RowsSearch").hide();
@@ -265,7 +265,7 @@ $("#insert_btn").click(function(){
 
   var tipoDate = $("#tipoIncidencia").val();
   if( (( tipoDate == 1 || tipoDate == 2 || tipoDate == 17) &&  validarFecha($("#fechaIncidencia").val(), 2)) || ( ( tipoDate == 10) && validarFecha($("#rangoFechasVac").val(), 2) || (validarFecha($("#fechaIncidencia").val(), 2) ) )
-   ||( (tipoDate== 20 || tipoDate == 5 || tipoDate == 6  || tipoDate == 7 || tipoDate == 13 || tipoDate==15 || tipoDate ==18) && validarFecha($("#rangoFechasVac").val(), 1) || (validarFecha($("#fechaIncidencia").val(), 1) ) )  ){
+   ||( (tipoDate== $("#periodo1_pk").val() || tipoDate == $("#periodo2_pk").val() || tipoDate == 6  || tipoDate == 7 || tipoDate == 13 || tipoDate==15 || tipoDate ==18) && validarFecha($("#rangoFechasVac").val(), 1) || (validarFecha($("#fechaIncidencia").val(), 1) ) )  ){
     var opcion = confirm("Se va a agregar incidencia general: "+ $("#tipoIncidencia option:selected").text() +". ¿Es correcto?");
             if (opcion == true) {
 
@@ -320,12 +320,47 @@ $(document).on("click",".btn-xs",function(){
   var this_html=$(this);
   $("#nombreEmpleado").text(getAndShowId(this_html).nombre);
   $("#idEmpleado").val(getAndShowId(this_html).id);
+  console.log($("#periodo1_pk").val());
+  console.log($("#periodo2_pk").val());
   });
 
 $(document).on("click",".glyphicon-book",function(){
   var this_html=$(this);
-   $("#nombreEmpleadoCons").text(getAndShowId(this_html).nombre);
-  $("#idEmpleadoCons").val(getAndShowId(this_html).id);
+    $("#nombreEmpleadoCons").text(getAndShowId(this_html).nombre);
+    $("#idEmpleadoCons").val(getAndShowId(this_html).id);
+      $.ajax({
+        url:"{% url 'add_Incidencia' %}",
+        type:'POST',
+        data:{ fechaIncidencia:$("#fechaIncidencia").val(), tipoIncidencia:$("#tipoIncidencia").val(), fechaIncidenciaComp:$("#rangoFechasVac").val(), person:$("#idEmpleado").val(), return:true}
+        })
+      .done(function(response){
+        if(response['error']==false){ 
+            $("#ins_error").hide();
+            $("#ins_success").text(response['errorMessage']);
+            $("#ins_success").show();
+            $("#noData").hide();
+            doSearch(response['persona'], response['diasEco'], response['diasVaca1'], response['diasVaca2'], response['diasExtra']);
+          }
+          else{
+            $("#ins_success").hide();
+            $("#ins_error").text(response['errorMessage']);
+            $("#ins_error").show();
+            }
+          })
+          .fail(function(){
+            $("#ins_success").hide();
+            $("#ins_error").text("Something Went Wrong!");
+            $("#ins_error").show();
+          })
+          .always(function(){
+            $(".btn-insert-data").removeAttr("disabled");
+            $(".btn-insert-data").text("INSERT STUDENT");
+                })
+        setTimeout(() => {
+                      $("#ins_success").hide();
+                      $("#ins_error").hide();  
+                    }, 2000);
+      }
   });
 
 $('#tipoIncidencia').change(function() {
@@ -336,7 +371,7 @@ $('#tipoIncidencia').change(function() {
       $("#textoIncidencia").text("Ingrese una fecha con hora, para registrar Incidencia"); 
       $("#rangoFechas").hide();
   }
-  else if(tipoDate== 20 || tipoDate == 5 || tipoDate == 6  || tipoDate == 7 || tipoDate == 13 || tipoDate==15 || tipoDate ==18){
+  else if(tipoDate== $("#periodo1_pk").val() || tipoDate == $("#periodo2_pk").val() || tipoDate == 6  || tipoDate == 7 || tipoDate == 13 || tipoDate==15 || tipoDate ==18){
      $("#fechaIncidencia").attr('type','date'); 
      $("#textoIncidencia").text("Seleccione el rango de fechas, para registrar Incidencia"); 
       $("#rangoFechasVac").attr('type','date'); 

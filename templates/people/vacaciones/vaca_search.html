@@ -21,7 +21,10 @@
           <td>{{person.vaca1}}</td>
           <td>{{person.vaca2}}</td>
           <td>{{person.extra}}</td>
-          <td><button class="btn btn-default btn-xs eliminar" type="button"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Eliminar compensacion </button></td>
+           <td><button class="btn btn-default btn-xs" data-toggle="modal" data-target="#myModal" type="button">
+          <span class="glyphicon glyphicon-plus" aria-hidden="true" ></span> Agregar Vacaciones </button>
+           <button class="btn btn-default btn-xs consultar" data-toggle="modal" data-target="#Consulta" type="button" >
+          <span class="glyphicon glyphicon-book" aria-hidden="true"></span> Consultar Vacaciones </button></td>
         </tr>
       {% empty %}
         <tr class="table-active">

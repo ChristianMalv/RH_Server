@@ -20,6 +20,8 @@
     <tr><p><strong>RFC: </strong>{{ person.rfc }}</p> </tr>
     <tr><p><strong>Matrícula: </strong> {{person.matricula}}</p> </tr>
     <input id="idPerson" value=" {{person.pk}} "  style="display:none"/>
+    <input id="periodo1_pk" value="{{periodo1.pk}}"  style="display:none"/>
+    <input id="periodo2_pk" value="{{periodo2.pk}}"  style="display:none"/>
     <tr><p><strong>Horario: </strong>{{ person.cat_horario.nombre }}</p> </tr>
     </table>
   </div>  
@@ -27,8 +29,8 @@
 
   </div>
     <h5>Vacaciones disfrutadas: </h5> 
-    <tr><p><strong>{{periodo1}}:</strong> {{ diasVaca1 }} de 10 </p>
-    <tr><p><strong>{{periodo2}}:</strong> {{ diasVaca2 }} de 10 </p>
+    <tr><p><strong>{{periodo1.nombre}}:</strong> {{ diasVaca1 }} de 10 </p>
+    <tr><p><strong>{{periodo2.nombre}}:</strong> {{ diasVaca2 }} de 10 </p>
     <tr><p><strong>Extraordinarias:</strong>  {% if person.vacaciones_extra %} {{ diasExtra }} de 10 {% else %} No {% endif %} </p>
     <tr><p><strong>Días económicos distrutados:</strong> {{diasEco}} de 9 </p>
   </div>  
@@ -208,7 +210,7 @@ $('#tipoIncidencia').change(function() {
       $("#textoIncidencia").text("Ingrese una fecha con hora, para registrar Incidencia"); 
       $("#rangoFechasVac").hide();
   }
-  else if(tipoDate== 20 || tipoDate == 5 || tipoDate == 6  || tipoDate == 7 || tipoDate == 13 || tipoDate==15 || tipoDate ==18){
+  else if(tipoDate==  $("#periodo1_pk").val() || tipoDate == $("#periodo2_pk").val()|| tipoDate == 6  || tipoDate == 7 || tipoDate == 13 || tipoDate==15 || tipoDate ==18){
      $("#fechaIncidencia").attr('type','date'); 
      $("#textoIncidencia").text("Seleccione el rango de fechas, para registrar Incidencia"); 
      $("#rangoFechasVac").show();

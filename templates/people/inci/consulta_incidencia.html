@@ -14,20 +14,23 @@
     margin:0px auto;
 }
   </style>
-
-<div class="col-md-6" id="divContent">
-  <div id="divCenter"> 
-        <div class="form-group" >
-          <label  class="control-label" id="Label1"> Capture su número de matrícula </label>
-          <input  type="text" id="input2" placeholder="Matrícula" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm" autocomplete="off">
+<div class="row">
+<div class="col-md-12">
+    <div class="col-md-6" id="divContent">
+      <div id="divCenter"> 
+            <div class="form-group" >
+              <label  class="control-label" id="Label1"> Capture su número de matrícula </label>
+              <input  type="text" id="input2" placeholder="Matrícula" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm" autocomplete="off">
+            </div>
+            <div class="form-group">
+              <label><b>Seleccione su fecha de nacimiento:</b></label>
+              <input class="form-control" id="input1" type="text" placeholder="(DD/MM/AAAA)">
+            </div>   
+        <div class="col-md-12"  style="margin:0px auto">
+            </p>
+            <button class="btn btn-primary pull-right" id="validate-asist">Ingresar </a>
         </div>
-        <div class="form-group">
-          <label><b>Seleccione su fecha de nacimiento:</b></label>
-          <input class="form-control" id="input1" type="text" placeholder="(DD/MM/AAAA)">
-        </div>   
-    <div class="col-md-12"  style="margin:0px auto">
-        </p>
-        <button class="btn btn-primary pull-right" id="validate-asist">Ingresar </a>
+      </div>
     </div>
   </div>
 </div>
@@ -52,7 +55,6 @@
     </div> 
 
 <script>
-   
 $('#input1').datepicker({changeYear: true,  yearRange: "1930:2025"});
 $('#input1').val("");
 $('#input2').val("");

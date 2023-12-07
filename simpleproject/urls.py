@@ -4,12 +4,14 @@ from django.urls import re_path
 from django.conf.urls import include
 from people.views import PersonListView, PersonCreateView, PersonUpdateView, ReportePersonasPDF, PersonCheckView, searchPerson, saveCheckedPerson, PersonBajaListView, GetPersonas, InsertBaja, DirectoryListView, GetPersonasDirectory, GetCompPersonas, InsertComp, PersonCompListView, DetalleIncidencias, PersonInciListView, ReporteIncidenciasPDF, UpdateIncidencia, GetPersonasIncidencia, AddIncidencia, DeleteIncidencia, PersonDirectoryUpdateView, DeleteComp, AreasListView, json_to_pdf, GetPersonasCompensacion, compensacionesArea, IncidenciaConsulta, ValidatePersonIncidencia, DetailPersonIncidencia, GetIncidenciaTable, \
     loginAdmin, AdminConsulta, AdminInciListView, GetAdminIncidencia, reporteIncidencias, PersonAyudaListView, GetAyudaPersonas, InsertAyuda, DeleteAyuda, GetPersonasAyuda, DashboardCheck, UpdateDashboard, \
-        GetPersonaAyuda,  SersocListView, SersocCreateView, CreateSersocPerson, AddAyuda, DeleteAyudaMonto, ValidateRFC, PersonVacacionesListView, GetPersonasVacacion
+        GetPersonaAyuda,  SersocListView, SersocCreateView, CreateSersocPerson, AddAyuda, DeleteAyudaMonto, ValidateRFC, PersonVacacionesListView, GetPersonasVacacion, GetDetalleVacacion
 from django.contrib.auth import views
 from django.contrib.auth.decorators import login_required
 urlpatterns = [
     path('login/', views.LoginView.as_view(), name='login'),
     path('logout/', views.LogoutView.as_view(next_page='/'), name='logout'),
+    path('accounts/login/', views.LoginView.as_view(), name='login'),
+    path('accounts/logout/', views.LogoutView.as_view(next_page='/'), name='logout'),
     
     path('', PersonListView.as_view(), name='person_list'),
     path('activos/personas',PersonListView.as_view(), name='activos_list'),
@@ -20,6 +22,7 @@ urlpatterns = [
     #Vacaciones
     path('vacaciones/personas', PersonVacacionesListView.as_view(), name='vacaciones_list' ),
     path('vacaciones/busqueda', GetPersonasVacacion , name='search_person_vacacion'),
+    path('vacaciones/detalle', GetDetalleVacacion , name='detalle_vacacion'),
     #Compensaciones
     path('compensaciones/personas', PersonCompListView.as_view(), name='comp_list' ),
     path('get_personas_comp/', GetCompPersonas, name="get_PersonasComp"),
