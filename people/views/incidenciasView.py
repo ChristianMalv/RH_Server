@@ -34,7 +34,7 @@ class PersonInciListView(ListView):
 
     def get(self, request, *args, **kwargs):
         queryset = Person.objects.filter( Q(activo=True) & ~Q(cat_contratacion__pk =6) )
-        causaIncidencia = CausaIncidencia.objects.get(isVisible = True)
+        causaIncidencia = CausaIncidencia.objects.filter(isVisible = True)
         
         #t = get_template('people/Incidencias/inci_list.html')
         content = {
@@ -683,7 +683,7 @@ class DetalleIncidencias(View):
         periodo1 = PeriodosVacaciones.objects.get(idPeriodo= 1)
         periodo2 = PeriodosVacaciones.objects.get(idPeriodo= 2)
         nombreDias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sabado']
-        causaIncidencia = CausaIncidencia.objects.all(isVisible = True)
+        causaIncidencia = CausaIncidencia.objects.filter(isVisible = True)
         person = Person.objects.get(pk=self.kwargs['pk'])
         dateInicio = datetime.datetime.strptime(self.kwargs['fechaInicio'], "%d-%m-%Y")
         # t = get_template('people/Incidencias/persona_modif_inci.html')
