@@ -77,6 +77,9 @@ def CreateSersocPerson(request, pk=None):
             sersoc_form = ServicioSocialForm()
     return render(request, 'people/sersoc/serviciosocial_form.html', {'form': my_form, 'sersoc_form': sersoc_form})
 
+def GetAsistencia(person, sersoc):
+    person = Person.objects.get(pk=person)
+    sersoc= sersoc
 
 
 class SersocCreateView(CreateView):

@@ -32,7 +32,7 @@
           <td>{{person.vaca1}}</td>
           <td>{{person.vaca2}}</td>
           <td>{{person.extra}}</td>
-          <td><button class="btn btn-default btn-xs" data-toggle="modal" data-target="#myModal" type="button">
+          <td><button class="btn btn-default btn-xs agregar" data-toggle="modal" data-target="#myModal" type="button">
           <span class="glyphicon glyphicon-plus" aria-hidden="true" ></span> Agregar Vacaciones </button>
            <button class="btn btn-default btn-xs consultar" data-toggle="modal" data-target="#Consulta" type="button" >
           <span class="glyphicon glyphicon-book" aria-hidden="true"></span> Consultar Vacaciones </button></td>
@@ -260,8 +260,8 @@ $.ajax({
 
 
 $("#insert_btn").click(function(){
-  console.log($("#fechaIncidencia").val())
-  console.log($("#tipoIncidencia").val())
+  console.log($("#fechaIncidencia").val());
+  console.log($("#tipoIncidencia").val());
 
   var tipoDate = $("#tipoIncidencia").val();
   if( (( tipoDate == 1 || tipoDate == 2 || tipoDate == 17) &&  validarFecha($("#fechaIncidencia").val(), 2)) || ( ( tipoDate == 10) && validarFecha($("#rangoFechasVac").val(), 2) || (validarFecha($("#fechaIncidencia").val(), 2) ) )
@@ -280,8 +280,7 @@ $("#insert_btn").click(function(){
                   $("#ins_success").text(response['errorMessage']);
                   $("#ins_success").show();
                   $("#noData").hide();
-                  doSearch(response['persona'], response['diasEco'], response['diasVaca1'], response['diasVaca2'], response['diasExtra']);
-                }
+                 }
                 else{
                   $("#ins_success").hide();
                   $("#ins_error").text(response['errorMessage']);
@@ -316,7 +315,9 @@ function getAndShowId(this_html, nombre, id){
     };
  
 }
-$(document).on("click",".btn-xs",function(){
+
+
+$(document).on("click",".agregar",function(){
   var this_html=$(this);
   $("#nombreEmpleado").text(getAndShowId(this_html).nombre);
   $("#idEmpleado").val(getAndShowId(this_html).id);
@@ -324,22 +325,36 @@ $(document).on("click",".btn-xs",function(){
   console.log($("#periodo2_pk").val());
   });
 
-$(document).on("click",".glyphicon-book",function(){
+
+function cleanDiv()
+{
+  console.log(":Erase");
+  document.getElementById("vaca1").innerHTML = "";
+  document.getElementById("vaca2").innerHTML = "";
+  document.getElementById("diasEco").innerHTML = "";
+  document.getElementById("extra").innerHTML = "";
+ }
+$(document).on("click",".consultar",function(){
   var this_html=$(this);
     $("#nombreEmpleadoCons").text(getAndShowId(this_html).nombre);
     $("#idEmpleadoCons").val(getAndShowId(this_html).id);
-      $.ajax({
-        url:"{% url 'add_Incidencia' %}",
-        type:'POST',
-        data:{ fechaIncidencia:$("#fechaIncidencia").val(), tipoIncidencia:$("#tipoIncidencia").val(), fechaIncidenciaComp:$("#rangoFechasVac").val(), person:$("#idEmpleado").val(), return:true}
+    cleanDiv();
+    $.ajax({
+        url:"{% url 'detail_vacacion' %}",
+        type:'GET',
+        data:{ person: $("#idEmpleadoCons").val(), },
         })
       .done(function(response){
-        if(response['error']==false){ 
+        if(response['error']==false) 
+        { 
             $("#ins_error").hide();
             $("#ins_success").text(response['errorMessage']);
             $("#ins_success").show();
             $("#noData").hide();
-            doSearch(response['persona'], response['diasEco'], response['diasVaca1'], response['diasVaca2'], response['diasExtra']);
+            $("#vaca1").append(response['vaca1']);
+            $("#vaca2").append(response['vaca2']);
+            $("#extra").append(response['extra']);
+            $("#diasEco").append(response['eco']);
           }
           else{
             $("#ins_success").hide();
@@ -347,20 +362,20 @@ $(document).on("click",".glyphicon-book",function(){
             $("#ins_error").show();
             }
           })
-          .fail(function(){
+      .fail(function(){
             $("#ins_success").hide();
             $("#ins_error").text("Something Went Wrong!");
             $("#ins_error").show();
           })
-          .always(function(){
+      .always(function(){
             $(".btn-insert-data").removeAttr("disabled");
             $(".btn-insert-data").text("INSERT STUDENT");
-                })
-        setTimeout(() => {
+         })
+       setTimeout(() => {
                       $("#ins_success").hide();
                       $("#ins_error").hide();  
                     }, 2000);
-      }
+        
   });
 
 $('#tipoIncidencia').change(function() {
