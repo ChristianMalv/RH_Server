@@ -43,7 +43,7 @@ from django.http import FileResponse, Http404
 from pyreportjasper import PyReportJasper
 import json 
 from .incidenciasView import getDiasEconomicos, getVacaciones
-
+from tabulate import tabulate
 class VacacionesToShow:  
     def __init__(self, pk,  matricula, nombre,  area, eco, vaca1, vaca2, extra):
         self.pk = pk 
@@ -55,7 +55,11 @@ class VacacionesToShow:
         self.vaca2 = vaca2
         self.extra = extra 
       
-
+class IncidenciaToShow:
+    def __init__(self, pk,  dia, fecha):
+        self.pk = pk 
+        self.dia = dia
+        self.fecha = fecha  
 
 @method_decorator(login_required, name='dispatch')
 class PersonVacacionesListView(ListView):
@@ -118,4 +122,17 @@ def GetPersonasVacacion(request):
 
 @csrf_exempt
 def GetDetalleVacacion(request):
-    q=request.GET.get("q")
+    q=request.GET.get("person")
+    person = Person.objects.get(Q(pk = q) &  Q(activo=True) & (Q(cat_contratacion__pk =1) | Q(cat_contratacion__pk =2) | Q(cat_contratacion__pk =3)) & Q(comision_sindical=False) & ~Q(cat_contratacion__pk =6) )
+    periodo1 = PeriodosVacaciones.objects.get(idPeriodo=1).periodo
+    periodo2= PeriodosVacaciones.objects.get(idPeriodo=2).periodo
+    vacation_data={"error":False,"vaca1": GetTableDetail(person,periodo1.pk ), "vaca2":GetTableDetail(person,periodo2.pk ),"extra": GetTableDetail(person,6 ), "eco": GetTableDetail(person,3 ) }
+    return JsonResponse(vacation_data,safe=False)
+
+def GetTableDetail(person, incidencia):
+    nombreDias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sabado']
+    incidencias = Incidencia.objects.filter(Q(matriculaCredencial = person) & Q(causa_incidencia__pk=incidencia))
+    list = []  
+    for i, inci in enumerate(incidencias):
+        list.append([inci.pk, nombreDias[int( inci.created_at.strftime("%w"))] , inci.created_at.strftime("%d-%m-%Y")])
+    return(tabulate(list, tablefmt='html'))
