@@ -243,6 +243,7 @@ def CreateJsonCredencial(person, sersoc):
         frase = 'Agradecemos a las autoridades civiles y militares, otorguen a la persona portadora del presente, todas las facilidades para el mejor desempeño de sus funciones. Esta credencial es propiedad de la Dirección General @prende.mx, es intrasferible y tendrá vigencia en el periodo estipulado.'
         vigencia = 'VIGENCIA: DICIEMBRE 2025'
         bg = settings.MEDIA_ROOT+'/imagenes/fondoguinda.png'
+        logoaprende = settings.MEDIA_ROOT+'/imagenes/LogoFull.png'
    
     data['credencial'].append({'Photo': filename,
                                'Nombre': person.nombres + ' ' + person.apellido1 + ' ' + person.apellido2,

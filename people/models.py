@@ -292,6 +292,8 @@ class ServicioSocial(models.Model):
     creditos_cursados = models.CharField(max_length=20, blank=False, verbose_name="Total de Créditos Cursados")
     numero_matricula = models.CharField(max_length=20, blank=False, verbose_name="Número de Matrícula")
     telefono_escuela = models.CharField(max_length=14, blank=False, verbose_name="Teléfono de la Escuela")
+    telefono_ext_escuela = models.CharField(max_length=14, blank=False, verbose_name="extensión")
+    
     periodo = models.CharField(max_length=255, blank=False, verbose_name="Periodo en el que se realizará el Servicio")
     horario = models.CharField(max_length=255, blank=False, verbose_name="Horario de desempeño de las actividades")
     description = models.TextField(max_length=250, blank=True, verbose_name="Actividades")

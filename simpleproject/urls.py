@@ -4,7 +4,8 @@ from django.urls import re_path
 from django.conf.urls import include
 from people.views import PersonListView, PersonCreateView, PersonUpdateView, ReportePersonasPDF, PersonCheckView, searchPerson, saveCheckedPerson, PersonBajaListView, GetPersonas, InsertBaja, DirectoryListView, GetPersonasDirectory, GetCompPersonas, InsertComp, PersonCompListView, DetalleIncidencias, PersonInciListView, ReporteIncidenciasPDF, UpdateIncidencia, GetPersonasIncidencia, AddIncidencia, DeleteIncidencia, PersonDirectoryUpdateView, DeleteComp, AreasListView, json_to_pdf, GetPersonasCompensacion, compensacionesArea, IncidenciaConsulta, ValidatePersonIncidencia, DetailPersonIncidencia, GetIncidenciaTable, \
     loginAdmin, AdminConsulta, AdminInciListView, GetAdminIncidencia, reporteIncidencias, PersonAyudaListView, GetAyudaPersonas, InsertAyuda, DeleteAyuda, GetPersonasAyuda, DashboardCheck, UpdateDashboard, \
-        GetPersonaAyuda,  SersocListView, SersocCreateView, CreateSersocPerson, AddAyuda, DeleteAyudaMonto, ValidateRFC, PersonVacacionesListView, GetPersonasVacacion, GetDetalleVacacion
+        GetPersonaAyuda,  SersocListView, SersocCreateView, CreateSersocPerson, AddAyuda, DeleteAyudaMonto, ValidateRFC, PersonVacacionesListView, GetPersonasVacacion, GetDetalleVacacion, \
+        GetAsistencia
 from django.contrib.auth import views
 from django.contrib.auth.decorators import login_required
 urlpatterns = [
@@ -22,7 +23,7 @@ urlpatterns = [
     #Vacaciones
     path('vacaciones/personas', PersonVacacionesListView.as_view(), name='vacaciones_list' ),
     path('vacaciones/busqueda', GetPersonasVacacion , name='search_person_vacacion'),
-    path('vacaciones/detalle', GetDetalleVacacion , name='detalle_vacacion'),
+    path('vacaciones/detalle', GetDetalleVacacion , name='detail_vacacion'),
     #Compensaciones
     path('compensaciones/personas', PersonCompListView.as_view(), name='comp_list' ),
     path('get_personas_comp/', GetCompPersonas, name="get_PersonasComp"),
@@ -99,6 +100,7 @@ urlpatterns = [
     path('add/sersoc/', CreateSersocPerson, name='sersoc_add'),
     path('<int:pk>/edit/sersoc/', CreateSersocPerson, name='sersoc_edit'),
     path('<int:pk>/<int:sersoc>/print/sersoc/', ReportePersonasPDF.as_view(), name='sersoc_print'),
+    path('<int:pk>/<int:sersoc>/asist/sersoc/', GetAsistencia, name='sersoc_asist'),
     path('sersoc/', SersocListView.as_view(), name='sersoc_list'),
 
     #Consulta 

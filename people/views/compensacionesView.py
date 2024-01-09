@@ -337,7 +337,7 @@ def reporteIncidencias(request,fechaInicio,fechaFin, incidencia  ):
     if incidencia > 0:
         tipoIncidencia= CausaIncidencia.objects.get(pk=incidencia)
         incidencia = tipoIncidencia.nombre
-        CreateJsonReport(dateInicio, dateFin,incidencia)
+        CreateJsonReport(dateInicio, dateFin,tipoIncidencia)
         dataFile= '/Formatos/dataReporteIncidencias.json'
         outputFile= settings.MEDIA_ROOT+ '/Formatos/ReporteIncidencias'+ incidencia +' '+fechaInicio+' al '+fechaFin+'.xls' 
     else:
@@ -345,7 +345,7 @@ def reporteIncidencias(request,fechaInicio,fechaFin, incidencia  ):
         outputFile= settings.MEDIA_ROOT+ '/Formatos/ReporteIncidenciasSinRegistroEntradaSalida'+fechaInicio+' al '+fechaFin+'.xls' 
         dataFile = '/Formatos/dataReporteSinRegistros.json'
         incidencia = 'Entrada y Salida sin Registro'
-    input_file = settings.MEDIA_ROOT+ '/Formatos/ReporteIncidencias_v1.jrxml'
+    input_file = settings.MEDIA_ROOT+ '/Formatos/ReporteIncidencias_v1_2.jrxml'
     conn = {
       'driver': 'json',
       'data_file': settings.MEDIA_ROOT+ dataFile,
