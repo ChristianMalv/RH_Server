@@ -31,7 +31,11 @@
           <td>{{person.eco}}</td>
           <td>{{person.vaca1}}</td>
           <td>{{person.vaca2}}</td>
+          {% if person.extra == 'NA' %}
+          <td> No Aplica </td>
+          {% else %}
           <td>{{person.extra}}</td>
+          {% endif %}
           <td><button class="btn btn-default btn-xs agregar" data-toggle="modal" data-target="#myModal" type="button">
           <span class="glyphicon glyphicon-plus" aria-hidden="true" ></span> Agregar Vacaciones </button>
            <button class="btn btn-default btn-xs consultar" data-toggle="modal" data-target="#Consulta" type="button" >
@@ -140,15 +144,15 @@
             </div>
             <div class="col-md-12">
               <h6>{{ periodo1.nombre }}</h6>
-              <div id="vaca1"></div>
+              <div id="vaca1" class="col-md-12"></div>
             </div>
             <div class="col-md-12">
               <h6>{{ periodo2.nombre }}</h6>
-              <div id="vaca2"></div>
+              <div id="vaca2" class="col-md-12"></div>
             </div>
             <div class="col-md-12">
               <h6>Vacaciones Extraordinarias</h6>
-              <div id="extra"></div>
+              <div id="extra" class="col-md-12"></div>
             </div>
           </div>
           <div class="modal-footer">
@@ -266,7 +270,7 @@ $("#insert_btn").click(function(){
   var tipoDate = $("#tipoIncidencia").val();
   if( (( tipoDate == 1 || tipoDate == 2 || tipoDate == 17) &&  validarFecha($("#fechaIncidencia").val(), 2)) || ( ( tipoDate == 10) && validarFecha($("#rangoFechasVac").val(), 2) || (validarFecha($("#fechaIncidencia").val(), 2) ) )
    ||( (tipoDate== $("#periodo1_pk").val() || tipoDate == $("#periodo2_pk").val() || tipoDate == 6  || tipoDate == 7 || tipoDate == 13 || tipoDate==15 || tipoDate ==18) && validarFecha($("#rangoFechasVac").val(), 1) || (validarFecha($("#fechaIncidencia").val(), 1) ) )  ){
-    var opcion = confirm("Se va a agregar incidencia general: "+ $("#tipoIncidencia option:selected").text() +". ¿Es correcto?");
+    var opcion = confirm("Se va a agregar incidencia: "+ $("#tipoIncidencia option:selected").text() +". ¿Es correcto?");
             if (opcion == true) {
 
             $.ajax({
@@ -280,6 +284,9 @@ $("#insert_btn").click(function(){
                   $("#ins_success").text(response['errorMessage']);
                   $("#ins_success").show();
                   $("#noData").hide();
+                  doSearch(response['persona'], response['diasEco'], response['diasVaca1'], response['diasVaca2'], response['diasExtra']);
+                  console.log("buscado");
+                  console.log(response['persona'], response['diasEco'], response['diasVaca1'], response['diasVaca2'], response['diasExtra']);
                  }
                 else{
                   $("#ins_success").hide();
@@ -325,6 +332,45 @@ $(document).on("click",".agregar",function(){
   console.log($("#periodo2_pk").val());
   });
 
+$(document).on("click",".eliminar",function(){
+  var this_html=$(this);
+  var id=this_html.parent().parent().children().first().text();
+  var fecha=this_html.parent().parent().children().first().next().next().text();
+  console.log(id);
+  console.log(fecha);
+  var opcion = confirm("Borrar fecha: "+ fecha +". ¿Es correcto?");
+  if (opcion == true) {
+    $.ajax({
+        url:"{% url 'delete_vacacion' %}",
+        type:'GET',
+        data:{ incidencia: id, },
+        })
+      .done(function(response){
+        if(response['error']==false) 
+        { 
+            $("#ins_error").hide();
+            $("#ins_success").text(response['errorMessage']);
+            $("#ins_success").show();
+            doSearch(response['persona'], response['diasEco'], response['diasVaca1'], response['diasVaca2'], response['diasExtra']);
+            this_html.parent().parent().remove();
+          }
+          else{
+            $("#ins_success").hide();
+            $("#ins_error").text(response['errorMessage']);
+            $("#ins_error").show();
+            }
+          })
+      .fail(function(){
+            $("#ins_success").hide();
+            $("#ins_error").text("Something Went Wrong!");
+            $("#ins_error").show();
+          })
+      .always(function(){
+            $(".btn-insert-data").removeAttr("disabled");
+            $(".btn-insert-data").text("INSERT STUDENT");
+         })    
+  }
+  });
 
 function cleanDiv()
 {

@@ -5,7 +5,7 @@ from django.conf.urls import include
 from people.views import PersonListView, PersonCreateView, PersonUpdateView, ReportePersonasPDF, PersonCheckView, searchPerson, saveCheckedPerson, PersonBajaListView, GetPersonas, InsertBaja, DirectoryListView, GetPersonasDirectory, GetCompPersonas, InsertComp, PersonCompListView, DetalleIncidencias, PersonInciListView, ReporteIncidenciasPDF, UpdateIncidencia, GetPersonasIncidencia, AddIncidencia, DeleteIncidencia, PersonDirectoryUpdateView, DeleteComp, AreasListView, json_to_pdf, GetPersonasCompensacion, compensacionesArea, IncidenciaConsulta, ValidatePersonIncidencia, DetailPersonIncidencia, GetIncidenciaTable, \
     loginAdmin, AdminConsulta, AdminInciListView, GetAdminIncidencia, reporteIncidencias, PersonAyudaListView, GetAyudaPersonas, InsertAyuda, DeleteAyuda, GetPersonasAyuda, DashboardCheck, UpdateDashboard, \
         GetPersonaAyuda,  SersocListView, SersocCreateView, CreateSersocPerson, AddAyuda, DeleteAyudaMonto, ValidateRFC, PersonVacacionesListView, GetPersonasVacacion, GetDetalleVacacion, \
-        GetAsistencia
+        GetAsistencia, DeleteDayVacacion
 from django.contrib.auth import views
 from django.contrib.auth.decorators import login_required
 urlpatterns = [
@@ -24,6 +24,8 @@ urlpatterns = [
     path('vacaciones/personas', PersonVacacionesListView.as_view(), name='vacaciones_list' ),
     path('vacaciones/busqueda', GetPersonasVacacion , name='search_person_vacacion'),
     path('vacaciones/detalle', GetDetalleVacacion , name='detail_vacacion'),
+    path('vacaciones/delete', DeleteDayVacacion, name='delete_vacacion'),
+
     #Compensaciones
     path('compensaciones/personas', PersonCompListView.as_view(), name='comp_list' ),
     path('get_personas_comp/', GetCompPersonas, name="get_PersonasComp"),
