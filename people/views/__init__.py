@@ -9,4 +9,4 @@ from .ayudasView import PersonAyudaListView, GetAyudaPersonas, InsertAyuda, Dele
 from .charts import DashboardCheck, UpdateDashboard
 from .sersoc import  SersocListView, SersocCreateView, CreateSersocPerson, GetAsistencia
 from .consulta import ValidateRFC
-from .vacaciones import PersonVacacionesListView, GetPersonasVacacion, GetDetalleVacacion
+from .vacaciones import PersonVacacionesListView, GetPersonasVacacion, GetDetalleVacacion, DeleteDayVacacion

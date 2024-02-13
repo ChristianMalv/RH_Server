@@ -77,7 +77,7 @@ class PersonVacacionesListView(ListView):
                         str(getDiasEconomicos(person)),
                         str(getVacaciones(person, periodo1.pk)), 
                         str(getVacaciones(person, periodo2.pk)), 
-                        str(10 - getVacaciones(person, 6)) )) 
+                        str(10 - getVacaciones(person, 6)) if person.vacaciones_extra else "No Aplica" )) 
                           
         #t = get_template('people/Incidencias/inci_list.html')
         content = {
@@ -107,7 +107,7 @@ def GetPersonasVacacion(request):
                         str(getDiasEconomicos(person)),
                         str(getVacaciones(person, periodo1.pk)), 
                         str(getVacaciones(person, periodo2.pk)), 
-                        str(10 - getVacaciones(person, 6)) )) 
+                        str(10 - getVacaciones(person, 6))if person.vacaciones_extra else "No Aplica" )) 
 
     t = get_template('people/vacaciones/vaca_search.html')
     content = t.render(
@@ -130,9 +130,45 @@ def GetDetalleVacacion(request):
     return JsonResponse(vacation_data,safe=False)
 
 def GetTableDetail(person, incidencia):
+    now = datetime.datetime.now()
     nombreDias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sabado']
-    incidencias = Incidencia.objects.filter(Q(matriculaCredencial = person) & Q(causa_incidencia__pk=incidencia))
-    list = []  
+    if incidencia == 4:
+        dateInicio = datetime.datetime(now.year-1, 5, 1, 00, 00, 00, 0) 
+        dateFin = datetime.datetime(now.year, 5, 1, 00, 00, 00, 0) 
+        incidencias = Incidencia.objects.filter(Q(matriculaCredencial = person) & Q(causa_incidencia__pk=incidencia)& Q(created_at__range=[dateInicio, dateFin]) ).order_by('pk')   
+    elif incidencia == 3 or incidencia == 6 :
+        dateInicio = datetime.datetime(now.year, 1, 1, 00, 00, 00, 0) 
+        dateFin = datetime.datetime(now.year, 12, 31, 00, 00, 00, 0)
+        incidencias = Incidencia.objects.filter(Q(matriculaCredencial = person) & Q(causa_incidencia__pk=incidencia) & Q(created_at__range=[dateInicio, dateFin]) ).order_by('pk')           
+    else:
+        incidencias = Incidencia.objects.filter(Q(matriculaCredencial = person) & Q(causa_incidencia__pk=incidencia) & Q(created_at__year__gt= 2022)).order_by('pk')  
+    list = [] 
+    list.append(['id', 'dia', 'fecha']); 
     for i, inci in enumerate(incidencias):
-        list.append([inci.pk, nombreDias[int( inci.created_at.strftime("%w"))] , inci.created_at.strftime("%d-%m-%Y")])
-    return(tabulate(list, tablefmt='html'))
+        list.append([inci.pk, nombreDias[int( inci.created_at.strftime("%w"))] , inci.created_at.strftime("%d-%m-%Y"), 'add_button'])
+    return(custom_html_formatter(list))
+
+def custom_html_formatter(tabulated_data):
+    # Add your custom CSS classes to the HTML table
+    table_html = tabulate(tabulated_data, tablefmt='html')
+    table_html_with_classes = table_html.replace('<table>', '<table class="col-md-12">')
+    print(table_html_with_classes)
+    table_html_with_classes = table_html_with_classes.replace('<tr><td>id', '<tr style="display:none"><td>id')
+    table_html_with_classes = table_html_with_classes.replace('add_button','<button class="btn btn-default btn-xs eliminar" type="button"><span class="glyphicon glyphicon-remove" aria-hidden="true" ></span> Eliminar día </button>')
+    return table_html_with_classes
+
+@csrf_exempt
+def DeleteDayVacacion(request):
+    periodo1 = PeriodosVacaciones.objects.get(idPeriodo=1)
+    periodo2= PeriodosVacaciones.objects.get(idPeriodo=2)
+    q=request.GET.get("incidencia")
+    incidencia = Incidencia.objects.get(pk = q)
+    person = incidencia.matriculaCredencial
+    incidencia.delete()
+    diasEco = getDiasEconomicos(person)
+    diasVaca1 = getVacaciones(person, periodo1.periodo.pk)
+    diasVaca2 = getVacaciones(person, periodo2.periodo.pk)
+    diasExtra = 10 - getVacaciones(person, 6)  #if person.vacaciones_extra else 0
+    stuent_data={"error":False,"errorMessage":"Incidencia eliminada al Personal", "persona": person.matricula, "diasEco": diasEco, "diasVaca1":diasVaca1, "diasVaca2": diasVaca2, "diasExtra":diasExtra}
+    return JsonResponse(stuent_data,safe=False)
+    
