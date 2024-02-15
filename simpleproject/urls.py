@@ -5,7 +5,7 @@ from django.conf.urls import include
 from people.views import PersonListView, PersonCreateView, PersonUpdateView, ReportePersonasPDF, PersonCheckView, searchPerson, saveCheckedPerson, PersonBajaListView, GetPersonas, InsertBaja, DirectoryListView, GetPersonasDirectory, GetCompPersonas, InsertComp, PersonCompListView, DetalleIncidencias, PersonInciListView, ReporteIncidenciasPDF, UpdateIncidencia, GetPersonasIncidencia, AddIncidencia, DeleteIncidencia, PersonDirectoryUpdateView, DeleteComp, AreasListView, json_to_pdf, GetPersonasCompensacion, compensacionesArea, IncidenciaConsulta, ValidatePersonIncidencia, DetailPersonIncidencia, GetIncidenciaTable, \
     loginAdmin, AdminConsulta, AdminInciListView, GetAdminIncidencia, reporteIncidencias, PersonAyudaListView, GetAyudaPersonas, InsertAyuda, DeleteAyuda, GetPersonasAyuda, DashboardCheck, UpdateDashboard, \
         GetPersonaAyuda,  SersocListView, SersocCreateView, CreateSersocPerson, AddAyuda, DeleteAyudaMonto, ValidateRFC, PersonVacacionesListView, GetPersonasVacacion, GetDetalleVacacion, \
-        GetAsistencia, DeleteDayVacacion
+        GetAsistencia, DeleteDayVacacion, SersocAsistListView
 from django.contrib.auth import views
 from django.contrib.auth.decorators import login_required
 urlpatterns = [
@@ -102,7 +102,7 @@ urlpatterns = [
     path('add/sersoc/', CreateSersocPerson, name='sersoc_add'),
     path('<int:pk>/edit/sersoc/', CreateSersocPerson, name='sersoc_edit'),
     path('<int:pk>/<int:sersoc>/print/sersoc/', ReportePersonasPDF.as_view(), name='sersoc_print'),
-    path('<int:pk>/<int:sersoc>/asist/sersoc/', GetAsistencia, name='sersoc_asist'),
+    path('<int:person>/asist/sersoc/', SersocAsistListView.as_view(), name='sersoc_asist'),
     path('sersoc/', SersocListView.as_view(), name='sersoc_list'),
 
     #Consulta 

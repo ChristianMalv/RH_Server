@@ -1,0 +1,220 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+     {% if fechaInicio %}
+      <label>Periodo del día : {{fechaInicio}} al día: {{fechaFin}} </label>
+      {% else %}
+      <label> Sin periodo de registro </label>
+      {% endif %}
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <table>
+      <tr><p><strong>Nombre: </strong> {{ person.nombres  }} {{ person.apellido1  }} {{ person.apellido2 }} </p> </tr>
+      <tr><p><strong>Área de adscripción: </strong> {{person.cat_area_org.nombre}} </p> </tr>
+      <tr><p><strong>Escuela: </strong>{{ sersoc.escuela_procedencia }}</p> </tr>
+      <tr><p><strong>Periodo de Servicio Social: </strong> {{sersoc.periodo}}</p> </tr>
+      <input id="idPerson" value=" {{person.pk}} "  style="display:none"/>
+      <input id="periodo1_pk" value="{{periodo1.pk}}"  style="display:none"/>
+      <input id="periodo2_pk" value="{{periodo2.pk}}"  style="display:none"/>
+      <tr><p><strong>Horario: </strong>{{ sersoc.horario }}</p> </tr>
+      </table>
+    </div>  
+  </div>
+
+</div>  
+<div class="row">
+  <div id="RowsInicio" class="col-md-12">
+    <table class="table table-striped" >
+      <thead>
+        <tr>
+        <th>Día</th>
+          <th>Fecha</th>
+          <th>Registro de entrada</th>
+          <th>Registro de salida</th>
+        </tr>
+      </thead>
+      <tbody>  
+      <tr class="table-active">
+            <td colspan="3">No hay registros de entrada o salida</td>
+          </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+ $.ajaxSetup({
+  data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
+});
+
+$('#Title1').html('<h2>Servicio Social</h2>');
+
+$("#consultar").click(function(){
+    var input1 = $('#input1').val();
+    var input2 = $('#input2').val();
+    var id = $('#idPerson').val();
+    console.log(input1);
+    console.log(input2);
+    console.log(id);
+    if (input1 == "") {
+      alert("Seleccione una Fecha de Inicio");
+      $('#input1').focus();
+    }
+    else if(input2 == ""){
+      alert("Seleccione una Fecha de Fin");
+      $('#input2').focus();
+    }
+    else
+    {
+      $.ajax({
+      data: {'fecha1': input1, 'fecha2' : input2, 'id' : id },
+      url: "{% url 'get_incidencias' %}",
+      type: 'GET'
+    })
+    .done(function(response){
+      $("#RowsSearch").show();
+      $("#RowsInicio").hide();
+      $("#Pages").hide();
+      $("#RowsSearch").empty();
+      $("#RowsSearch").append(response);
+     
+      })
+    .fail(function(){
+      $("#RowsSearch").hide();
+      $("#RowsInicio").show();
+      $("#Pages").show();
+      })  
+   
+    }
+    });
+
+$("#salir").click(function(){
+   window.open("../login", '_self'); 
+});
+function validarFecha(testDate, tipo){
+  var datetime_regex = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2})$/;
+  var date_regex = /^(\d{4}-\d{2}-\d{2})$/;
+        if (tipo == 1 && date_regex.test(testDate)) {
+           return true;
+        }
+        else if (tipo == 2 && datetime_regex.test(testDate)){
+          return true;
+        }
+        else{
+          $("#ins_error").text("La fecha y hora ingresada es incorrecta!");
+          $("#ins_error").show();
+            setTimeout(function(){ 
+             $("#ins_error").hide();
+            }, 1000); 
+          return false;
+        }
+}
+
+function convertDate(fecha) {
+  var date = new Date(fecha);
+  var yyyy = date.getFullYear().toString();
+  var mm = (date.getMonth()+1).toString();
+  var dd  = date.getDate().toString();
+
+  var mmChars = mm.split('');
+  var ddChars = dd.split('');
+
+  return  (ddChars[1]?dd:"0"+ddChars[0]) + '/' + (mmChars[1]?mm:"0"+mmChars[0]) + '/' + yyyy ;
+}
+
+$(document).on("click",".eliminar",function(){
+            var this_html=$(this);
+            var fecha = this_html.parent().parent().children().eq(1).text()
+            var idHrEntrada =this_html.parent().parent().children().eq(2).text()
+            var idHrSalida =  this_html.parent().parent().children().eq(4).text()
+            console.log(this_html.parent().parent().children().eq(0).text())
+            var opcion = confirm("Se va a dar eliminar la Incidencia registrada el: "+ fecha +". ¿Es correcto?");
+            if (opcion == true) {
+
+            $.ajax({
+                url:"{% url 'delete_Incidencia' %}",
+                type:'POST',
+                data:{idHrEntrada:idHrEntrada, idHrSalida:idHrSalida }
+            })
+            .done(function(response){
+                if(response['error']==false){
+                    this_html.parent().parent().remove();
+                    $("#upt_error").hide();
+                    $("#upt_success").text(response['errorMessage']);
+                    $("#upt_success").show();
+
+                }
+                else{
+                    $("#upt_success").hide();
+                    $("#upt_error").text(response['errorMessage']);
+                    $("#upt_error").show();
+                }
+               
+            })
+            .fail(function(){
+                 $("#upt_success").hide();
+                 $("#upt_error").text("Something Went Wrong!");
+                 $("#upt_error").show();
+            });
+             setTimeout(() => {
+                  $("#upt_success").hide();
+                  $("#upt_error").hide();  
+                }, 2000);
+          }
+        });
+
+$('#tipoIncidencia').change(function() {
+  var tipoDate = $("#tipoIncidencia").val();
+  console.log($("#tipoIncidencia").val());
+  if(tipoDate== 1 || tipoDate == 2 || tipo == 17 ){
+      $("#fechaIncidencia").attr('type','datetime-local'); 
+      $("#textoIncidencia").text("Ingrese una fecha con hora, para registrar Incidencia"); 
+      $("#rangoFechasVac").hide();
+  }
+  else if(tipoDate==  $("#periodo1_pk").val() || tipoDate == $("#periodo2_pk").val()|| tipoDate == 6  || tipoDate == 7 || tipoDate == 13 || tipoDate==15 || tipoDate ==18){
+     $("#fechaIncidencia").attr('type','date'); 
+     $("#textoIncidencia").text("Seleccione el rango de fechas, para registrar Incidencia"); 
+     $("#rangoFechasVac").show();
+  }
+   else if(tipoDate== 10){
+    $("#fechaIncidencia").attr('type','datetime-local'); 
+      $("#textoIncidencia").text("Ingrese una fecha con hora, para el rango de fechas de la Incidencia"); 
+      $("#rangoFechasVac").attr('type','datetime-local');
+      $("#rangoFechasVac").show();
+  }
+  else{
+     
+       $("#fechaIncidencia").attr('type','date'); 
+        $("#textoIncidencia").text("Ingrese una fecha, para registrar Incidencia");
+        $("#rangoFechasVac").hide();
+  }
+
+ });
+
+$('#fechaIncidencia').change(function() {
+  var arregloFecha = $('#input1').val().split("/");
+  var fecha1 = new Date( arregloFecha[2], arregloFecha[1] - 1, arregloFecha[0]); 
+  var arregloFecha = $('#input2').val().split("/");
+  var fecha2 = new Date( arregloFecha[2], arregloFecha[1] - 1, arregloFecha[0]); 
+  
+  //console.log(fecha1);
+  console.log(fecha2);
+  console.log( $('#fechaIncidencia').val());
+  var fecInci = new Date( $('#fechaIncidencia').val()); 
+  console.log(fecInci);
+    if( (fecInci < fecha1 )|| ( fecInci > fecha2 )){
+        console.log("Aguas");
+    }
+ });
+$('#fechaIncidenciaComp').change(function() {
+
+ });
+
+</script>
+
+{% endblock %}
