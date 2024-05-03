@@ -1,0 +1,451 @@
+
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+ 
+<form method="get">
+   <div class="col-md-12">
+    <div class="col-md-3">
+    <p>
+      <input name ="q" id="searchAyuda" value="{{request.GET.q}}" placeholder="Buscar capacitacion..">
+    </p>  
+    </div>
+  </div>  
+ </form>
+  <div class="col-md-12">
+    <div class="col-md-6">
+      <p>
+       <a class="btn btn-primary" id="insert_btn"  data-toggle="modal" data-target="#myModal">Agregar Capacitación</a>
+      </p>
+    </div>
+     <div class="col-md-6"> 
+       <p>
+       <button type="button" class="btn btn-danger" id="print-all" >Consulta evidencias de Capacitación</button>
+      </p>
+    </div>
+  </div>
+  <div class="col-md-12">
+   
+  
+  <div class="col-md-6"> 
+      
+    </div>
+  </div>
+  <div id="listaPersonas"></div>
+    
+  <div id="RowsSearch"></div>
+<div class ="col-md-12" id="RowsInicio">
+  {% for curso in capacitacion %}
+    <div>
+        <h4>{{ curso.nombre }}</h4>
+
+       <img src="{{ curso.imagen_base64 }}" />
+        
+    
+    <hr class="red">
+    </div>
+    {% endfor %}  
+  <div class="card" style="width: 18rem;">
+    <img src="..." class="card-img-top" alt="...">
+    <div class="card-body">
+      <h5 class="card-title">Card title</h5>
+        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+      <a href="#" class="btn btn-primary">Go somewhere</a>
+    </div>
+  </div>
+
+  <div id="Pages"> 
+    {% if is_paginated %}
+      <ul class="pagination">
+        {% if page_obj.has_previous %}
+          <li><a href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+        {% else %}
+          <li class="disabled"><span>&laquo;</span></li>
+    {% endif %}
+    
+    {% for i in paginator.page_range %}
+        {% if page_obj.number == i %}
+          <li class="active"><span>{{ i }} <span class="sr-only">(current)</span>     </span></li>
+        {% else %}
+          <li><a href="?page={{ i }}">{{ i }}</a></li>
+        {% endif %}
+    {% endfor %}
+ 
+    {% if page_obj.has_next %}
+      <li><a href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&raquo;</span></li>
+    {% endif %}
+      </ul>
+    {% endif %}
+  </div>
+    <div class="modal fade"  id="myModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Agregar Capacitación</h4>
+          </div>
+          <div class="modal-body">
+                <div class="col-md-12">
+                <h4> Nombre </h4>
+                  <input id="nombre" placeholder="Ingrese el nombre del curso">
+                <h4> Fotografía </h4>
+                  <input type="file" id="imagen" placeholder="Cargue imagen referente al curso" accept="image/png, image/gif, image/jpeg">
+                  <img id="myimage" ssrcset="image-320w.jpg 320w, image-640w.jpg 640w, image-1024w.jpg 1024w" sizes="(max-width: 320px) 280px, (max-width: 640px) 600px, 1000px">
+                <hr>
+               </div> 
+              <div style="display:none"> </div>
+              <textarea id="imagenb64" rows="30" cols="50"></textarea>
+               <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal" id="close_btn">Cerrar</button>
+            <button type="button" id="save" class="btn btn-primary">Guardar</button>
+          </div>
+          <div class="form-group">
+              <div class="alert alert-success" id="ins_success" style="display:none">
+
+              </div>
+               <div class="alert alert-danger" id="ins_error" style="display:none">
+
+              </div>
+         
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+<div class="row">
+  <div class="col-lg-12">
+        <div class="alert alert-success" id="upt_success" style="display:none">
+
+        </div>
+         <div class="alert alert-danger" id="upt_error" style="display:none">
+
+        </div>
+  </div>
+</div>
+   
+
+
+<script>
+$('.decimales').on('input', function () {
+  this.value = this.value.replace(/[^0-9,.]/g, '').replace(/,/g, '.');
+});
+const input = document.getElementById("imagen");
+const avatar = document.getElementById("myimage");
+const textArea = document.getElementById("imagenb64");
+const convertBase64 = (file) => {
+  return new Promise((resolve, reject) => {
+    const fileReader = new FileReader();
+    fileReader.readAsDataURL(file);
+
+    fileReader.onload = () => {
+      resolve(fileReader.result);
+     };
+
+    fileReader.onerror = (error) => {
+      reject(error);
+    };
+  });
+};
+
+const uploadImage = async (event) => {
+  const file = event.target.files[0];
+  const base64 = await convertBase64(file);
+  avatar.src = base64;
+  textArea.innerText = base64;
+};
+
+input.addEventListener("change", (e) => {
+  uploadImage(e);
+});
+/*
+document.getElementById('imagen').onchange = function (evt) {
+    var tgt = evt.target || window.event.srcElement,
+        files = tgt.files;
+    
+    // FileReader support
+    if (FileReader && files && files.length) {
+        var fr = new FileReader();
+        fr.onload = function () {
+            document.getElementById('myimage').src = fr.result;
+        }
+        console.log(files[0]);
+        fr.readAsDataURL(files[0]);
+    }
+    
+    // Not supported
+    else {
+        // fallback -- perhaps submit the input to an iframe and temporarily store
+        // them on the server until the user's session ends.
+    }
+}
+*/
+  
+function doSearch() {
+                var tableReg = document.getElementById('persona_buscado');
+                var searchText = document.getElementById('searchPerson').value.toLowerCase();
+                //console.log(tableReg);
+                for (var i = 1; i < tableReg.rows.length ; i++) {
+                    var cellsOfRow = tableReg.rows[i].getElementsByTagName('td');
+                    var found = false;
+                    for (var j = 0; j < cellsOfRow.length && !found; j++) {
+                        var compareWith = cellsOfRow[j].innerHTML.toLowerCase();
+                        if (searchText.length == 0 || (compareWith.indexOf(searchText) > -1)) {
+                            found = true;
+                        }
+                    }
+                    if (found) {
+                        tableReg.rows[i].style.display = '';
+                    } else {
+                        tableReg.rows[i].style.display = 'none';
+                    }
+                }
+            }
+
+document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('input[type=text]').forEach( node => node.addEventListener('keypress', e => {
+        
+      }))
+    });
+
+    $('#searchPerson').keyup(function(e){
+       doSearch();
+   
+});
+
+$('#searchAyuda').keyup(function(e){
+  clearTimeout($.data(this, 'timer'));
+  if($("#searchAyuda").val()==""){
+      $("#RowsSearch").hide();
+      $("#RowsInicio").show();
+      $("#Pages").show();
+      
+    }
+  else {
+    $(this).data('timer', setTimeout(search, 500));
+}
+
+
+});
+function search(force) {
+  var existingString = $("#searchAyuda").val();
+    if (!force && existingString.length < 3) return; 
+
+$.ajax({
+      url:"{% url 'search_person_ayuda' %}",
+      type:'GET',
+      data:{q:$("#searchAyuda").val()}
+            })
+    .done(function(response){
+      $("#RowsSearch").show();
+      $("#RowsInicio").hide();
+      $("#Pages").hide();
+      $("#RowsSearch").empty();
+      $("#RowsSearch").append(response);
+      console.log(response)
+      })
+    .fail(function(){
+      $("#RowsSearch").hide();
+      $("#RowsInicio").show();
+      $("#Pages").show();
+      })  
+}                
+
+
+$("#save").click(function(){
+   
+  $.ajax({
+      url:"{% url 'save_capacitacion' %}",
+      type:'POST',
+      data:{nombre:$("#nombre").val(), imagen:$("#imagenb64").val()},
+     })
+    .done(function(response){
+                if(response['error']==false){
+                   this_html.parent().parent().parent().remove();
+                    $("#ins_error").hide();
+                    $("#ins_success").text(response['errorMessage']);
+                    $("#ins_success").show();
+                    var html_data="<tr><td style='display:none'> "+response['id']+"</td>  <td>"+response['matricula']+"</td><td>" +response['nombre'] + "</td><td>"+ response['monto']+ " </td> <td><button class='btn btn-default btn-xs eliminar' type='button'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span> Eliminar ayuda </button></td>   </tr>";
+                    $("#bajasList  tbody").append(html_data);
+                }
+                else{
+                    $("#ins_success").hide();
+                    $("#ins_error").text(response['errorMessage']);
+                    if(response['message']==true){
+                      alert(response['errorMessage']+' para '+texto[0] ) ;
+                    }
+                    $("#ins_error").show();
+                }
+            })
+            .fail(function(){
+                 $("#ins_success").hide();
+                 $("#ins_error").text("Something Went Wrong!");
+                 $("#ins_error").show();
+            })
+            setTimeout(() => {
+                  $("#ins_success").hide();
+                  $("#ins_error").hide();  
+                }, 2000);
+    
+})
+
+
+$("#close_btn").click(function(){
+  $("#ins_success").hide();
+  $("#ins_error").hide();
+
+})
+
+$(document).on("click",".glyphicon-plus",function(){
+            var this_html=$(this);
+            var id=this_html.parent().parent().parent().children().first().text();
+            var compen =  $("#monto").val();
+            console.log(id);
+            console.log(compen);
+            $.ajax({
+                url:"{% url 'add_ayuda' %}",
+                type:'POST',
+                data:{id:id, monto:compen}
+            })
+            .done(function(response){
+                if(response['error']==false){
+                   this_html.parent().parent().parent().remove();
+                    $("#ins_error").hide();
+                    $("#ins_success").text(response['errorMessage']);
+                    $("#ins_success").show();
+                    var html_data="<tr><td style='display:none'> "+response['id']+"</td>  <td>"+response['matricula']+"</td><td>" +response['nombre'] + "</td><td>"+ response['monto']+ " </td> <td><button class='btn btn-default btn-xs eliminar' type='button'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span> Eliminar ayuda </button></td>   </tr>";
+                    $("#bajasList  tbody").append(html_data);
+                }
+                else{
+                    $("#ins_success").hide();
+                    $("#ins_error").text(response['errorMessage']);
+                    if(response['message']==true){
+                      alert(response['errorMessage']+' para '+texto[0] ) ;
+                    }
+                    $("#ins_error").show();
+                }
+            })
+            .fail(function(){
+                 $("#ins_success").hide();
+                 $("#ins_error").text("Something Went Wrong!");
+                 $("#ins_error").show();
+            })
+            setTimeout(() => {
+                  $("#ins_success").hide();
+                  $("#ins_error").hide();  
+                }, 2000);
+	         
+    });
+
+
+$(document).on("click",".eliminar",function(){
+            var this_html=$(this);
+            var empleado = this_html.parent().parent().children().eq(2).text()
+            var id =this_html.parent().parent().children().eq(0).text()
+            console.log(this_html.parent().parent().children().eq(0).text())
+            var opcion = confirm("Se va a eliminar la ayuda registrada al empleado: "+ empleado +". ¿Es correcto?");
+            if (opcion == true) {
+
+            $.ajax({
+                url:"{% url 'delete_ayuda' %}",
+                type:'POST',
+                data:{id:id}
+            })
+            .done(function(response){
+                if(response['error']==false){
+                    this_html.parent().parent().remove();
+                    var id = response['compensacion'];
+                    console.log(id);
+                    var texto =  $("#compensacion option[value="+id +"]").text().split("(");
+                    var numero = texto[1].split(")");
+                    var number = numero[0];
+                    var iNum = parseInt(number);
+                    iNum = iNum + 1;
+                    $("#compensacion option[value="+id +"]").text(texto[0]+"("+ iNum +")" );
+                   
+                    $("#upt_error").hide();
+                    $("#upt_success").text(response['errorMessage']);
+                    $("#upt_success").show();
+
+                }
+                else{
+                    $("#upt_success").hide();
+                    $("#upt_error").text(response['errorMessage']);
+                    $("#upt_error").show();
+                }
+               
+            })
+            .fail(function(){
+                 $("#upt_success").hide();
+                 $("#upt_error").text("Something Went Wrong!");
+                 $("#upt_error").show();
+            });
+             setTimeout(() => {
+                  $("#upt_success").hide();
+                  $("#upt_error").hide();  
+                }, 2000);
+          }
+        });
+
+
+$("#print-all").click(function(){
+  console.log(":S");
+  var respFolio = getInteger();
+  //var input1 = $('#input1').val();
+  //var input2 = $('#input2').val();
+  //window.open( "print/"+ input1.replaceAll('/', '-')+"/"+ input2.replaceAll('/', '-') , '_blank');
+  var input1 = $('#input1').val();
+            var input2 = $('#input2').val();
+            console.log(input1);
+            console.log(input2);
+            if (input1 == "") {
+              alert("Seleccione una Fecha de Inicio");
+              $('#input1').focus();
+            }
+            else{
+              norango=false;
+              if(input2==""){
+                //window.location.href = "detalle/"+id.trim()+"/"+ input1.replaceAll('/', '-') ;
+              }
+              else
+              {
+                window.open( "print/"+ input1.replaceAll('/', '-')+"/"+ input2.replaceAll('/', '-')+"/"+respFolio , '_blank');
+                }
+            
+            }
+});
+
+
+
+
+
+$("#print-area").click(function(){
+  console.log(":S");
+  //var input1 = $('#input1').val();
+  //var input2 = $('#input2').val();
+  //window.open( "print/"+ input1.replaceAll('/', '-')+"/"+ input2.replaceAll('/', '-') , '_blank');
+  var respFolio = getInteger();
+  var input1 = $('#input1').val();
+            var input2 = $('#input2').val();
+            console.log(input1);
+            console.log(input2);
+            if (input1 == "") {
+              alert("Seleccione una Fecha de Inicio");
+              $('#input1').focus();
+            }
+            else{
+              norango=false;
+              if(input2==""){
+                //window.location.href = "detalle/"+id.trim()+"/"+ input1.replaceAll('/', '-') ;
+              }
+              else
+              {
+                window.open( "printarea/"+ input1.replaceAll('/', '-')+"/"+ input2.replaceAll('/', '-')+"/"+respFolio  , '_blank');
+                }
+            
+            }
+});
+
+
+</script>
+
+{% endblock %}

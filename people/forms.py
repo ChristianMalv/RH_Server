@@ -3,7 +3,7 @@ from django import forms
 from django.core.validators import RegexValidator
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
-from people.models import AreaOrganigrama, Incidencia, Person, ServicioSocial
+from people.models import AreaOrganigrama, Incidencia, Person, ServicioSocial, Capacitacion
 from django.forms.widgets import NumberInput
 from multi_email_field.forms import MultiEmailField
 import datetime
@@ -84,4 +84,8 @@ ServicioSocialInlineFormset = inlineformset_factory(
     # labels=None, help_texts=None, error_messages=None,
     # min_num=None, validate_min=False, field_classes=None
 )
-   
+
+class CapacitacionForm(forms.ModelForm):
+    class Meta:
+        model = Capacitacion
+        fields = '__all__'   
