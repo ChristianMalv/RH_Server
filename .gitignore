@@ -79,3 +79,4 @@ builds/
 *.sqlite3      filter=lfs diff=lfs merge=lfs -text
 	 
 simpleproject/settings.py
+simpleproject/settings.py

@@ -1,0 +1,124 @@
+{% extends 'base_dir.html' %}
+
+{% block content %}
+  <style>
+  #divContent {
+    height:400px;
+    width:1000px;
+    
+   
+}
+#divCenter {
+    height:400px;
+    width:500px;
+    margin:0px auto;
+}
+  </style>
+
+<div class="col-md-6" id="divContent">
+                    <div class="row">
+                        <div class="col-md-12 col-lg-12">
+                            <h2>Iniciar sesión</h2>
+                            <hr class="red">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-8 col-md-8">
+                            <div class="form-group">
+                                <label for="username">Usuario de dominio:</label>
+                                <input class="form-control" type="text" placeholder="Ingresa el nombre de usuario" id="username" name="username" />
+                            </div>
+                            <div class="form-group">
+                                <label for="password">Contraseña:</label>
+                                <input class="form-control" type="password" placeholder="Ingresa la contraseña" id="password" name="password" />
+                            </div>
+			                      <input class="btn btn-primary" value="Entrar" id="admin-login" type="submit" />
+                        </div>
+                    </div>
+                </div>
+        </main>
+        <div class="row">
+        <div class="col-md-12">
+            <div class="alert alert-success" id="alertSuccess">
+                <div class="row">
+                    <label ><h2 id="alertSucessH2"></h2></label>
+                </div>
+                <div class="row"> 
+                    <label ><h3 id="alertSucessH3"></h3></label>
+                </div>
+                <div class="row"> 
+                    <label ><h4 id="alertSucessH4"> </h4></label>
+                </div>
+                </div>
+            <div class="alert alert-warning" id="alertWarning" >
+                <label ><h4 id="alertWarningH4"> </h4> </label>
+            </div>
+        </div>
+
+
+<script>
+$('#alertSuccess').hide();
+$('#alertWarning').hide();
+
+$.ajaxSetup({
+  data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
+});
+
+function cleanForm(){
+  $('#alertSuccess').hide();
+  $('#alertWarning').hide();
+  $('#username').val("");
+  $('#password').val("");  
+  
+}
+
+$("#admin-login").click(function(){
+  console.log(":S");
+  var input1 = $('#username').val();
+  var input2 = $('#password').val();
+  if (input1 == "" ) {
+    alert("Ingrese usuario");
+    $('#input1').focus();
+  }
+  else if(input2 == ""){
+    alert("Ingrese contraseña");
+    $('#input2').focus();
+  }
+  else{
+     $.ajax({
+      data: {'usuario': input1, 'password' : input2 },
+      url: "{% url 'capacitacion_login' %}",
+      type: 'GET'
+    })
+    .done(function(response){
+      if(response['error']==false){
+        window.open("personas/"+ response['data'] , '_self'); 
+        setTimeout(function(){ 
+        cleanForm();
+        }, 3000); 
+      }
+      else{
+        $('#alertWarning').show('slow');
+        $("#alertWarningH4").text(response['errorMessage']);
+      
+        setTimeout(function(){ 
+        cleanForm();
+        }, 3000);      
+           
+  
+        }
+                  
+          })
+      .fail(function(){
+        $('#alertWarning').show('slow');
+        $("#alertWarning").text("Hubo un error al procesar el registro, intente nuevamente");
+        setTimeout(function(){ 
+        cleanForm();
+        location.reload();
+        }, 3000);      
+      })
+  }
+});
+
+</script>
+{% endblock %}

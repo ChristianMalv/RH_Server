@@ -300,6 +300,19 @@ class ServicioSocial(models.Model):
     class Meta:
         verbose_name = "Servicio social"
         verbose_name_plural = "Servicios sociales"
-        permissions = (("servicio_social", "Puede ver, crear y editar servicios sociales"), )
+        permissions = (("servicio_social", "Puede ver, crear y editar servicios sociales"), ("imprimir_credenciales_ss", "Puede Imprimir credenciales de servicio social"), )
 
 
+class Capacitacion(Catalogo):
+    class Meta:
+        verbose_name = "Capacitación"
+        verbose_name_plural = "Capacitaciones"
+    imagen_base64 = models.TextField(blank=True,null=True)
+    fecha_limite =  models.DateTimeField(blank=True, null= True)
+    activo = models.BooleanField(blank=True, null=True, default=True)
+    enlace = models.CharField(max_length=255, blank=True, null=True, verbose_name="Enlace al curso")
+
+class EvidenciaCurso(models.Model):
+    info_person = models.ForeignKey(Person, on_delete=models.CASCADE)
+    curso_tomado = models.ForeignKey(Capacitacion, on_delete=models.CASCADE)
+    ruta_drive =  models.CharField(max_length=255, blank=False, verbose_name="Ruta Drive")

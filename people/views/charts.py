@@ -30,9 +30,12 @@ class ChartToShow():
     def to_dict(self):
       return {"area": self.area, "personIn": self.personIn, "personOut": self.personOut} 
 
-@method_decorator(login_required, name='dispatch')
+
 class DashboardCheck(ListView):
+ 
     def get(self, request, *args, **kwargs):
+        if 'username' in request.session:
+            idempresa = request.session['username']
         now = datetime.datetime.now()
         #queryset =AreaInterna.objects.all()
         #incidencias = Incidencia.objects.all().filter(created_at__day=now.day, created_at__month = now.month, created_at__year = now.year).distinct('matriculaCredencial')

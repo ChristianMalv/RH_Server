@@ -130,7 +130,16 @@
                 <li><a href="{% url 'sersoc_list' %}">Finalizado</a></li>
              
           </div>
-           {% endif %}  
+           {% endif %} 
+          <div class="btn-group" role="group" >
+            <button id="btnGroupVerticalDrop2" type="button" class="btn btn-primary btn-lg active dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Capacitación  
+            <span class="caret"></span>
+            </button>
+             <ul class="dropdown-menu" role="menu" aria-labelledby="btnGroupVerticalDrop2"> 
+               <li><a href="{% url 'capacitacion_list' %}">Cursos</a></li>
+               <li><a href="{% url 'sersoc_list' %}">Personas</a></li>
+             
+          </div> 
           <hr class="red">
           {% block content %}
           {% endblock %}
