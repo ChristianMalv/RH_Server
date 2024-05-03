@@ -1176,7 +1176,7 @@ class AdminInciListView(ListView):
         now = datetime.datetime.now()
         list = [] 
         dashboard = False 
-        if self.kwargs['matricula'] == ('H210527' or 'M210276' or 'M210668'):
+        if self.kwargs['matricula'] in  ('H210527' , 'M210276' , 'M210668'):
             dashboard = True
         for ayuda in querysetAyuda:
             personaConAyuda=PersonaAyuda.objects.filter(Q(ayuda = ayuda) & Q(created_at__month = now.month) & Q(created_at__year = now.year) )
