@@ -300,13 +300,14 @@ class ServicioSocial(models.Model):
     class Meta:
         verbose_name = "Servicio social"
         verbose_name_plural = "Servicios sociales"
-        permissions = (("servicio_social", "Puede ver, crear y editar servicios sociales"), ("imprimir_credenciales_ss", "Puede Imprimir credenciales de servicio social"), )
+        permissions = (("servicio_social", "Puede ver, crear y editar servicios sociales"), ("imprimir_credenciales_ss", "Puede Imprimir credenciales de servicio social"), ("asistencias_ss", "Puede editar y ver indicdencias de servicio social"),  )
 
 
 class Capacitacion(Catalogo):
     class Meta:
         verbose_name = "Capacitación"
         verbose_name_plural = "Capacitaciones"
+        permissions = (("capacitacion", "Puede ver, crear y editar capacitaciones"), )
     imagen_base64 = models.TextField(blank=True,null=True)
     fecha_limite =  models.DateTimeField(blank=True, null= True)
     activo = models.BooleanField(blank=True, null=True, default=True)
