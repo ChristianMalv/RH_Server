@@ -8,6 +8,8 @@ from people.views import PersonListView, PersonCreateView, PersonUpdateView, Rep
         GetAsistencia, DeleteDayVacacion, SersocAsistListView, CapacitacionCreateView, CapacitacionListView, SaveCapacitacion, loginUsers, Capacitacion, CapacitacionesxPersona
 from django.contrib.auth import views
 from django.contrib.auth.decorators import login_required
+from crede_api import urls as crede_urls
+
 urlpatterns = [
     path('login/', views.LoginView.as_view(), name='login'),
     path('logout/', views.LogoutView.as_view(next_page='/'), name='logout'),
@@ -116,4 +118,8 @@ urlpatterns = [
     path('capacitacion/login', loginUsers, name="capacitacion_login"), 
     path('capacitacion/users', Capacitacion.as_view(), name="capacitacion_users"), 
     path('capacitacion/persona', CapacitacionesxPersona.as_view(), name="capacitacion_persona"),
+
+    #Api URL's
+    path('api-auth/', include('rest_framework.urls')),
+    path('', include(crede_urls)),
 ]   
