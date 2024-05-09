@@ -53,7 +53,8 @@ class IncidenciaConsulta(View):
 def ValidatePersonIncidencia(request):
     try:
         now = datetime.datetime.now()
-        if request.is_ajax():
+        #if request.is_ajax():
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest': 
             matriculaInput = request.POST['matricula']
             person = Person.objects.get(matricula =matriculaInput.upper()  )
             if person.activo == False:
@@ -615,7 +616,8 @@ def savePhoto( image_data):
 
 def searchPerson(request):
     try:
-        if request.is_ajax():
+        #if request.is_ajax():
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest': 
             now = datetime.datetime.now()
             person = Person.objects.get(matricula = request.POST['matricula'] )
             if person.activo == False:
@@ -1122,7 +1124,8 @@ class AdminConsulta(View):
 @csrf_exempt
 def loginAdmin(request):
     try:
-        if request.is_ajax():
+        #if request.is_ajax():
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest': 
             user = request.GET['usuario'] 
             pwd = request.GET['password']
             response = get_attributes(user, pwd)
