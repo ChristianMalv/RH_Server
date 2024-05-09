@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     'people',
     'evaluacion',
     'django.contrib.postgres',
+   'crede_api',
+	'crispy_bootstrap4',
     
 ]
 
@@ -140,6 +142,8 @@ DATE_FORMAT = "%d/%m/%y"
 STATIC_URL = '/static/'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap4'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
