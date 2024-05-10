@@ -53,7 +53,7 @@ def CreateSersocPerson(request, pk=None):
                 my_form = PersonForm(request.POST or None, instance=person)
                 sersoc_form = ServicioSocialForm(request.POST or None, instance=sersoc)
             form = my_form.save()
-            valor = Person.objects.all().last().pk
+            valor = form.pk
             valor = str(valor).zfill(4)
             code= "S"+ form.fecha_ingreso.strftime('%y') + valor
             form.matricula = code
