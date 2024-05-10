@@ -74,7 +74,7 @@ urlpatterns = [
     #Checador
     path('check/', PersonCheckView.as_view(), name='person_check'),
     path('checked/', saveCheckedPerson, name='person_check'),
-    path('search/', searchPerson, name='person_search'), 
+    path('searchecked/', searchPerson, name='person_search'), 
     ###########
     
     re_path(r'^chaining/', include('smart_selects.urls')),
