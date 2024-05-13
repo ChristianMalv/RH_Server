@@ -9,9 +9,9 @@ from itertools import groupby
 from django.db.models import Q
 import datetime
 from django.shortcuts import get_object_or_404
+from rest_framework.permissions import AllowAny
 class PersonListApiView(APIView):
-    # add permission to check if user is authenticated
-    #permission_classes = [permissions.IsAuthenticated]
+    permission_classes = (AllowAny,)
 
     def get(self, request, *args, **kwargs):
         areas = AreaInterna.objects.all()
@@ -46,6 +46,7 @@ class PersonListApiView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class AreaListApiView(APIView):
+    permission_classes = (AllowAny,)
     # 1. List all
     def get(self, request, *args, **kwargs):
         areas = AreaInterna.objects.all()
