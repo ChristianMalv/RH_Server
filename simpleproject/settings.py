@@ -27,7 +27,7 @@ SECRET_KEY = 'vp-0rke=$u$g7yn6w=l$02+f!*y4uizr_x4k*l@w!4u2xb(68g'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '172.16.110.29', '127.0.0.1', 'credenciales.televisioneducativa.gob.mx', 'credenciales.aprende.gob.mx']
+ALLOWED_HOSTS = ['localhost:9000','localhost', '172.16.110.29', '127.0.0.1', 'credenciales.televisioneducativa.gob.mx', 'credenciales.aprende.gob.mx']
 
 
 # Application definition
@@ -83,6 +83,9 @@ TEMPLATES = [
     },
 ]
 
+CORS_ALLOWED_ORIGINS = [
+"http://localhost:9000"
+]
 
 WSGI_APPLICATION = 'simpleproject.wsgi.application'
 
