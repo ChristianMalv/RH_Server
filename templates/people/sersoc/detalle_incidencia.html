@@ -39,9 +39,34 @@
         </tr>
       </thead>
       <tbody>  
+       {% for incidencia in list %}
+      <tr>
+      <td> {{ incidencia.dia }}</td>
+        <td>{{ incidencia.fecha }}</td>
+        <td style="display:none">{{incidencia.idIn}}</td>
+        {% if incidencia.observacion == " " %}
+        <td  class="editable" data-type="entrada">{% if incidencia.Entrada == "null" %}Sin Registro{% else %}{{ incidencia.Entrada }}{% endif %}</td>
+        {% else %}
+        <td data-type="entrada">{% if incidencia.Entrada == "null" %}Sin Registro{% else %}{{ incidencia.Entrada }}{% endif %}</td>
+        {% endif %}
+
+
+        <td style="display:none" >{{incidencia.idOut}}</td>
+
+        {% if incidencia.observacion == " " %}
+        <td class="editable" data-type="salida">{% if incidencia.Salida == "null" %}Sin Registro{% else %}{{ incidencia.Salida }}{% endif %}</td>  
+        {% else %}
+        <td data-type="salida">{% if incidencia.Salida == "null" %}Sin Registro{% else %}{{ incidencia.Salida }}{% endif %}</td>  
+        {% endif %}
+
+        <td>{% if incidencia.observacion == 0 %} {% else %}{{incidencia.observacion}}{% endif %}</td>
+        <td> {% if incidencia.horas == 0 %} - {% else %} {{incidencia.horas}} </td> {% endif %}
+       </tr>
+    {% empty %}
       <tr class="table-active">
             <td colspan="3">No hay registros de entrada o salida</td>
           </tr>
+    {% endfor %}
       </tbody>
     </table>
   </div>

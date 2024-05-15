@@ -96,9 +96,9 @@ class SersocAsistListView(ListView):
         nombreDias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sabado']
         list = []  
         sersoc = ServicioSocial.objects.get(info_person = person)
-        dateInicio = Incidencia.objects.filter(Q(matriculaCredencial = person)).aggregate(max_date=Max('created_at'))['max_date']
+        dateInicio = Incidencia.objects.filter(Q(matriculaCredencial = person)).aggregate(min_date=Min('created_at'))['min_date']
         if dateInicio:
-            dateFin = Incidencia.objects.filter(Q(matriculaCredencial = person)).aggregate(min_date=Min('created_at'))['min_date']
+            dateFin = Incidencia.objects.filter(Q(matriculaCredencial = person)).aggregate(max_date=Max('created_at'))['max_date']
             incidencias = Incidencia.objects.filter(Q(matriculaCredencial = person) & Q(created_at__range=[dateInicio, dateFin+ timedelta(days = 1)]))
             i=0
             for n in range(int((dateFin - dateInicio).days)+1):
@@ -111,7 +111,7 @@ class SersocAsistListView(ListView):
                         if  incidenciaIn.causa_incidencia != None : 
                             list.append( IncidenciaToShowSS( nombreDias[int(incidenciaIn.created_at.strftime("%w"))] , incidenciaIn.created_at.strftime("%d/%m/%Y"), incidenciaIn.pk, incidenciaIn.created_at.strftime("%H:%M:%S"),  incidenciaOut.pk, incidenciaOut.created_at.strftime("%H:%M:%S")  )) 
                         else:
-                            list.append( IncidenciaToShowSS( nombreDias[int(incidenciaIn.created_at.strftime("%w"))] , incidenciaIn.created_at.strftime("%d/%m/%Y"), incidenciaIn.pk, incidenciaIn.created_at.strftime("%H:%M:%S"),  incidenciaOut.pk, incidenciaOut.created_at.strftime("%H:%M:%S"), " ")) 
+                            list.append( IncidenciaToShowSS( nombreDias[int(incidenciaIn.created_at.strftime("%w"))] , incidenciaIn.created_at.strftime("%d/%m/%Y"), incidenciaIn.pk, incidenciaIn.created_at.strftime("%H:%M:%S"),  incidenciaOut.pk, incidenciaOut.created_at.strftime("%H:%M:%S"))) 
                         
                     else:
                         incicenciaFirst = incidencia.first()
@@ -124,6 +124,8 @@ class SersocAsistListView(ListView):
                 'list': list,
                 'person': person,
                 'sersoc': sersoc,
+                'fechaInicio': dateInicio, 
+                'fechaFin': dateFin,
             }            
        
         return render(request, 'people/sersoc/detalle_incidencia.html' , content)
