@@ -10,6 +10,24 @@ from django.db.models import Q
 import datetime
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import AllowAny
+from rest_framework import viewsets
+
+class PersonApiViewSet(viewsets.ModelViewSet):
+    permission_classes = (AllowAny,)
+    serializer_class = PersonSerializer
+    queryset = Person.objects.all()
+
+    def get_queryset(self):
+        q = self.request.query_params.get("q", "").split(" ")
+        qs = Person.objects.filter(activo=True)
+        for t in q:
+            qs = qs.filter( Q(nombres__icontains=t)|Q(apellido1__icontains=t)|Q(apellido2__icontains=t)|Q(extension_telefonica=t))
+
+        return qs
+        
+
+
+
 class PersonListApiView(APIView):
     permission_classes = (AllowAny,)
 
