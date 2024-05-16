@@ -300,7 +300,10 @@ def CreateJsonReportNoData(dateInicio, dateFin):
                 except AttributeError:
                  print("Attribute does not exist")
                 print(incidencia[0]['created_at'])
-                fechaRevisada = revisarFecha(persona.cat_horario.nombre, incidencia[0]['created_at'])
+                if persona.cat_horario:
+                    fechaRevisada = revisarFecha(persona.cat_horario.nombre, incidencia[0]['created_at'])
+                else:
+                    fechaRevisada=0 
                 if fechaRevisada==1:
                     tipoInci="Entrada no Registrada" 
                 else:
@@ -318,7 +321,7 @@ def dataToAppend(dateInicio, dateFin, persona, incidencia, fecha  ):
     return {'Fecha':  "Del día "+ dateInicio.strftime("%d-%m-%Y")+" al "+dateFin.strftime("%d-%m-%Y"),
                 'Rfc': persona.rfc,
                 'Nombre': persona.nombres + ' ' + persona.apellido1 + ' '+ persona.apellido2,
-                'Horario': persona.cat_horario.nombre,
+                'Horario': persona.cat_horario.nombre if persona.cat_horario else "Sin horario capturado",
                 'FechaIncidencia':fecha,
                 'Incidencia': incidencia,
                 'Area': persona.cat_area_org.nombre,
