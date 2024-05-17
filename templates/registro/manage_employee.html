@@ -1,0 +1,511 @@
+{% extends "base.html" %} {% load humanize %} {% load customfilter %} {% load qr_code %} {% load static %} {% block pageContent %} {% block headerContent %}
+<style>
+    #cimg {
+        display: none;
+    }
+    img.img-thumbnail.avatar {
+        max-width: 500px;
+        max-height: 300px;
+    }
+
+    input[type=text], select {
+        width: calc(100% - 24px); /* Ajuste para compensar el padding */
+        height: 39px;
+        padding: 6px 12px;
+        margin:0; /* Margen superior e inferior de 8px, margen izquierdo y derecho de 0 */
+        display: inline-block;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+        font-family: 'Montserrat', Arial, sans-serif; /* Fuente Arial */
+    }
+    /* Estilos para inputs y select válidos */
+    input[type=text]:valid, select:valid {
+        border-color: #0f0; /* Cambia el color del borde cuando el input es válido */
+    }
+    /* Estilos para etiquetas */
+    label {
+        font-family: 'Montserrat', Arial, sans-serif; /* Fuente Arial */
+        font-size: 16px;
+        font-weight: 400;
+        color: black;
+        margin-bottom: 8px;
+        display: inline-block;
+    }
+    form.divisor {
+        border-radius: 5px;
+        background-color: #f2f2f2;
+        padding: 20px;
+    }
+    /* Estilos para el botón */
+    button {
+        display: block;
+        width: 200px; /* Ajusta el ancho según sea necesario */
+        height: 40px; /* Ajusta la altura según sea necesario */
+        margin: 0 auto; /* Centra el botón horizontalmente */
+        padding: 10px 20px;
+        background-color: #9D2449; /* Color de fondo del botón */
+        color: #fff; /* Color del texto */
+        border: none;
+        border-radius: 4px;
+        font-family: Arial, sans-serif; /* Fuente Arial */
+        font-size: 16px; /* Tamaño de fuente */
+        cursor: pointer; /* Cambia el cursor al pasar por encima */
+        transition: background-color 0.3s ease; /* Efecto de transición para el color de fondo */
+    }
+
+    /* Estilo cuando el cursor pasa por encima */
+    button:hover {
+        background-color: #9D2449; /* Cambia el color de fondo al pasar por encima */
+    }
+
+    /* Estilo cuando se hace clic */
+    button:active {
+        background-color: #9D2449; /* Cambia el color de fondo cuando se hace clic */
+        transform: translateY(1px); /* Agrega un efecto de desplazamiento hacia abajo */
+    }
+    /* Estilos para los botones */
+    .btn {
+        display: inline-block;
+        padding: 8px 16px;
+        font-size: 14px;
+        font-weight: 500;
+        text-align: center;
+        text-decoration: none;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: background-color 0.3s ease;
+    }
+
+    /* Estilo para el fondo degradado */
+    .bg-gradient {
+        background-image: linear-gradient(to bottom, #9D2449, #9D2449);
+    }
+
+    /* Estilos para los botones */
+
+    .btn-primary, .btn-default {
+        border-radius: 3px;
+        padding: 10px 25px;
+        font-size: 18px;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s ease, color 0.3s ease;
+        height: 50px; /* Altura fija para ambos botones */
+        display: inline-block;
+        line-height: 1; /* Ajuste para centrar el texto verticalmente */
+        text-align: center;
+    }
+
+    /* Estilo para el botón "Guardar" */
+    .btn-primary {
+        border-color: #9D2449;
+        box-shadow: 0 0 0 0 #9D2449;
+    }
+
+    /* Estilo cuando el cursor pasa por encima */
+    .btn-primary:hover {
+        background-color: #9D2449;
+        color: #FFF;
+        border:#9D2449;
+    }
+
+    /* Estilo cuando se hace clic */
+    .btn:active {
+        transform: translateY(1px);
+    }
+
+    /* Estilos para el botón "Cancelar" */
+    .btn-default {
+        border: 2px solid #6F7271;
+        box-shadow: 0 0 0 0 #6F7271;
+        font-size: 18px;
+        border-radius: 3px;
+        padding: 10px 25px;
+        color: #6F7271;
+        background-color: #fff;
+        transition: border-color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    /* Estilo cuando el cursor pasa por encima */
+    .btn-default:hover {
+        background-color: #6F7271;
+        color: #fff;
+    }
+
+    /* Estilo cuando se hace clic */
+    .btn-default:active {
+        transform: translateY(1px);
+    }
+    /* Estilo para el enlace normal */
+    .view_card {
+        color: white;  /* Texto blanco */
+    }
+
+    /* Estilo para el enlace cuando está enfocado o activo */
+    .view_card:focus, .view_card:active {
+        color: white;  /* Texto blanco */
+    }
+</style>
+{% endblock headerContent %}
+<!--Section: Content-->
+<h3 class="fw-bolder">{{ page_title }}</h3>
+<hr>
+<div class="clock-container" style="text-align: center; padding: 10px; font-size: 24px;">
+    <div id="clock" style="font-weight: bold;"></div>
+    <div id="date"></div>
+</div>
+<section class="py-3">
+    <div class="container">
+        <div class="card">
+            <div class="card-body" >
+                <div class="container-fluid">
+                    <form action="" id="employee-form" class="divisor">
+                        {% csrf_token %}
+                        <input type="hidden" name="id" value="{{ employee.id }}">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <select id="direccionSelect" name="direccion">
+                                    <option value="">Seleccione una dirección</option>
+                                    {% for direccion in direcciones %}
+                                    <option value="{{ direccion.direccion.pk }}">{{ direccion.direccion.nombre }}</option>
+                                    {% endfor %}
+                                </select>
+    
+                                <!-- Select para elegir el empleado, inicialmente vacío -->
+                                <select id="empleadoSelect" name="empleado">
+                                    <option value="">Seleccione una opción</option>
+                                </select>
+
+                                <div class="mb-3">
+                                    <label for="first_name">Nombre(s)</label>
+                                    <input type="text" id="first_name" name="first_name" value="{{ employee.first_name }}" placeholder="Nombre(s)" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="middle_name" >Apellido Paterno</label>
+                                    <input type="text"  id="middle_name" name="middle_name" value="{{ employee.middle_name }}" placeholder="Apellido Paterno" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="last_name" >Apellido Materno</label>
+                                    <input type="text"  id="last_name" name="last_name" value="{{ employee.last_name }}" placeholder="Apellido Materno" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="department" >Área a visitar</label>
+                                    <input type="text"  id="department" name="department" value="{{ employee.department }}" placeholder="Área a visitar" required>
+                                </div>
+                                <div class="mb-3">
+                                    
+                                    <input type="hidden"  id="tipo" name="tipo" value="{{ employee.tipo }}" placeholder="Tipo de visitante" required>
+                                </div>
+                                <div class="mb-3">
+                                    
+                                    <input type="hidden"  id="matricula" name="matricula" value="{{ employee.matricula }}" placeholder="Matrícula" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="employee_code" >No. Gafete: </label>
+                                    <input type="number" min="0" id="employee_code" name="employee_code" value="{{ employee.employee_code }}" placeholder="Número de gafete" required>
+                                </div>
+
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="mb-3">
+                                    <input  type="hidden" name="avatar" id="avatar" accept="image/*" onchange="display_image(this)" disabled>
+                                </div>
+                                <div class="mb-3" style="display: flex; justify-content: center; align-items: center;">
+                                    <img src="{% if employee.avatar %}{{ employee.avatar.url }}{% else %}{% static 'assets/default/img/no-image-available.png' %}{% endif %}" alt="" class="img-thumbnail avatar" id="cimg" style="max-width: 100%;">
+                                </div>
+                                <div class="mb-3">
+                                    <video id="video" width="100%" height="auto" autoplay></video>
+                                    <div id="start-camera"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-end mt-3">
+                            {% if employee.pk %}
+                            <button class= "btn btn-sm" style="background: #9D2449;"><a class="view_card" href="javascript:void(0)" data-url="{% url 'view-card' employee.pk %}" >Ver credencial</a></button>
+                            {% endif %}
+                            <button class=" btn btn-sm" style="background: #13322b;" type="submit" ><i style="color: white;" class="fa fa-save"></i> <strong style="color: white;">Guardar</strong></button>
+                            <a href="{% url 'employee-page' %}" class=" btn btn-sm" style="background: #b38e5d;"><i  style="color: white;" class="fa fa-angle-left"></i> <strong style="color: white;" >Cancelar</strong></a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</section>
+ {% endblock pageContent %} {% block ScriptBlock %}
+<script>
+    $(document).ready(function() {
+        // Obtener la URL actual
+        var currentUrl = window.location.href;
+    
+        // Verificar si estamos en la página de agregar empleado
+        if (currentUrl.includes("add_employee")) {
+            // Ocultar los campos de ver credencial
+            $('.view_card').hide();
+        } else {
+            // Mostrar los campos de ver credencial
+            $('.view_card').show();
+    
+            // Agregar el evento click solo si estamos en la página de edición
+            $('.view_card').click(function(){
+                uni_modal("Tarjeta de visita", $(this).attr('data-url'),'modal-lg');
+                $('#uni_modal .modal-header').css('color', 'white');
+            });
+    
+            // Mostrar el botón de impresión solo si estamos en la página de edición
+            $('#uni_modal').on('shown.bs.modal', function() {
+                if ($('#id-card').length > 0) {
+                    let print_btn = $('<button id="print-card" class="btn btn-success btn-sm bg-gradient rounded-0 me-2" type="button"><i class="fa fa-print"></i> Imprimir</button>');
+                    $(this).find('.modal-sub-footer').prepend(print_btn);
+                    print_btn.click(function() {
+                        let h = $("head").clone();
+                        let style = $($("noscript#qr-style").html()).clone();
+                        let card = $("#id-card").clone();
+                        let el = $('<div>');
+    
+                        el.append(h);
+                        el.append(style);
+                        el.append(card);
+                        start_loader();
+                        let nw = window.open("", "_blank", "width=110, height=110");
+                        nw.document.write(el.html());
+                        nw.document.close();
+                        setTimeout(()=>{
+                            nw.print();
+                            setTimeout(()=>{
+                                nw.close();
+                                end_loader();
+                            }, 300);
+                        },300);
+                    });
+    
+                    // Eliminar el botón de impresión cuando se cierre el modal
+                    $('#uni_modal').on('hide.bs.modal', function() {
+                        print_btn.remove();
+                    });
+                }
+            });
+        }
+    });
+    document.addEventListener('DOMContentLoaded', function () {
+        function updateTime() {
+            const now = new Date();
+            const dayNames = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+            const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+    
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            const dayOfWeek = dayNames[now.getDay()];
+            const month = monthNames[now.getMonth()];
+            const day = now.getDate().toString().padStart(2, '0');
+            const year = now.getFullYear();
+    
+            const timeString = `${hours}:${minutes}:${seconds}`;
+            const dateString = `${dayOfWeek}, ${day} de ${month} de ${year}`;
+    
+            document.getElementById('clock').textContent = timeString;
+            document.getElementById('date').textContent = dateString;
+        }
+    
+        setInterval(updateTime, 1000);
+    });
+    document.addEventListener('DOMContentLoaded', function() {
+        const direccionSelect = document.getElementById('direccionSelect');
+        const empleadoSelect = document.getElementById('empleadoSelect');
+        const firstNameInput = document.getElementById('first_name');
+        const middleNameInput = document.getElementById('middle_name');
+        const lastNameInput = document.getElementById('last_name');
+        const departmentInput = document.getElementById('department');
+        const matriculaInput = document.getElementById('matricula');
+        const tipoInput = document.getElementById('tipo');
+    
+        direccionSelect.addEventListener('change', function() {
+            const direccionId = this.value;
+            empleadoSelect.innerHTML = '<option value="">Seleccione una opción</option>';
+    
+            const selectedOption = this.options[this.selectedIndex];
+            if (selectedOption) {
+                departmentInput.value = selectedOption.text;
+                departmentInput.readOnly = true;  // Hacer el campo de solo lectura
+            }
+    
+            {% for direccion in direcciones %}
+            if ("{{ direccion.direccion.pk }}" == direccionId) {
+                const empleados = {{ direccion.personas|safe }};
+                empleados.forEach(function(empleado) {
+                    const option = new Option(empleado.nombres + ' ' + empleado.apellido1 + ' ' + empleado.apellido2, empleado.matricula);
+                    empleadoSelect.add(option);
+                });
+            }
+            {% endfor %}
+        });
+    
+        empleadoSelect.addEventListener('change', function() {
+            const selectedEmpleado = this.options[this.selectedIndex];
+            if (selectedEmpleado && selectedEmpleado.value) {
+                const datosEmpleado = selectedEmpleado.text.split(' ');
+                firstNameInput.value = datosEmpleado.slice(0, -2).join(' ');
+                middleNameInput.value = datosEmpleado[datosEmpleado.length - 2];
+                lastNameInput.value = datosEmpleado[datosEmpleado.length - 1];
+                tipoInput.value = "Visita";
+                matriculaInput.value = selectedEmpleado.value;
+    
+                // Establece todos los campos como solo lectura para evitar modificaciones, porque en disabled no funciono
+                firstNameInput.readOnly = true;
+                middleNameInput.readOnly = true;
+                lastNameInput.readOnly = true;
+                tipoInput.readOnly = true;
+                matriculaInput.readOnly = true;
+            }
+        });
+    });
+    
+
+    let capturedImageFile; // Variable para almacenar la imagen capturada como un objeto File
+
+    $(function() {
+        // Escuchar el evento submit del formulario
+        $('#employee-form').submit(function(e) {
+            e.preventDefault(); // Prevenir el envío normal del formulario
+
+            // Crear un objeto FormData para el formulario
+            var formData = new FormData($(this)[0]);
+
+            // Si hay una imagen capturada, agregarla al FormData
+            if (capturedImageFile) {
+                formData.append('avatar', capturedImageFile, 'captured_image.jpeg');
+            }
+
+            // Realizar una petición AJAX para enviar el formulario al servidor
+            $.ajax({
+                url: "{% url 'save-employee' %}",
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    console.log({data:response});
+                    if (response.status === 'success' && response.employee_id) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Visita correcta',
+                            timer: 1500, // Mostrar el mensaje durante 1.5 segundos
+                            showConfirmButton: false
+                        }).then(() => {
+                            window.location.href = "/edit_employee/" + response.employee_id;
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            text: 'El número de gafete ya fue registrado.',
+                            title: '¡Opps!',
+                            showConfirmButton: true
+                        })
+                    }
+                },
+            });
+            
+        });
+
+        // Función para mostrar y guardar la imagen seleccionada
+        function display_image(input) {
+            if (input.files && input.files[0]) {
+                let reader = new FileReader();
+    
+                reader.onload = function (e) {
+                    // Mostrar la imagen en el elemento de avatar
+                    document.getElementById('cimg').src = e.target.result;
+                    // Convertir la imagen a un objeto File
+                    selectedImageFile = dataURLtoFile(e.target.result, input.files[0].name);
+                }
+    
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    
+        // Variable para almacenar la imagen seleccionada como un objeto File
+        let selectedImageFile;
+    
+        document.getElementById('avatar').addEventListener('change', function() {
+            // Cuando se selecciona un archivo, mostrar y guardar la imagen seleccionada
+            display_image(this);
+        });
+    
+        // Función para convertir un data URL en un objeto File
+        function dataURLtoFile(dataUrl, filename) {
+            let arr = dataUrl.split(','),
+                mime = arr[0].match(/:(.*?);/)[1],
+                bstr = atob(arr[1]),
+                n = bstr.length,
+                u8arr = new Uint8Array(n);
+    
+            while (n--) {
+                u8arr[n] = bstr.charCodeAt(n);
+            }
+    
+            return new File([u8arr], filename, { type: mime });
+        }
+        
+        // Definir la función startCamera
+        async function startCamera() {
+            try {
+                // Obtener el stream de video de la cámara
+                let stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                let videoElement = document.getElementById('video');
+                // Mostrar el stream de video en el elemento de video
+                videoElement.srcObject = stream;
+
+                // Función para capturar una imagen desde el video
+                function captureImage() {
+                    let canvas = document.createElement('canvas');
+                    canvas.width = videoElement.videoWidth;
+                    canvas.height = videoElement.videoHeight;
+                    let context = canvas.getContext('2d');
+                    context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+                    let imageDataUrl = canvas.toDataURL('image/jpeg');
+
+                    // Mostrar la imagen capturada
+                    let cimgElement = document.getElementById('cimg');
+                    cimgElement.src = imageDataUrl;
+                    cimgElement.style.display = 'block';
+
+                    // Convertir la imagen a un objeto File y almacenarla en una variable global
+                    capturedImageFile = dataURLtoFile(imageDataUrl, 'captured_image.jpeg');
+
+                    // Ocultar la cámara
+                    videoElement.style.display = 'none';
+                }
+
+
+                // Crear y agregar el botón "Tomar foto"
+                let takePhotoButton = document.createElement('button');
+                takePhotoButton.type = 'button'; // Especifica que este botón no debería enviar el formulario
+                takePhotoButton.textContent = 'Tomar foto';
+                takePhotoButton.addEventListener('click', function(e) {
+                    e.preventDefault(); 
+                    e.stopPropagation(); 
+                    captureImage(); 
+                });
+                document.getElementById('video').insertAdjacentElement('afterend', takePhotoButton);
+
+
+            } catch (error) {
+ 		Swal.fire({
+		  icon: 'error',
+  		  html: 'HTTP 403 Forbidden<br>Ocurrió un problema al iniciar la cámara. Error', // Usa <br> para el salto de línea
+  		  title: '¡Oops!',
+  		  showConfirmButton: true
+		})
+            	console.error('Error al acceder a la cámara:', error);
+            }
+        }
+
+        // Llamar a la función startCamera al cargar la página
+        window.addEventListener('load', startCamera);
+
+    });    
+</script>
+{% endblock ScriptBlock %}

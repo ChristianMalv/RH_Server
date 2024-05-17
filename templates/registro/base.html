@@ -1,0 +1,245 @@
+{% load static %}
+{% load customfilter %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> {% if page_title %}
+    <title>{{ page_title }} | {{system_name}} </title>
+    {% else %}
+    <title>{{system_name}}</title>
+    {% endif %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <link rel="stylesheet" type="text/css" href="{% static 'css/navbar.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'js/datatable.js' %}"/>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/js/all.min.js" integrity="sha512-6PM0qYu5KExuNcKt5bURAoT6KCThUmHRewN3zUFNaoI6Di7XJPTMoT6K0nsagZKk2OB4L7E3q1uQKHNHd4stIQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="{% static 'assets/default/js/jquery-3.6.0.min.js' %}"></script>
+    <script src="{% static 'assets/bootstrap/js/popper.min.js' %}"></script>
+    <script src="{% static 'assets/bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="text/javascript" src="{% static 'assets/default/js/script.js' %}"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    <style>
+        .modal-sub-footer {
+            display: flex;
+            flex-wrap: wrap;
+            flex-shrink: 0;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 0.75rem;
+            border-top: 1px solid #dee2e6;
+            border-bottom-right-radius: calc(0.3rem - 1px);
+            border-bottom-left-radius: calc(0.3rem - 1px);           
+        }
+
+
+        /* Estilo cuando el cursor pasa por encima */
+        .btn-close:hover {
+            background-color: #9D2449;
+            color: #FFF;
+            border:#9D2449;
+        } 
+
+        /* Estilo cuando se hace clic */
+        .btn-close:active {
+            transform: translateY(1px);
+        }
+    </style>
+    {% block headerContent %} {% endblock headerContent %}
+</head>
+
+<body class="">
+    {% if topbar %}
+    {% block TopNavigation %} {% include "topNavigation.html" %} {% endblock TopNavigation %}
+    {% endif %}
+    <main class="py-5">
+        <div class="container mb-3">
+            {% if messages %}
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    {% for message in messages %}
+                    <div class="alert alert-{% if message.extra_tags %}{{ message.tags|replaceBlank:message.extra_tags|replaceBlank:' ' }}{% else %}{{ message.tags }}{% endif %} w-100 rounded-0 mb-2 redirect-msg">
+                        <div class="d-flex w-100">
+                            <div class="col-auto flex-shrink-1 flex-grow-1">{{ message|safe }}</div>
+                            <div class="col-auto text-center">
+                                <button class="btn-close btn-sm text-sm" style="color: #FFF;" type="button" onclick="$(this).closest('.alert').remove()"></button>
+                            </div>
+                        </div>
+
+                    </div>
+                    {% if message.extra_tags != 'stay' %}
+                    <script>
+                        $(function() {
+                            if ($('.redirect-msg').length > 0) {
+                                setTimeout(() => {
+                                    $('.redirect-msg').hide('slideUp')
+                                    setTimeout(() => {
+                                        $('.redirect-msg').remove()
+                                    }, 500)
+                                }, 3500)
+                            }
+                
+                        })
+                    </script>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>{% endif %} {% block pageContent %} {% endblock pageContent %}
+
+        </div>
+    </main>
+    {% block ScriptBlock %} {% endblock ScriptBlock %}
+    <div class="modal fade" id="uni_modal" role='dialog'>
+        <div class="modal-dialog modal-md modal-dialog-centered modal-dialog-scrollable" role="document">
+            <div class="modal-content rounded-0">
+                <div class="modal-header" style="background: #13322b;">
+                    <h5 class="modal-title">sdsadsda</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+                </div>
+                <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn  btn-sm btn-flat btn-primary rounded-0" id='submit' onclick="$('#uni_modal form').submit()">Save</button>
+                    <button type="button" class="btn btn-sm btn-flat btn-light border rounded-0" data-bs-dismiss="modal">Cancelar</button>
+                </div>
+                <div class="modal-sub-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="confirm_modal" role='dialog'>
+        <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+            <div class="modal-content rounded-0">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmación</h5>
+                </div>
+                <div class="modal-body">
+                    <div id="delete_content"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-flat btn-primary rounded-0" id='confirm' onclick="">Continuar</button>
+                    <button type="button" class="btn btn-sm btn-flat btn-light border rounded-0" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Footer-->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+    <script>
+        const loader = $('<div>')
+        loader.attr('id', 'pre-loader')
+        loader.html('<div class="lds-default"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>')
+
+        window.start_loader = function() {
+            $('body').removeClass('loading')
+            if ($('#pre-loader').length > 0)
+                $('#pre-loader').remove();
+            $('body').append(loader)
+            $('body').addClass('loading')
+        }
+        window.end_loader = function() {
+            if ($('#pre-loader').length > 0)
+                $('#pre-loader').remove();
+            $('body').removeClass('loading')
+        }
+        window.uni_modal = function($title = '', $url = '', $size = "") {
+            start_loader()
+            $.ajax({
+                url: $url,
+                error: err => {
+                    Swal.fire({
+                        title: "¡Oops!",
+                        text: "Ocurrio un problema al abrir la etiqueta, favor de comunicarse con el área de innovación.",
+                        icon: "error"
+                      }); 
+                },
+                success: function(resp) {
+                    // console.log(`Respuesta: ${resp}`)
+                    if (resp) {
+                        $('#uni_modal .modal-title').html($title)
+                        $('#uni_modal .modal-body').html(resp)
+                        if ($size != '') {
+                            $('#uni_modal .modal-dialog').addClass($size + '  modal-dialog-centered')
+                        } else {
+                            $('#uni_modal .modal-dialog').removeAttr("class").addClass("modal-dialog modal-md modal-dialog-centered")
+                        }
+                        $('#uni_modal').modal({
+                            //backdrop: 'static',
+                            keyboard: false,
+                            focus: true
+                        })
+                        $('#uni_modal').modal('show')
+                        end_loader()
+                    }
+                }
+            })
+        }
+        window._conf = function($msg = '', $func = '', $params = []) {
+            $('#confirm_modal #confirm').attr('onclick', $func + "(" + $params.join(',') + ")")
+            $('#confirm_modal .modal-body').html($msg)
+            $('#confirm_modal').modal('show')
+        }
+        
+        $(function() {
+            $('#uni_modal').on('shown.bs.modal', function() {
+                if ($('#e-details').length > 0) {
+                    var delete_btn = $('<button id="delete-btn" class="btn btn btn-sm" style="background: #9D2449" ><i  style = "color:white;" class="fa fa-trash"></i> <strong style="color:white;">Borrar</strong></button>')
+                    var edit_btn = $('<a id="edit-btn" href="' + emp_edit_url + '" class="btn btn btn-sm" style="background: #b38e5d"><i style = "color:white;" class="fa fa-edit"></i> <strong style="color:white;">Editar</strong></a>')
+                    $(this).find('.modal-sub-footer').prepend(delete_btn)
+                    $(this).find('.modal-sub-footer').prepend(edit_btn)
+                    delete_btn.click(function() {
+                        _conf("Estás seguro de borrar este visitante?", "delete_employee")
+                    })
+    
+                    $('#uni_modal').on('hide.bs.modal', function() {
+                        delete_btn.remove()
+                        edit_btn.remove()
+                    })
+    
+                }
+            })
+        })
+    
+        function delete_employee() {
+            start_loader()
+            $.ajax({
+                url: emp_delete_url,
+                error: err => {
+                    console.error(err)
+                    Swal.fire({
+                        icon: 'error',
+                        title: `${error}`,
+                        showConfirmButton: true
+                    })
+                    end_loader()
+                },
+                success: function(resp) {
+                    if (resp.status == 'success') {
+                        location.reload()
+                    } else if (!!resp.msg) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: `${resp.msg}`,
+                            showConfirmButton: true
+                        })
+                        alert(resp.msg)
+                    }
+                    end_loader()
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>

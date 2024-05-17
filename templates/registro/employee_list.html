@@ -1,0 +1,359 @@
+{% extends "base.html" %} {% load humanize %} {% load customfilter %} {% block pageContent %}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.css"/>
+<style>
+    /* Estilos para la tabla */
+    .table {
+        width: 100%;
+        margin-bottom: 1rem;
+        color: #333;
+        font-family: 'Montserrat', Arial, sans-serif; 
+    }
+
+    /* Estilos para el encabezado de la tabla */
+    .table th {
+        vertical-align: middle;
+        text-align: center;
+        background-color: #18463b; /* Color del header de la tabla */
+        color: #fff;
+    } 
+
+    /* Estilos para las filas de la tabla */
+    .table tbody tr {
+        vertical-align: middle;
+    }
+
+    /* Estilos para los botones dentro de la tabla */
+    .dropdown-menu .dropdown-item {
+        color: #333;
+    }
+
+    /* Estilo para la celda de acciones */
+    .dropdown-menu .dropdown-item:hover {
+        background-color: #9D2449;
+        color: #fff;
+    }
+
+    /* Espacios entre elementos */
+    .container-fluid {
+        padding: 20px; /* Ajusta según sea necesario */
+    }
+
+    .text-end {
+        margin-bottom: 20px; /* Ajusta según sea necesario */
+    }
+     /* Estilos para el botón "Agregar visitante" */
+     .btn-success {
+        border: 2px solid #9D2449;
+        box-shadow: 0 0 0 0 #9D2449;
+        font-size: 18px;
+        border-radius: 3px;
+        padding: 5px 10px;
+        color: #9D2449;
+        background-color: #FFF;
+        transition: border-color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    /* Estilo cuando el cursor pasa por encima */
+    .btn-success:hover {
+        background-color: #9D2449;
+        color: #FFF;
+        border:#9D2449;
+    }
+
+    /* Estilo cuando se hace clic */
+    .btn-success:active {
+        transform: translateY(1px);
+    }
+    /* Estilos para el botón "Agregar visitante" */
+    .btn-primary {
+        border: 2px solid #9D2449;
+        box-shadow: 0 0 0 0 #9D2449;
+        font-size: 18px;
+        border-radius: 3px;
+        padding: 5px 10px;
+        color: #9D2449;
+        background-color: #FFF;
+        transition: border-color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    /* Estilo cuando el cursor pasa por encima */
+    .btn-primary:hover {
+        background-color: #9D2449;
+        color: #FFF;
+        border:#9D2449;
+    }
+
+    /* Estilo cuando se hace clic */
+    .btn-primary:active {
+        transform: translateY(1px);
+    }
+    /* Estilos para el botón "Agregar visitante" */
+    .btn-danger {
+        border: 2px solid #9D2449;
+        box-shadow: 0 0 0 0 #9D2449;
+        font-size: 18px;
+        border-radius: 3px;
+        padding: 5px 10px;
+        color: #9D2449;
+        background-color: #FFF;
+        transition: border-color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    /* Estilo cuando el cursor pasa por encima */
+    .btn-danger:hover {
+        background-color: #9D2449;
+        color: #FFF;
+        border:#9D2449;
+    }
+
+    /* Estilo cuando se hace clic */
+    .btn-danger:active {
+        transform: translateY(1px);
+    }
+    
+    /* Estilo para el dropdown */
+    .dropdown {
+        position: relative;
+    }
+
+    /* Estilo para el botón del dropdown */
+    .dropdown-toggle {
+        color: #fff; /* Color del texto */
+        background-color: #9D2449; /* Fondo verde fuerte */
+        border-color: transparent; /* Quita el borde del botón */
+    }
+
+    /* Estilo para el menú desplegable */
+    .dropdown-menu {
+        background-color: #7E7E7E; /* Fondo verde fuerte --------------------*/
+        border: none; /* Quita el borde del menú desplegable */
+        box-shadow: none; /* Quita la sombra del menú desplegable */
+    }
+
+    /* Estilo para los items del menú desplegable */
+    .dropdown-menu .dropdown-item {
+        color: #fff; /* Color del texto */
+    }
+
+    /* Estilo para los items del menú desplegable cuando se pasa el cursor sobre ellos */
+    .dropdown-menu .dropdown-item:hover {
+        background-color: #b38e5d; /* Cambia el fondo al verde oscuro al pasar el cursor */
+    }
+    </style>
+<!--Section: Content-->
+<div class="d-flex justify-content-between align-items-center mb-2">
+    <h3 class="fw-bolder" style="background:font-family: 'Montserrat', Arial, sans-serif; ">{{ page_title }}</h3>
+    <a href="{% url 'add-employee' %}" class="btn btn-primary btn-sm bg-gradient"><i class="fa fa-plus"></i> Agregar visitante</a>
+</div>
+<hr>
+<section class="py-3">
+
+    <div class="card mt-3">
+        <div class="card-header text-center" style="background: #F1F7F8">
+          <div class="d-flex justify-content-center">
+            <h4 class="card-title text-center">*** Detalles ***</h4>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-body">
+            <div class="col-md-12">
+                <table id="tabla" class="table table-stripped table-bordered">
+                   
+                    <thead>
+                        <tr class="bg-primary bg-gradient text-light">
+                            <th>#</th>
+                            <th>Identificador</th>
+                            <th>Nombre Completo</th>
+                            {% comment %} <th>Matrícula</th> {% endcomment %}
+                            {% comment %} <th>Tipo de visitante</th> {% endcomment %}
+                            <th>Fecha y hora de entrada</th>
+                            <th>Área a visitar</th>
+                            <th>Fecha y hora de salida</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for employee in employees %}
+                            {% comment %} {% if employee.date_end == None %} {% endcomment %}
+                                <tr>
+                                    <td>{{forloop.counter}}</td>
+                                    <td class="">{{ employee.employee_code}}</td>
+                                    <td class="">{{ employee.first_name }} {{ employee.middle_name }} {{ employee.last_name }}</td>
+                                    {% comment %} <td>{{employee.matricula}}</td> {% endcomment %}
+                                    {% comment %} <td>{{employee.tipo}}</td> {% endcomment %}
+                                    <td>{{employee.date_added}}</td>
+                                    <td class="">
+                                        <div class="lh-1">
+                                            <div>{{employee.department}}</div>
+                                            <div>{{employee.position}}</div>
+                                        </div>
+                                    </td>
+                                    {%if employee.date_end is None %}
+                                        <td>No hay salida</td>
+                                    {%else%}
+                                        <td>{{employee.date_end}}</td>
+                                    {% endif %} 
+                                    <td>
+                                        <div class="dropdown">
+                                            <button class="border bg-gradient btn-sm rounded-0 dropdown-toggle" type="button" id="employeeDD{{employee.pk}}" data-bs-toggle="dropdown" aria-expanded="false">
+                                                Acciones
+                                            </button>
+                                            <ul class="dropdown-menu" aria-labelledby="employeeDD{{employee.pk}}">
+                                                <li><a class="dropdown-item view_detail" href="javascript:void(0)" data-url="{% url 'view-details' employee.pk %}" >Ver datos</a></li>
+                                                <li><a class="dropdown-item view_card" href="javascript:void(0)" data-url="{% url 'view-card' employee.pk %}" >Ver credencial</a></li>
+                                                {% if employee.date_end == None %}
+                                                    <li><a class="dropdown-item end_visit" href="javascript:void(0)" data-url="{% url 'end-visit' employee.pk %}" >Finalizar visita</a></li>
+                                                {% endif %}
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% comment %} {% endif %} {% endcomment %}
+                        {% endfor %} 
+                        {% if not employees %}
+                        <tr>
+                            <th colspan="6">Sin visitas.</th>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+</section>
+</div> {% endblock pageContent %} {% block ScriptBlock %}
+<script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.js"></script>
+<script>
+    $(document).ready(function() {
+        if (!$.fn.DataTable.isDataTable('#tabla')) {
+            $('#tabla').DataTable({
+                "lengthMenu": [[  10, 25, 50, 100, 150,200, -1], [ 10,  25, 50 ,100 ,150,200, "Todo"]],
+            "order": [[ 0, "asc" ]], 
+            
+                "language": {
+                    "sProcessing":     "Procesando...",
+                    "sLengthMenu":     "Mostrar _MENU_ registros",
+                    "sZeroRecords":    "No se encontraron resultados",
+                    "sEmptyTable":     "Ningun dato disponible en esta tabla",
+                    "sInfo":           "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+                    "sInfoEmpty":      "Mostrando registros del 0 al 0 de un total de 0 registros",
+                    "sInfoFiltered":   "(filtrado de un total de _MAX_ registros)",
+                    "sInfoPostFix":    "",
+                    "sSearch":         "Buscar:",
+                    "sUrl":            "",
+                    "sInfoThousands":  ",",
+                    "sLoadingRecords": "Cargando...",
+                    "oPaginate": {
+                        "sFirst":    "Primero",
+                        "sLast":     "Último",
+                        "sNext":     "Siguiente",
+                        "sPrevious": "Anterior"
+                    },
+                    "oAria": {
+                        "sSortAscending":  ": Activar para ordenar la columna de manera ascendente",
+                        "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                    },
+                }            
+            });
+        }
+    
+        $('#tabla').on('click', function(event) {
+            // Detener la propagación del evento para evitar que se cierre el offcanvas
+            event.stopPropagation();
+        });
+    });
+</script>
+<script>
+    $(function() {
+        $('table').find('td, th').addClass('align-middle px-2 py-1');
+        $('.view_card').click(function(){
+            uni_modal("Tarjeta de visita", $(this).attr('data-url'),'modal-lg');
+            $('#uni_modal .modal-header').css('color', 'white');
+        });
+        $('.view_detail').click(function(){
+            uni_modal("Detalles del visitante", $(this).attr('data-url'),'modal-md');
+            $('#uni_modal .modal-header').css('color', 'white'); // Aplica directamente el color blanco
+        });
+        $('.end_visit').click(function(){
+            // Guardar la URL del enlace en una variable
+            var url = $(this).attr('data-url');
+            
+            // Obtener el token CSRF
+            var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+            
+            // Mostrar SweetAlert de confirmación
+            Swal.fire({
+                title: "¿Estás seguro?",
+                text: "¿Quieres finalizar esta visita?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, finalizar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Si el usuario hace clic en "Sí, finalizar", enviar la solicitud al servidor
+                    $.ajax({
+                        url: url,
+                        type: 'POST',
+                        dataType: 'json',
+                        headers: {
+                            "X-CSRFToken": csrftoken  // Agregar el token CSRF como encabezado
+                        },
+                        data: {},
+                        success: function(response) {
+                            if (response.status === 'success') {
+                                Swal.fire("¡Visita finalizada!", "", "success").then(() => {
+                                    // Actualizar la página o hacer cualquier otra acción necesaria
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire("Error", response.msg, "error");
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            Swal.fire("Error", "Ha ocurrido un error al finalizar la visita.", "error");
+                        }
+                    });
+                }
+            });
+        });
+        $('#uni_modal').on('shown.bs.modal', function() {
+            if ($('#id-card').length > 0) {
+                let print_btn = $('<button id="print-card" class="btn btn-success btn-sm bg-gradient rounded-0 me-2" type="button"><i class="fa fa-print"></i> Imprimir</button>');
+                $(this).find('.modal-sub-footer').prepend(print_btn);
+                print_btn.click(function() {
+                    let h = $("head").clone();
+                    let style = $($("noscript#qr-style").html()).clone();
+                    let card = $("#id-card").clone();
+                    let el = $('<div>');
+    
+                    el.append(h);
+                    el.append(style);
+                    el.append(card);
+                    start_loader();
+                    let nw = window.open("", "_blank", "width=110, height=110");
+                    nw.document.write(el.html());
+                    nw.document.close();
+                    setTimeout(()=>{
+                        nw.print();
+                        setTimeout(()=>{
+                            nw.close();
+                            end_loader();
+                        }, 300);
+                    },300);
+    
+                });
+    
+                $('#uni_modal').on('hide.bs.modal', function() {
+                    print_btn.remove();
+                });
+            }
+        });
+    });
+
+</script>
+{% endblock ScriptBlock %}
