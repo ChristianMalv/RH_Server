@@ -10,6 +10,10 @@ from django.contrib.auth import views
 from django.contrib.auth.decorators import login_required
 from crede_api import urls as crede_urls
 from registro import urls as registro_urls
+from django.conf import settings
+from django.conf.urls.static import static
+
+
 
 urlpatterns = [
     path('login/', views.LoginView.as_view(), name='login'),
@@ -124,4 +128,7 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
     path('', include(crede_urls)),
     path('registro/', include(registro_urls)),
+
 ]   
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

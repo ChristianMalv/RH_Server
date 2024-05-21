@@ -398,7 +398,8 @@
                             timer: 1500, // Mostrar el mensaje durante 1.5 segundos
                             showConfirmButton: false
                         }).then(() => {
-                            window.location.href = "/edit_employee/" + response.employee_id;
+                            // window.location.href = "/employee-page/" + response.employee_id;
+                            window.location.href = "{% url 'employee-page' %}"
                         });
                     } else {
                         Swal.fire({
