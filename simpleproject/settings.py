@@ -45,9 +45,15 @@ INSTALLED_APPS = [
     'people',
     'evaluacion',
     'django.contrib.postgres',
-   'crede_api',
+    'crede_api',
 	'crispy_bootstrap4',
-    
+	'rest_framework',
+	'registro',
+	'qr_code',
+    'django.contrib.humanize',
+    # 'customerfilter',
+    # 'registro.apps.AppConfig',
+   
 ]
 
 MIDDLEWARE = [
@@ -91,11 +97,11 @@ DATABASES = {
  
      'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'recursoshumanos',
+        'NAME': 'humanos',
         'USER': 'postgres',
-        'PASSWORD': 'postgres',
+        'PASSWORD': 'humanos',
         'HOST': 'localhost',
-        'PORT': '5432',
+        'PORT': '5439',
     }
 }
 
@@ -139,7 +145,14 @@ DATE_FORMAT = "%d/%m/%y"
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
+
+
 STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'registro/static'),
+]
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 

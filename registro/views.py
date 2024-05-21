@@ -6,9 +6,7 @@ from django.http import HttpResponse
 from registro import models, forms
 from django.db.models import Q
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
-from django.contrib.auth.decorators import login_required
 import requests
-from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.contrib import messages
 import json
@@ -33,59 +31,59 @@ def context_data():
     return context
 
 
-# Create your views here.
-def login_page(request):
-    context = context_data()
-    context['topbar'] = False
-    context['footer'] = False
-    context['page_name'] = 'login'
-    context['page_title'] = 'Login'
-    return render(request, 'registro/login.html', context)
+# # Create your views here.
+# def login_page(request):
+#     context = context_data()
+#     context['topbar'] = False
+#     context['footer'] = False
+#     context['page_name'] = 'login'
+#     context['page_title'] = 'Login'
+#     return render(request, 'registro/login.html', context)
 
-def login_user(request):
-    logout(request)
-    resp = {"status":'failed','msg':''}
-    username = ''
-    password = ''
-    if request.POST:
-        username = request.POST['username']
-        password = request.POST['password']
+# def login_user(request):
+#     logout(request)
+#     resp = {"status":'failed','msg':''}
+#     username = ''
+#     password = ''
+#     if request.POST:
+#         username = request.POST['username']
+#         password = request.POST['password']
 
-        user = authenticate(username=username, password=password)
-        if user is not None:
-            if user.is_active:
-                login(request, user)
-                resp['status']='success'
-            else:
-                resp['msg'] = "Incorrect username or password"
-        else:
-            resp['msg'] = "Incorrect username or password"
-    return HttpResponse(json.dumps(resp),content_type='application/json')
+#         user = authenticate(username=username, password=password)
+#         if user is not None:
+#             if user.is_active:
+#                 login(request, user)
+#                 resp['status']='success'
+#             else:
+#                 resp['msg'] = "Incorrect username or password"
+#         else:
+#             resp['msg'] = "Incorrect username or password"
+#     return HttpResponse(json.dumps(resp),content_type='application/json')
 
-@login_required
-def home(request):
-    context = context_data()
-    context['page'] = 'home'
-    context['page_title'] = 'Home'
-    context['employees'] = models.Employee.objects.count()
-    return render(request, 'registro/home.html', context)
+
+# def home(request):
+#     context = context_data()
+#     context['page'] = 'home'
+#     context['page_title'] = 'Home'
+#     context['employees'] = models.Employee.objects.count()
+#     return render(request, 'registro/home.html', context)
 
 def logout_user(request):
     logout(request)
     return redirect('login-page')
 
 
-@login_required
+
 def employee_list(request):
     context =context_data()
     context['page'] = 'employee_list'
     context['page_title'] = 'Lista de visitantes'
     context['employees'] = models.Employee.objects.all().order_by('-id')
 
-    return render(request, 'employee_list.html', context)
+    return render(request, 'registro/employee_list.html', context)
 
 
-@login_required 
+ 
 def manage_employee(request, pk=None):
     # Suponiendo que context_data() es una función que prepara datos generales para el contexto
     context = context_data()
@@ -112,11 +110,11 @@ def manage_employee(request, pk=None):
             'direcciones': direcciones 
         })
 
-    return render(request, 'manage_employee.html', context)
+    return render(request, 'registro/manage_employee.html', context)
 
 
 
-@login_required
+
 def save_employee(request):
     resp = {'status': 'failed', 'msg': ''}
     employee_id = None
@@ -149,30 +147,30 @@ def save_employee(request):
 
     return JsonResponse(resp)
 
-@login_required
+
 def view_card(request, pk =None):
     if pk is None:  
         return HttpResponse("El ID del visitante es invalido")
     else:
         context = context_data()
         context['employee'] = models.Employee.objects.get(id=pk)
-        return render(request, 'view_id.html', context)
+        return render(request, 'registro/view_id.html', context)
 
-@login_required
+
 def view_scanner(request):
     context = context_data()
-    return render(request, 'scanner.html', context)
+    return render(request, 'registro/scanner.html', context)
 
-@login_required
+
 def view_details(request, code = None):
     if code is None:
         return HttpResponse("El ID del visitante es invalido")
     else:
         context = context_data()
         context['employee'] = models.Employee.objects.get(pk=code)
-        return render(request, 'view_details.html', context)
+        return render(request, 'registro/view_details.html', context)
     
-@login_required
+
 def end_visit(request, code=None):
     resp = {'status': 'failed', 'msg': ''}
     
@@ -189,7 +187,7 @@ def end_visit(request, code=None):
 
     return JsonResponse(resp)
 
-@login_required
+
 def delete_employee(request, pk=None):
     resp = { 'status' : 'failed', 'msg' : '' }
     if pk is None:

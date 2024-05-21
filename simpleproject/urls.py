@@ -9,7 +9,9 @@ from people.views import PersonListView, PersonCreateView, PersonUpdateView, Rep
 from django.contrib.auth import views
 from django.contrib.auth.decorators import login_required
 from crede_api import urls as crede_urls
+
 from registro import urls as registro_urls
+# from registro.views import urls as employee_list
 
 urlpatterns = [
     path('login/', views.LoginView.as_view(), name='login'),
@@ -124,4 +126,6 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
     path('', include(crede_urls)),
     path('registro/', include(registro_urls)),
+
 ]   
+

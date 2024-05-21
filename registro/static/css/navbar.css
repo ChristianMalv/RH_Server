@@ -1,0 +1,125 @@
+
+#datatable th {
+    background-color: #18463b; /* Color de fondo de las celdas de encabezado */
+    color: white; /* añadido para cambiar el color de las letras */
+    }
+    
+    #datatable td {
+      white-space:inherit;
+    }
+  
+  
+  
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    .dataTable {
+      padding: 0;
+  
+    }
+  
+    td {
+      padding: 0;
+      border: none;
+    }
+  
+    .estatus-alert {
+      margin: 2;
+      padding: 10px;
+    }
+  
+  
+    th, td {
+      border-right: 1px solid #dddddd;
+    }
+    
+  
+  /* Estilos para centrar el título */
+  .centered-title {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 0; /* Para quitar el espacio inferior */
+  }
+  
+  .input-error {
+    border-color: red; /* Cambia el borde del campo a rojo cuando está vacío */
+    background-color: #ffcccc; /* Cambia el fondo del campo a un color claro cuando está vacío */
+  }
+  
+  
+  /* Cambia el color del texto e icono del botón al pasar el mouse */
+  .btn-button:hover {
+    background-color: #9D2449; /* Cambia el color de fondo al pasar el mouse */
+  }
+  
+  /* Estilo para el color del texto e icono del botón */
+  .btn-button span,
+  .btn-button i {
+    color: #ffffff; /* Color del texto e icono */
+  }
+  
+  /* Estilo para los enlaces del header */
+  .navbar a {
+    color: #ffffff; /* Cambia el color de los enlaces a blanco */
+    text-decoration: none; /* Quita el subrayado por defecto */
+    margin: 10px; /* Espaciado entre los enlaces */
+  }
+  
+  /* Estilo para el icono de búsqueda */
+  .navbar a i.fas.fa-search {
+    font-size: 20px; /* Tamaño del icono */
+    margin-right: 5px; /* Espacio a la derecha del icono */
+  }
+  
+  /* Estilo para los enlaces del menú de Gobierno y Trámites */
+  .navbar a span {
+    color: #ffffff; /* Cambia el color del texto a blanco */
+  }
+  /* Inputs form validate */
+  
+  /* Estilo para resaltar campos vacíos */
+  .input-error {
+    background-color: #FFCCCC; /* Cambia el color de fondo a rojo */
+  }
+  
+  .small-text{
+    font-size: 100%;
+    width: 380px;
+    height: 30px;
+  }
+  
+  /* styles.css */
+  
+  /* Estilos para los inputs con la clase .form-control-sm */
+  /* Estilos para los inputs con la clase .mis-inputs */
+  .form-control-sm {
+    font-size: 100%;
+    width: 100%; /* Divide el ancho en 3 columnas */
+    display: inline-block;
+    margin-right: 2%; /* Añade un pequeño margen entre los inputs */
+  }
+  
+  
+  .form-control-fecha {
+    font-size: 100%;
+    width: 30%; /* Divide el ancho en 3 columnas */
+    height: 50; /* Altura específica para los inputs */
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  
+  /* Ajuste para los contenedores de inputs */
+  .input-container {
+    margin-bottom: 40px; /* Espacio entre los contenedores */
+  }
+  
+  
+  .form-label-s{
+    font-size: 100%;
+    width: 100%; /* Utiliza el ancho completo del contenedor */
+    height: 30px;
+    margin-bottom: 10px; /* Añade un margen inferior opcional para separarlo de los elementos anteriores */
+    margin-left: -247px;
+  }
+  
