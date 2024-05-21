@@ -9,12 +9,10 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('qr_code/', include('qr_code.urls', namespace="qr_code")),
-    path('',views.home),
-    path('login',views.login_page,name='login-page'),
-    path('user_login',views.login_user,name='login-user'),
-    # path('home',views.home,name='home-page'),
+    # path('login',views.login_page,name='login-page'),
+    # path('user_login',views.login_user,name='login-user'),
     path('logout',views.logout_user,name='logout'),
-    path('employee_list',views.employee_list,name='employee-page'),
+    path('employee_list',views.employee_list,name='employee-page'), 
     path('add_employee',views.manage_employee,name='add-employee'),
     path('edit_employee/<int:pk>',views.manage_employee,name='edit-employee'),
     path('save_employee',views.save_employee,name='save-employee'),
