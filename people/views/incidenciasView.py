@@ -105,8 +105,8 @@ class DetailPersonIncidencia(View):
 
 class ReporteIncidenciasPDF(View):
 
-    pdfmetrics.registerFont(TTFont('Montserrat', settings.MEDIA_ROOT+'/montserrat/Montserrat-Light.ttf'))
-    pdfmetrics.registerFont(TTFont('Montserrat-Bold', settings.MEDIA_ROOT+'/montserrat/Montserrat-Bold.ttf'))  
+    # pdfmetrics.registerFont(TTFont('Montserrat', settings.MEDIA_ROOT+'/montserrat/Montserrat-Light.ttf'))
+    # pdfmetrics.registerFont(TTFont('Montserrat-Bold', settings.MEDIA_ROOT+'/montserrat/Montserrat-Bold.ttf'))  
     
 
     def pdf_return(self,nombre):
