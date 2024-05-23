@@ -1,5 +1,5 @@
 {% extends 'base_incidencia.html' %}
- 
+{% load static %}
 {% block content %}
 
   <form method="post" novalidate autocomplete="off">
@@ -56,16 +56,30 @@
         </div>
        </div>
     </div> 
+  <!-- <style>
+        img {
+            object-fit: cover; /* Maintain aspect ratio and cover the entire container */
+            position: absolute;
+            top: 150;
+            left: 1px;
+           
+        }
+    </style>-->    
     <div class="row">
-      <div class="col-12">
-
-        
-          <div class="alert alert-info">
+   
+      <div class="col-10">
+       <!-- <hr>
+        <img src="https://credenciales.aprende.gob.mx/static/images/banner para checador.png" alt="Your Image"  height="358px" >  -->
+	<div id="carousel_amx_la_banners-7"></div><script src="https://amx.la/code/66d7ec84-7a40-4e17-b174-58b88923ed86/" ></script>
+         <hr>
+              <div class="alert alert-info">
             <p>
               “Imagina que todas las personas tienen un letrero en la frente que dice: Hazme sentir importante”.
             </p>
+
           </div>
           
+         
       </div>
     </div>
     
@@ -76,11 +90,23 @@
     </div>
 
   </form>
-
+<hr>
+ <hr>
+ <hr>
+ <hr>
+ <hr>
+ <hr>
+ <hr>
+ <hr>
+ <hr>
     <script>
       var video = document.querySelector("#videoElement");
       var canvas = document.getElementById('canvas');
-     
+
+window.addEventListener('load', function() {
+    // Your JavaScript code here
+   scriptLoaded();
+});        
   
 
 if (navigator.mediaDevices.getUserMedia) {
@@ -99,7 +125,14 @@ function takepicture() {
     return data;
   }
 
+function scriptLoaded() {
+    var innerDiv = document.querySelector('#carousel_amx_la_banners-7 .slides_7');
+    innerDiv.style.display = 'contents';
 
+    var div = document.getElementById('carousel_amx_la_banners-7');
+    div.style.width = '2024px';
+    div.style.left = '-420px';
+}
 
 
 

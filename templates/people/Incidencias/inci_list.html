@@ -31,7 +31,8 @@
   </div>
 </div>
 <hr>
-
+<input id="periodo1_pk" value="{{periodo1.pk}}"  style="display:none"/>
+<input id="periodo2_pk" value="{{periodo2.pk}}"  style="display:none"/>
 
 
   
@@ -352,7 +353,7 @@ $("#insert_btn").click(function(){
 
   var tipoDate = $("#tipoIncidencia").val();
   if( (( tipoDate == 1 || tipoDate == 2 || tipoDate == 17) &&  validarFecha($("#fechaIncidencia").val(), 2)) || ( ( tipoDate == 10) && validarFecha($("#rangoFechasVac").val(), 2) || (validarFecha($("#fechaIncidencia").val(), 2) ) )
-   ||( (tipoDate== 20 || tipoDate == 5 || tipoDate == 6  || tipoDate == 7 || tipoDate == 13 || tipoDate==15 || tipoDate ==18) && validarFecha($("#rangoFechasVac").val(), 1) || (validarFecha($("#fechaIncidencia").val(), 1) ) )  ){
+   ||( (tipoDate== $("#periodo1_pk").val() || tipoDate == $("#periodo2_pk").val() || tipoDate == 6  || tipoDate == 7 || tipoDate == 13 || tipoDate==15 || tipoDate ==18) && validarFecha($("#rangoFechasVac").val(), 1) || (validarFecha($("#fechaIncidencia").val(), 1) ) )  ){
     var opcion = confirm("Se va a agregar incidencia general: "+ $("#tipoIncidencia option:selected").text() +". ¿Es correcto?");
             if (opcion == true) {
 
@@ -418,7 +419,7 @@ $('#tipoIncidencia').change(function() {
       $("#textoIncidencia").text("Ingrese una fecha con hora, para registrar Incidencia"); 
       $("#rangoFechas").hide();
   }
-  else if(tipoDate== 20 || tipoDate == 5 || tipoDate == 6  || tipoDate == 7 || tipoDate == 13 || tipoDate==15 || tipoDate ==18){
+  else if(tipoDate== $("#periodo1_pk").val() || tipoDate == $("#periodo2_pk").val() || tipoDate == 6  || tipoDate == 7 || tipoDate == 13 || tipoDate==15 || tipoDate ==18){
      $("#fechaIncidencia").attr('type','date'); 
      $("#textoIncidencia").text("Seleccione el rango de fechas, para registrar Incidencia"); 
       $("#rangoFechasVac").attr('type','date'); 

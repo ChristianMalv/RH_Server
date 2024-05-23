@@ -1,11 +1,13 @@
 media/
 env/
 myvenv/
+people/migrations/
 **/__pycache__/
 *.dump
 *.sqlite3
 *.json
 whole.json
+settings.py
 # These are some examples of commonly ignored file patterns.
 # You should customize this list as applicable to your project.
 # Learn more about .gitignore:
@@ -77,4 +79,7 @@ builds/
 *.sqlite3      filter=lfs diff=lfs merge=lfs -text
 	 
 simpleproject/settings.py
+simpleproject/settings.py
+simpleproject/settings.py
+requirements.txt
 simpleproject/settings.py

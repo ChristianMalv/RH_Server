@@ -66,6 +66,11 @@
   }
 }
 
+
+.invalid-feedback {
+    color: #ff0000; /* Change this to your desired color */
+}    
+
           </style>
 
    <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
@@ -103,6 +108,9 @@
               {% if perms.people.asignar_comp %}
                 <li><a href="{% url 'comp_list' %}">Compensaciones</a></li>
                 {% endif %}  
+              {% if perms.people.ver_vacaciones %}
+                <li><a href="{% url 'vacaciones_list' %}">Vacaciones</a></li>
+              {% endif %}
                 {% if perms.people.ver_incidencias  %}
                   <li><a href="{% url 'inci_list' %}">Incidencias</a></li>
                 {% endif %}  
@@ -122,7 +130,16 @@
                 <li><a href="{% url 'sersoc_list' %}">Finalizado</a></li>
              
           </div>
-           {% endif %}  
+           {% endif %} 
+          <div class="btn-group" role="group" >
+            <button id="btnGroupVerticalDrop2" type="button" class="btn btn-primary btn-lg active dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Capacitación  
+            <span class="caret"></span>
+            </button>
+             <ul class="dropdown-menu" role="menu" aria-labelledby="btnGroupVerticalDrop2"> 
+               <li><a href="{% url 'capacitacion_list' %}">Cursos</a></li>
+               <li><a href="{% url 'sersoc_list' %}">Personas</a></li>
+             
+          </div> 
           <hr class="red">
           {% block content %}
           {% endblock %}

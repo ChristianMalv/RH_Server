@@ -27,7 +27,7 @@ SECRET_KEY = 'vp-0rke=$u$g7yn6w=l$02+f!*y4uizr_x4k*l@w!4u2xb(68g'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '172.16.110.29', '127.0.0.1', 'credenciales.televisioneducativa.gob.mx', 'credenciales.aprende.gob.mx']
+ALLOWED_HOSTS = ['localhost:9000','localhost', '172.16.110.29', '127.0.0.1', 'credenciales.televisioneducativa.gob.mx', 'credenciales.aprende.gob.mx']
 
 
 # Application definition
@@ -45,12 +45,17 @@ INSTALLED_APPS = [
     'people',
     'evaluacion',
     'django.contrib.postgres',
+   'crede_api',
+	'crispy_bootstrap4',
+	'rest_framework',
+	'corsheaders',
     
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+	'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -78,6 +83,9 @@ TEMPLATES = [
     },
 ]
 
+CORS_ALLOWED_ORIGINS = [
+"http://localhost:9000"
+]
 
 WSGI_APPLICATION = 'simpleproject.wsgi.application'
 
@@ -116,6 +124,14 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated', 
+    )
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
@@ -140,6 +156,8 @@ DATE_FORMAT = "%d/%m/%y"
 STATIC_URL = '/static/'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap4'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 

@@ -107,7 +107,8 @@
         </div>
   </div>
 </div>
-
+<input id="periodo1_pk" value="{{periodo1.pk}}"  style="display:none"/>
+<input id="periodo2_pk" value="{{periodo2.pk}}"  style="display:none"/>
 <!-- modificar todo ese divModal -->
 <div class="modal fade"  id="myModal">
   <div class="modal-dialog">
@@ -333,7 +334,7 @@ $('#tipoIncidencia').change(function() {
       $("#textoIncidencia").text("Ingrese una fecha con hora, para registrar Incidencia"); 
       $("#rangoFechas").hide();
   }
-  else if(tipoDate== 20 || tipoDate == 5 || tipoDate == 6  || tipoDate == 7 || tipoDate == 13 || tipoDate==15 || tipoDate ==18){
+  else if(tipoDate== $("#periodo1_pk").val() || tipoDate == $("#periodo2_pk").val() || tipoDate == 6  || tipoDate == 7 || tipoDate == 13 || tipoDate==15 || tipoDate ==18){
      $("#fechaIncidencia").attr('type','date'); 
      $("#textoIncidencia").text("Seleccione el rango de fechas, para registrar Incidencia"); 
      $("#rangoFechas").show();

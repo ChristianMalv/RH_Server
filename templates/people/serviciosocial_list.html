@@ -29,16 +29,24 @@
         <th>Nombre</th>
         <th>Periodo</th>
         <th>Credencial</th>
+        <th>Asistencia</th>
       </tr>
     </thead>
     <tbody>
       {% for person in people %}
         <tr>
           <td>{{ person.escuela_procedencia }}</td>
-          <td><a href="{% url 'sersoc_edit' person.info_person.pk %}?redirect_page={{ request.GET.page }}" >{{ person.info_person.nombres  }} {{ person.info_person.apellido1  }} {{ person.info_person.apellido2 }} </a></td>
-          <td>{{ person.periodo }}</a></td>
-          <td><button type="button" class="btn btn-default" onclick="location.href='{% url 'sersoc_print' person.info_person.pk person.pk %}?redirect_page={{ request.GET.page }}';"> <span class="glyphicon glyphicon-qrcode"></span> Credencial</button> </td>
-        </tr>
+          <td> 
+            {% if perms.people.imprimir_credenciales_ss  %}
+            <a href="{% url 'sersoc_edit' person.info_person.pk %}?redirect_page={{ request.GET.page }}" >{{ person.info_person.nombres  }} {{ person.info_person.apellido1  }} {{ person.info_person.apellido2 }} </a></td>
+            <td>{{ person.periodo }}</a></td>
+            <td><button type="button" class="btn btn-default" onclick="location.href='{% url 'sersoc_print' person.info_person.pk person.pk %}?redirect_page={{ request.GET.page }}';"> <span class="glyphicon glyphicon-qrcode"></span> Credencial</button> </td>
+            {% endif %} 
+            {% if perms.people.asistencias_ss  %}
+            <td><button type="button" class="btn btn-default" onclick="location.href='{% url 'sersoc_asist' person.info_person.pk %}?redirect_page={{ request.GET.page }}';"> <span class="glyphicon glyphicon-calendar"></span> Asistencia</button> </td>
+        
+            {% endif %}
+          </tr>
       {% empty %}
         <tr class="table-active">
           <td colspan="3">No data</td>
@@ -80,6 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 
+$('#Title1').html('<h2>Servicio Social</h2>');
 
 $('#searchPerson').keyup(function(e){
   console.log(":)");

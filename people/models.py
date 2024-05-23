@@ -178,7 +178,7 @@ class Person(models.Model):
     class Meta:
         verbose_name = "Persona"
         verbose_name_plural = "Personas"
-        permissions = (("datos_personales", "Puede ver datos personales"),   ("tomar_fotografia", "Puede tomar fotografía"),   ("imprimir_credencial", "Puede imprimir credencial"), ("dar_baja", "Puede dar de baja"), ("modificar_directorio", "Puede modificar directorio"),  )   
+        permissions = (("datos_personales", "Puede ver datos personales"),   ("tomar_fotografia", "Puede tomar fotografía"),   ("imprimir_credencial", "Puede imprimir credencial"), ("dar_baja", "Puede dar de baja"), ("modificar_directorio", "Puede modificar directorio"), ("ver_vacaciones", "Puede modificar vacaciones"), )   
        
 class Bajas(models.Model):
     info_person = models.ForeignKey(Person, on_delete=models.DO_NOTHING)
@@ -203,10 +203,19 @@ class Compensaciones(models.Model):
         permissions = (("asignar_comp", "Puede asignar compensaciones"), )
 
 class CausaIncidencia(Catalogo):
+    isVisible= models.BooleanField(default=True)
     class Meta:
         verbose_name = "Causa Incidencia"
         verbose_name_plural = "Causas Incidencias"
     pass
+
+class PeriodosVacaciones(Catalogo):
+    periodo= models.ForeignKey(CausaIncidencia, on_delete=models.DO_NOTHING, related_name="periodo_vacaciones")
+    idPeriodo= models.IntegerField()
+    dateInicio = models.DateTimeField()
+    dateFin =  models.DateTimeField()
+    pass
+    
 class Incidencia(models.Model):
     matriculaCredencial = models.ForeignKey(Person, on_delete=models.DO_NOTHING, related_name="Credencial")
     created_at = models.DateTimeField(blank=True, null=True)
@@ -283,12 +292,28 @@ class ServicioSocial(models.Model):
     creditos_cursados = models.CharField(max_length=20, blank=False, verbose_name="Total de Créditos Cursados")
     numero_matricula = models.CharField(max_length=20, blank=False, verbose_name="Número de Matrícula")
     telefono_escuela = models.CharField(max_length=14, blank=False, verbose_name="Teléfono de la Escuela")
+    telefono_ext_escuela = models.CharField(max_length=14, blank=False, verbose_name="extensión")
+    
     periodo = models.CharField(max_length=255, blank=False, verbose_name="Periodo en el que se realizará el Servicio")
     horario = models.CharField(max_length=255, blank=False, verbose_name="Horario de desempeño de las actividades")
     description = models.TextField(max_length=250, blank=True, verbose_name="Actividades")
     class Meta:
         verbose_name = "Servicio social"
         verbose_name_plural = "Servicios sociales"
-        permissions = (("servicio_social", "Puede ver, crear y editar servicios sociales"), )
+        permissions = (("servicio_social", "Puede ver, crear y editar servicios sociales"), ("imprimir_credenciales_ss", "Puede Imprimir credenciales de servicio social"), ("asistencias_ss", "Puede editar y ver indicdencias de servicio social"),  )
 
 
+class Capacitacion(Catalogo):
+    class Meta:
+        verbose_name = "Capacitación"
+        verbose_name_plural = "Capacitaciones"
+        permissions = (("capacitacion", "Puede ver, crear y editar capacitaciones"), )
+    imagen_base64 = models.TextField(blank=True,null=True)
+    fecha_limite =  models.DateTimeField(blank=True, null= True)
+    activo = models.BooleanField(blank=True, null=True, default=True)
+    enlace = models.CharField(max_length=255, blank=True, null=True, verbose_name="Enlace al curso")
+
+class EvidenciaCurso(models.Model):
+    info_person = models.ForeignKey(Person, on_delete=models.CASCADE)
+    curso_tomado = models.ForeignKey(Capacitacion, on_delete=models.CASCADE)
+    ruta_drive =  models.CharField(max_length=255, blank=False, verbose_name="Ruta Drive")

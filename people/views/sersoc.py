@@ -9,7 +9,7 @@ from django.urls.base import reverse
 from django.views.generic import ListView, CreateView, UpdateView
 from django.urls import reverse_lazy
 from django.views.generic import View
-from people.models import  Person, ServicioSocial,Contratacion
+from people.models import  Person, ServicioSocial,Contratacion, Incidencia
 from people.forms import  PersonForm, ServicioSocialForm, ServicioSocialInlineFormset
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -19,7 +19,8 @@ from datetime import timedelta
 from functools import reduce
 import textwrap, operator, base64, json, datetime
 from django.shortcuts import get_object_or_404, redirect, render
-
+from django.template.loader import get_template
+from django.db.models import Max, Min
 @method_decorator(login_required, name='dispatch')
 class SersocListView(ListView):
     model = ServicioSocial
@@ -52,7 +53,7 @@ def CreateSersocPerson(request, pk=None):
                 my_form = PersonForm(request.POST or None, instance=person)
                 sersoc_form = ServicioSocialForm(request.POST or None, instance=sersoc)
             form = my_form.save()
-            valor = Person.objects.all().last().pk
+            valor = form.pk
             valor = str(valor).zfill(4)
             code= "S"+ form.fecha_ingreso.strftime('%y') + valor
             form.matricula = code
@@ -77,6 +78,98 @@ def CreateSersocPerson(request, pk=None):
             sersoc_form = ServicioSocialForm()
     return render(request, 'people/sersoc/serviciosocial_form.html', {'form': my_form, 'sersoc_form': sersoc_form})
 
+
+class IncidenciaToShowSS:  
+    def __init__(self, dia,  fecha, idIn, Entrada, idOut, Salida):
+        self.dia = dia
+        self.fecha = fecha  
+        self.idIn = idIn  
+        self.Entrada = Entrada
+        self.idOut = idOut
+        self.Salida = Salida 
+
+@method_decorator(login_required, name='dispatch')
+class SersocAsistListView(ListView):
+    model = ServicioSocial
+    def get(self, request, *args, **kwargs):
+        person = Person.objects.get(pk=self.kwargs['person'])
+        nombreDias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sabado']
+        list = []  
+        sersoc = ServicioSocial.objects.get(info_person = person)
+        dateInicio = Incidencia.objects.filter(Q(matriculaCredencial = person)).aggregate(min_date=Min('created_at'))['min_date']
+        if dateInicio:
+            dateFin = Incidencia.objects.filter(Q(matriculaCredencial = person)).aggregate(max_date=Max('created_at'))['max_date']
+            incidencias = Incidencia.objects.filter(Q(matriculaCredencial = person) & Q(created_at__range=[dateInicio, dateFin+ timedelta(days = 1)]))
+            i=0
+            for n in range(int((dateFin - dateInicio).days)+1):
+                incidencia = incidencias.filter(created_at__day=(dateInicio + timedelta(n)).day, created_at__month = (dateInicio + timedelta(n)).month, created_at__year = (dateInicio + timedelta(n)).year)
+                if incidencia :
+                    incidenciaOut = incidencia.latest('created_at')
+                    #print(incidenciaOut)
+                    if incidencia.count()>1:
+                        incidenciaIn = incidencia.earliest('created_at')
+                        if  incidenciaIn.causa_incidencia != None : 
+                            list.append( IncidenciaToShowSS( nombreDias[int(incidenciaIn.created_at.strftime("%w"))] , incidenciaIn.created_at.strftime("%d/%m/%Y"), incidenciaIn.pk, incidenciaIn.created_at.strftime("%H:%M:%S"),  incidenciaOut.pk, incidenciaOut.created_at.strftime("%H:%M:%S")  )) 
+                        else:
+                            list.append( IncidenciaToShowSS( nombreDias[int(incidenciaIn.created_at.strftime("%w"))] , incidenciaIn.created_at.strftime("%d/%m/%Y"), incidenciaIn.pk, incidenciaIn.created_at.strftime("%H:%M:%S"),  incidenciaOut.pk, incidenciaOut.created_at.strftime("%H:%M:%S"))) 
+                        
+                    else:
+                        incicenciaFirst = incidencia.first()
+                        if  incicenciaFirst.causa_incidencia != None :
+                            list.append( IncidenciaToShowSS(nombreDias[int( incicenciaFirst.created_at.strftime("%w"))] ,  incicenciaFirst.created_at.strftime("%d/%m/%Y"),  incicenciaFirst.pk, "--:--",  incicenciaFirst.pk, "--:--" )) 
+                    
+                else:
+                    list.append( IncidenciaToShowSS( nombreDias[int(  (dateInicio + timedelta(n)).strftime("%w")  )], (dateInicio + timedelta(n)).strftime("%d/%m/%Y"),  "null" , "--:--",  "null", "--:--")) 
+        content =  {
+                'list': list,
+                'person': person,
+                'sersoc': sersoc,
+                'fechaInicio': dateInicio, 
+                'fechaFin': dateFin,
+            }            
+       
+        return render(request, 'people/sersoc/detalle_incidencia.html' , content)
+
+
+
+def GetAsistencia(request, person):
+    person = Person.objects.get(pk=person)
+    nombreDias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sabado']
+    list = []  
+    sersoc = ServicioSocial.objects.get(info_person = person)
+    dateInicio = Incidencia.objects.filter(Q(matriculaCredencial = person)).aggregate(max_date=Max('created_at'))['max_date']
+    if dateInicio:
+        dateFin = Incidencia.objects.filter(Q(matriculaCredencial = person)).aggregate(min_date=Min('created_at'))['min_date']
+        incidencias = Incidencia.objects.filter(Q(matriculaCredencial = person) & Q(created_at__range=[dateInicio, dateFin+ timedelta(days = 1)]))
+        i=0
+        for n in range(int((dateFin - dateInicio).days)+1):
+            incidencia = incidencias.filter(created_at__day=(dateInicio + timedelta(n)).day, created_at__month = (dateInicio + timedelta(n)).month, created_at__year = (dateInicio + timedelta(n)).year)
+            if incidencia :
+                incidenciaOut = incidencia.latest('created_at')
+                #print(incidenciaOut)
+                if incidencia.count()>1:
+                    incidenciaIn = incidencia.earliest('created_at')
+                    if  incidenciaIn.causa_incidencia != None : 
+                        list.append( IncidenciaToShowSS( nombreDias[int(incidenciaIn.created_at.strftime("%w"))] , incidenciaIn.created_at.strftime("%d/%m/%Y"), incidenciaIn.pk, incidenciaIn.created_at.strftime("%H:%M:%S"),  incidenciaOut.pk, incidenciaOut.created_at.strftime("%H:%M:%S")  )) 
+                    else:
+                        list.append( IncidenciaToShowSS( nombreDias[int(incidenciaIn.created_at.strftime("%w"))] , incidenciaIn.created_at.strftime("%d/%m/%Y"), incidenciaIn.pk, incidenciaIn.created_at.strftime("%H:%M:%S"),  incidenciaOut.pk, incidenciaOut.created_at.strftime("%H:%M:%S"), " ")) 
+                    
+                else:
+                    incicenciaFirst = incidencia.first()
+                    if  incicenciaFirst.causa_incidencia != None :
+                        list.append( IncidenciaToShowSS(nombreDias[int( incicenciaFirst.created_at.strftime("%w"))] ,  incicenciaFirst.created_at.strftime("%d/%m/%Y"),  incicenciaFirst.pk, "--:--",  incicenciaFirst.pk, "--:--" )) 
+                
+            else:
+                list.append( IncidenciaToShowSS( nombreDias[int(  (dateInicio + timedelta(n)).strftime("%w")  )], (dateInicio + timedelta(n)).strftime("%d/%m/%Y"),  "null" , "--:--",  "null", "--:--")) 
+                
+    t = get_template('people/sersoc/detalle_incidencia.html')
+    content =  t.render({
+                'list': list,
+                'person': person,
+                'sersoc': sersoc,
+            } )
+    return HttpResponse(content)
+   
 
 
 class SersocCreateView(CreateView):

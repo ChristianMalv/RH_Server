@@ -4,10 +4,15 @@ from django.urls import re_path
 from django.conf.urls import include
 from people.views import PersonListView, PersonCreateView, PersonUpdateView, ReportePersonasPDF, PersonCheckView, searchPerson, saveCheckedPerson, PersonBajaListView, GetPersonas, InsertBaja, DirectoryListView, GetPersonasDirectory, GetCompPersonas, InsertComp, PersonCompListView, DetalleIncidencias, PersonInciListView, ReporteIncidenciasPDF, UpdateIncidencia, GetPersonasIncidencia, AddIncidencia, DeleteIncidencia, PersonDirectoryUpdateView, DeleteComp, AreasListView, json_to_pdf, GetPersonasCompensacion, compensacionesArea, IncidenciaConsulta, ValidatePersonIncidencia, DetailPersonIncidencia, GetIncidenciaTable, \
     loginAdmin, AdminConsulta, AdminInciListView, GetAdminIncidencia, reporteIncidencias, PersonAyudaListView, GetAyudaPersonas, InsertAyuda, DeleteAyuda, GetPersonasAyuda, DashboardCheck, UpdateDashboard, \
-        GetPersonaAyuda,  SersocListView, SersocCreateView, CreateSersocPerson, AddAyuda, DeleteAyudaMonto, ValidateRFC
+        GetPersonaAyuda,  SersocListView, SersocCreateView, CreateSersocPerson, AddAyuda, DeleteAyudaMonto, ValidateRFC, PersonVacacionesListView, GetPersonasVacacion, GetDetalleVacacion, \
+        GetAsistencia, DeleteDayVacacion, SersocAsistListView, CapacitacionCreateView, CapacitacionListView, SaveCapacitacion, loginUsers, Capacitacion, CapacitacionesxPersona
 from django.contrib.auth import views
 from django.contrib.auth.decorators import login_required
+from crede_api import urls as crede_urls
+
 urlpatterns = [
+    path('login/', views.LoginView.as_view(), name='login'),
+    path('logout/', views.LogoutView.as_view(next_page='/'), name='logout'),
     path('accounts/login/', views.LoginView.as_view(), name='login'),
     path('accounts/logout/', views.LogoutView.as_view(next_page='/'), name='logout'),
     
@@ -16,6 +21,12 @@ urlpatterns = [
     path('bajas/personas', PersonBajaListView.as_view(), name='baja_list' ),
     path('get_personas/', GetPersonas, name="get_Personas"),
     path('insert_baja/', InsertBaja, name="insert_baja"),
+
+    #Vacaciones
+    path('vacaciones/personas', PersonVacacionesListView.as_view(), name='vacaciones_list' ),
+    path('vacaciones/busqueda', GetPersonasVacacion , name='search_person_vacacion'),
+    path('vacaciones/detalle', GetDetalleVacacion , name='detail_vacacion'),
+    path('vacaciones/delete', DeleteDayVacacion, name='delete_vacacion'),
 
     #Compensaciones
     path('compensaciones/personas', PersonCompListView.as_view(), name='comp_list' ),
@@ -63,7 +74,7 @@ urlpatterns = [
     #Checador
     path('check/', PersonCheckView.as_view(), name='person_check'),
     path('checked/', saveCheckedPerson, name='person_check'),
-    path('search/', searchPerson, name='person_search'), 
+    path('searchecked/', searchPerson, name='person_search'), 
     ###########
     
     re_path(r'^chaining/', include('smart_selects.urls')),
@@ -93,8 +104,22 @@ urlpatterns = [
     path('add/sersoc/', CreateSersocPerson, name='sersoc_add'),
     path('<int:pk>/edit/sersoc/', CreateSersocPerson, name='sersoc_edit'),
     path('<int:pk>/<int:sersoc>/print/sersoc/', ReportePersonasPDF.as_view(), name='sersoc_print'),
+    path('<int:person>/asist/sersoc/', SersocAsistListView.as_view(), name='sersoc_asist'),
     path('sersoc/', SersocListView.as_view(), name='sersoc_list'),
 
     #Consulta 
     path('consulta/<str:rfc>/', ValidateRFC, name='validate_rfc'),
+
+    #Capacitacion
+    
+    path('capacitacion/', CapacitacionListView.as_view(), name='capacitacion_list'),
+    path('capacitacion/add/', SaveCapacitacion, name='save_capacitacion'),
+    path('<int:pk>/edit/', PersonUpdateView.as_view(), name='capacitacion_edit'),
+    path('capacitacion/login', loginUsers, name="capacitacion_login"), 
+    path('capacitacion/users', Capacitacion.as_view(), name="capacitacion_users"), 
+    path('capacitacion/persona', CapacitacionesxPersona.as_view(), name="capacitacion_persona"),
+
+    #Api URL's
+    path('api-auth/', include('rest_framework.urls')),
+    path('', include(crede_urls)),
 ]   

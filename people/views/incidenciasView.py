@@ -3,7 +3,7 @@ from django.http.response import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.views.generic import ListView, CreateView, UpdateView
 from django.views.generic import View
-from people.models import AreaOrganigrama, Compensacion, Compensaciones, Person, Incidencia, Bajas, AreaInterna, CausaIncidencia, MultipleOrganigrama, Ayudas, PersonaAyuda
+from people.models import AreaOrganigrama, Compensacion, Compensaciones, Person, Incidencia, Bajas, AreaInterna, CausaIncidencia, MultipleOrganigrama, Ayudas, PersonaAyuda, PeriodosVacaciones
 from django.conf import settings
 from reportlab.pdfgen import canvas
 import textwrap, operator, base64, json, datetime
@@ -34,7 +34,7 @@ class PersonInciListView(ListView):
 
     def get(self, request, *args, **kwargs):
         queryset = Person.objects.filter( Q(activo=True) & ~Q(cat_contratacion__pk =6) )
-        causaIncidencia = CausaIncidencia.objects.all()
+        causaIncidencia = CausaIncidencia.objects.filter(isVisible = True)
         
         #t = get_template('people/Incidencias/inci_list.html')
         content = {
@@ -53,7 +53,8 @@ class IncidenciaConsulta(View):
 def ValidatePersonIncidencia(request):
     try:
         now = datetime.datetime.now()
-        if request.is_ajax():
+        #if request.is_ajax():
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest': 
             matriculaInput = request.POST['matricula']
             person = Person.objects.get(matricula =matriculaInput.upper()  )
             if person.activo == False:
@@ -84,11 +85,11 @@ class DetailPersonIncidencia(View):
         diasExtra = 0
         matriculaInput = self.kwargs['pk']
         person = Person.objects.get(matricula=  matriculaInput.upper())
-        periodo1 = CausaIncidencia.objects.get(pk= 20)
-        periodo2= CausaIncidencia.objects.get(pk = 5)
+        periodo1 = PeriodosVacaciones.objects.get(idPeriodo= 1)
+        periodo2 = PeriodosVacaciones.objects.get(idPeriodo= 2)
         diasEco = getDiasEconomicos(person)
-        diasVaca1 = getVacaciones(person, 20)
-        diasVaca2 = getVacaciones(person, 5)
+        diasVaca1 = getVacaciones(person, periodo1.periodo.pk)
+        diasVaca2 = getVacaciones(person, periodo2.periodo.pk)
         if person.vacaciones_extra:
             diasExtra = 10 - getVacaciones(person, 6)
         content = { #t.render(
@@ -97,8 +98,8 @@ class DetailPersonIncidencia(View):
                 'diasVaca1': diasVaca1, 
                 'diasVaca2': diasVaca2, 
                 'diasExtra': diasExtra,
-                'periodo1': periodo1.nombre,
-                'periodo2': periodo2.nombre,
+                'periodo1': periodo1.periodo,
+                'periodo2': periodo2.periodo,
             } 
         return render(request, 'people/inci/detalle_incidencia.html' , content)    
 
@@ -174,13 +175,13 @@ class ReporteIncidenciasPDF(View):
                             incidenciaIn = incidencia.earliest('created_at')
                             if incidenciaOut.causa_incidencia != None:
                                 print(observacion)
-                                if incidenciaOut.causa_incidencia.pk != 1 or incidenciaOut.causa_incidencia.pk !=2 : 
+                                if incidenciaOut.causa_incidencia.pk != 1 or incidenciaOut.causa_incidencia.pk !=2 or incidenciaOut.causa_incidencia.pk !=10 : 
                                     can.drawCentredString(355, 507-(y), "--:--" )
                                     can.drawCentredString(230, 507-(y), "--:--" )
                                     can.drawCentredString(560, 507-(y), "-")
                                     observacion = incidenciaOut.causa_incidencia.nombre
                             elif incidenciaIn.causa_incidencia != None:
-                                    if incidenciaIn.causa_incidencia.pk != 1 or incidenciaIn.causa_incidencia.pk !=2:
+                                    if incidenciaIn.causa_incidencia.pk != 1 or incidenciaIn.causa_incidencia.pk !=2 or incidenciaIn.causa_incidencia.pk !=10:
                                         can.drawCentredString(355, 507-(y), "--:--" )
                                         can.drawCentredString(230, 507-(y), "--:--" )
                                         can.drawCentredString(560, 507-(y), "-")
@@ -198,7 +199,7 @@ class ReporteIncidenciasPDF(View):
                             incicenciaFirst = incidencia.first()
                             can.drawCentredString(560, 507-(y), "-")
                             if  incicenciaFirst.causa_incidencia != None:
-                                if incidenciaOut.causa_incidencia.pk != 1 or incidenciaOut.causa_incidencia.pk !=2: 
+                                if incidenciaOut.causa_incidencia.pk != 1 or incidenciaOut.causa_incidencia.pk !=2 or incidenciaOut.causa_incidencia.pk !=10: 
                                     can.drawCentredString(230, 507-(y), "--:--" )
                                     can.drawCentredString(355, 507-(y), "--:--")
                                     observacion = incidenciaOut.causa_incidencia.nombre
@@ -345,7 +346,7 @@ class ReporteIncidenciasPDF(View):
                     if incidencia.count()>1:
                         incidenciaIn = incidencia.earliest('created_at')
                         if  incidenciaIn.causa_incidencia != None : 
-                            if incidenciaIn.causa_incidencia.pk != 1 and  incidenciaIn.causa_incidencia.pk !=2 :
+                            if incidenciaIn.causa_incidencia.pk != 1 and incidenciaIn.causa_incidencia.pk !=2 and incidenciaIn.causa_incidencia.pk !=10 :
                                 can.drawCentredString(230, 507-(y), "--:--" )
                                 can.drawCentredString(355, 507-(y), "--:--" )
                                 #can.drawString(430, 507-(y), incidenciaIn.causa_incidencia.nombre)
@@ -380,7 +381,7 @@ class ReporteIncidenciasPDF(View):
 
 
                         if  incicenciaFirst.causa_incidencia != None :
-                            if incicenciaFirst.causa_incidencia.pk != 1 and  incicenciaFirst.causa_incidencia.pk !=2 :
+                            if incicenciaFirst.causa_incidencia.pk != 1 and  incicenciaFirst.causa_incidencia.pk !=2 and incicenciaFirst.causa_incidencia.pk !=10 :
                                 #list.append( IncidenciaToShow(nombreDias[int( incicenciaFirst.created_at.strftime("%w"))] ,  incicenciaFirst.created_at.strftime("%d/%m/%Y"),  incicenciaFirst.pk, "--:--",  incicenciaFirst.pk, "--:--",  incicenciaFirst.causa_incidencia.nombre , "-")) 
                                 can.drawCentredString(230, 507-(y), "--:--" )
                                 can.drawCentredString(355, 507-(y), "--:--" )
@@ -485,7 +486,7 @@ class ReporteIncidenciasPDF(View):
         ruta =  settings.MEDIA_ROOT+"/"
 
         if 'bases' in kwargs:
-            people = Person.objects.filter(Q(activo=True) & (Q(cat_contratacion__pk =1) | Q(cat_contratacion__pk =2)) & Q(comision_sindical=False) )
+            people = Person.objects.filter(Q(activo=True) & (Q(cat_contratacion__pk =1) | Q(cat_contratacion__pk =2)) & Q(comision_sindical=False)  & ~Q(cat_contratacion__pk =6)  )
             dateInicio = datetime.datetime.strptime(self.kwargs['fechaInicio'], "%d-%m-%Y")
             merger = PdfFileMerger() 
             nombreReporteArchivo = "_General"   
@@ -615,7 +616,8 @@ def savePhoto( image_data):
 
 def searchPerson(request):
     try:
-        if request.is_ajax():
+        #if request.is_ajax():
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest': 
             now = datetime.datetime.now()
             person = Person.objects.get(matricula = request.POST['matricula'] )
             if person.activo == False:
@@ -679,23 +681,11 @@ class IncidenciaToShow:
 
 #@method_decorator(login_required, name='dispatch')
 class DetalleIncidencias(View):
-    def validateDate(self):
-        now = datetime.datetime.now()
-        periodo1 = CausaIncidencia.objects.get(pk=5)
-        periodo2= CausaIncidencia.objects.get(pk=20)
-        if now.month >=6:
-            periodo1.nombre="Vacaciones Primer Periodo "+str(now.year)
-            periodo2.nombre="Vacaciones Segundo Periodo "+str(now.year)
-        else:
-            periodo1.nombre="Vacaciones Segundo Periodo "+str(now.year-1)
-            periodo2.nombre="Vacaciones Primer Periodo "+str(now.year)
-        periodo1.save()
-        periodo2.save()    
-            
     def get(self, request, *args, **kwargs):
+        periodo1 = PeriodosVacaciones.objects.get(idPeriodo= 1)
+        periodo2 = PeriodosVacaciones.objects.get(idPeriodo= 2)
         nombreDias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sabado']
-        self.validateDate()
-        causaIncidencia = CausaIncidencia.objects.all()
+        causaIncidencia = CausaIncidencia.objects.filter(isVisible = True)
         person = Person.objects.get(pk=self.kwargs['pk'])
         dateInicio = datetime.datetime.strptime(self.kwargs['fechaInicio'], "%d-%m-%Y")
         # t = get_template('people/Incidencias/persona_modif_inci.html')
@@ -705,8 +695,8 @@ class DetalleIncidencias(View):
         diasExtra = 0
         horasExtras = 0
         diasEco = getDiasEconomicos(person)
-        diasVaca1 = getVacaciones(person, 5)
-        diasVaca2 = getVacaciones(person, 20)
+        diasVaca1 = getVacaciones(person, periodo1.periodo.pk)
+        diasVaca2 = getVacaciones(person, periodo2.periodo.pk)
         
         if person.vacaciones_extra:
             diasExtra = 10 - getVacaciones(person, 6)
@@ -770,8 +760,8 @@ class DetalleIncidencias(View):
                 'diasVaca1': diasVaca1, 
                 'diasVaca2': diasVaca2, 
                 'diasExtra': diasExtra,
-                'periodo1': CausaIncidencia.objects.get(pk=5),
-                'periodo2': CausaIncidencia.objects.get(pk=20),
+                'periodo1': PeriodosVacaciones.objects.get(idPeriodo=1).periodo,
+                'periodo2': PeriodosVacaciones.objects.get(idPeriodo=2).periodo,
                 'horasExtras': horasExtras,
          
             } #)
@@ -858,8 +848,12 @@ def AddOneDate(person, fecha, tipo):
     diasEco = 0
     try:
         incidencias = Incidencia.objects.filter(Q(matriculaCredencial = person) & Q(created_at__day=fecha.day, created_at__month = fecha.month, created_at__year = fecha.year) )
-        newIncidencia = Incidencia(matriculaCredencial=person, created_at=fecha, causa_incidencia= tipo)
-        newIncidencia.save()
+        if ValidateVacations(person, fecha):
+            newIncidencia = Incidencia(matriculaCredencial=person, created_at=fecha, causa_incidencia= tipo)
+            newIncidencia.save()
+        else:
+            stuent_data={"error":True,"errorMessage":"Fecha " +  fecha.strftime("%d/%m/%Y") + " no agregada por existencia de vacaciones previas. "}
+            return stuent_data   
         if incidencias.count()>1:
             incidenciaOut = incidencias.latest('created_at')
             incidenciaIn = incidencias.earliest('created_at')
@@ -875,47 +869,61 @@ def AddOneDate(person, fecha, tipo):
             else:
                 resultadoHtml = "<tr><td> "+ nombreDias[int(fecha.strftime("%w"))] +"</td><td>"+ fecha.strftime("%d/%m/%Y") +"</td><td style='display:none'>"+ str(newIncidencia.pk) +"</td><td>--:--</td><td style='display:none' >"+ str( newIncidencia.pk) + "</td> <td >--:--</td><td>"+tipo.nombre+"</td><td>-</td><td><button class='btn btn-default btn-xs eliminar' type='button'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span> Eliminar Registro </button></td></tr>"
         stuent_data={"error":False,"errorMessage":"Incidencia Agregada!", "tabla":resultadoHtml, "diasEco": diasEco}
-       
     except Exception as e:
         print(e)
         stuent_data={"error":True,"errorMessage":"Failed to Update Data"}
     return stuent_data    
 
 def AddTwoDate(person, fecha, fechaComp, tipo):
+    periodo1 = PeriodosVacaciones.objects.get(idPeriodo= 1)
+    periodo2 = PeriodosVacaciones.objects.get(idPeriodo= 2)
     nombreDias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sabado']
-    try:
-        resultadoHtml=""
-        for n in range(int((fechaComp - fecha).days)+1):
-            newIncidencia = Incidencia(matriculaCredencial=person, created_at=(fecha + timedelta(n)), causa_incidencia= tipo)
-            newIncidencia.save()
-            resultadoHtml += "<tr><td> "+ nombreDias[int((fecha + timedelta(n)).strftime("%w"))] +"</td><td>"+ (fecha + timedelta(n)).strftime("%d/%m/%Y") +"</td><td style='display:none'>"+ str(newIncidencia.pk) +"</td><td>--:--</td><td style='display:none' >"+ str( newIncidencia.pk) + "</td> <td >--:--</td><td>"+tipo.nombre+"</td><td>-</td> <td><button class='btn btn-default btn-xs eliminar' type='button'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span> Eliminar Registro </button></td></tr>"
-            if tipo.pk ==  5 or tipo.pk == 20  or tipo.pk == 6:
-                diasVaca1 = getVacaciones(person, 5)
-                diasVaca2 = getVacaciones(person, 20)  
-                diasExtra = getVacaciones(person, 6)  
-                stuent_data={"error":False,"errorMessage":"Incidencia aplicada al Personal",  "diasVaca1": diasVaca1, "diasVaca2":diasVaca2, "diasExtra": diasExtra}    
-            else: 
-                stuent_data={"error":False,"errorMessage":"Incidencia Agregada!", "tabla":resultadoHtml}
-        return stuent_data
-    except Exception as e:
-        print(e)
-        stuent_data={"error":True,"errorMessage":"Failed to Update Data"}
+    if not person.vacaciones_extra and tipo.pk == 6:
+        stuent_data={"error":True,"errorMessage": "La persona no cuenta con vacaciones extra"}
+    else:
+        try:
+            resultadoHtml=""
+            withErrors =""
+            for n in range(int((fechaComp - fecha).days)+1):
+                if ValidateVacations(person, fecha+ timedelta(n)):
+                    newIncidencia = Incidencia(matriculaCredencial=person, created_at=(fecha + timedelta(n)), causa_incidencia= tipo)
+                    newIncidencia.save()
+                    resultadoHtml += "<tr><td> "+ nombreDias[int((fecha + timedelta(n)).strftime("%w"))] +"</td><td>"+ (fecha + timedelta(n)).strftime("%d/%m/%Y") +"</td><td style='display:none'>"+ str(newIncidencia.pk) +"</td><td>--:--</td><td style='display:none' >"+ str( newIncidencia.pk) + "</td> <td >--:--</td><td>"+tipo.nombre+"</td><td>-</td> <td><button class='btn btn-default btn-xs eliminar' type='button'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span> Eliminar Registro </button></td></tr>"
+                else:
+                    withErrors += "Fecha " +   fecha+ timedelta(n).strftime("%d/%m/%Y") + " no agregada por existencia de incidencias previas. "
+                if tipo.pk ==  periodo1.periodo.pk or tipo.pk == periodo2.periodo.pk  or tipo.pk == 6:
+                    diasVaca1 = getVacaciones(person, periodo1.periodo.pk)
+                    diasVaca2 = getVacaciones(person, periodo2.periodo.pk)  
+                    diasExtra = getVacaciones(person, 6)  
+                    stuent_data={"error":False,"errorMessage":"Incidencia aplicada al Personal",  "diasVaca1": diasVaca1, "diasVaca2":diasVaca2, "diasExtra": diasExtra}    
+                else: 
+                    stuent_data={"error":False,"errorMessage":"Incidencia Agregada!", "tabla":resultadoHtml}
+                
+            if withErrors != "":
+                stuent_data["errorMessage"] =  withErrors
+
+            return stuent_data
+        except Exception as e:
+            print(e)
+            stuent_data={"error":True,"errorMessage":"Failed to Update Data"}
     return stuent_data
 
 def AddIncidenciaPerson(person, tipo, fecha, fechaComp):
+    periodo1 =PeriodosVacaciones.objects.get(idPeriodo= 1).periodo
+    periodo2= PeriodosVacaciones.objects.get(idPeriodo= 2).periodo
     nombreDias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sabado']
     match tipo.pk:
         case 1 | 2 | 17: 
             #Registro de Entrada y Registro de Salida 1 dd/mm/aaa --:-- ----
             fecha=  datetime.datetime.strptime(fecha, "%Y-%m-%dT%H:%M")
             return JsonResponse(AddOneDate(person, fecha, tipo),safe=False)
-        case 3 | 8 | 9 | 11| 12 | 14 | 16 | 19 | 21 | 22 | 23 | 24:
+        case 3 | 8 | 9 | 11| 12 | 14 | 16 | 19 | 21 | 22 | 23 | 24 | 25:
             #Permiso dia economica 1 dd/mm/aaaa
             fecha=  datetime.datetime.strptime(fecha, "%Y-%m-%d")
             return JsonResponse(AddOneDate(person, fecha, tipo),safe=False)
         #case 4:
             #borrar
-        case 6 | 7 | 13 | 15 | 18 | 5 | 20: 
+        case 6 | 7 | 13 | 15 | 18 | periodo1.pk | periodo2.pk: 
             #Vacaciones extraordinarias 2 dd/mm/aaaa
             fecha=  datetime.datetime.strptime(fecha, "%Y-%m-%d")
             fechaComp =  datetime.datetime.strptime(fechaComp, "%Y-%m-%d")
@@ -935,12 +943,10 @@ def AddIncidenciaPerson(person, tipo, fecha, fechaComp):
 @csrf_exempt
 def AddIncidencia(request):
     tipo = CausaIncidencia.objects.get(id=request.POST.get("tipoIncidencia"))
-    # if tipo.pk == 1 or tipo.pk ==2 or tipo.pk ==17  or tipo.pk== 10:
-    #     fecha=  datetime.datetime.strptime(request.POST.get("fechaIncidencia"), "%Y-%m-%dT%H:%M")
-    # else:
-    #     fecha=  datetime.datetime.strptime(request.POST.get("fechaIncidencia"), "%Y-%m-%d")
+    periodo1 = PeriodosVacaciones.objects.get(idPeriodo= 1)
+    periodo2 = PeriodosVacaciones.objects.get(idPeriodo= 2)
     if not request.POST.get("person"):
-        people = Person.objects.filter(Q(activo=True) & (Q(cat_contratacion__pk =1) | Q(cat_contratacion__pk =2)) & Q(comision_sindical=False) )
+        people = Person.objects.filter(Q(activo=True) & ~Q(cat_contratacion__pk =6) & Q(comision_sindical=False) )
         for i, person in enumerate(people):
             fecha = request.POST.get("fechaIncidencia")
             fechaComp = request.POST.get("fechaIncidenciaComp")
@@ -950,66 +956,29 @@ def AddIncidencia(request):
                 print(e)
                 stuent_data={"error":True,"errorMessage":"Failed to Update Data"}
                 return JsonResponse(stuent_data,safe=False)    
-        #     if request.POST.get("fechaIncidenciaComp") :
-        #         if tipo.pk == 10:
-        #             fechaComp =  datetime.datetime.strptime(request.POST.get("fechaIncidenciaComp"), "%Y-%m-%dT%H:%M")
-        #             newIncidencia = Incidencia(matriculaCredencial=person, created_at=fecha, causa_incidencia= tipo)
-        #             newIncidencia.save()
-        #             newIncidencia = Incidencia(matriculaCredencial=person, created_at=fechaComp, causa_incidencia= tipo)
-        #             newIncidencia.save()
-                    
-        #         else:    
-        #             fechaComp =  datetime.datetime.strptime(request.POST.get("fechaIncidenciaComp"), "%Y-%m-%d")
-        #             try:
-        #                 for n in range(int((fechaComp - fecha).days)+1):
-        #                     newIncidencia = Incidencia(matriculaCredencial=person, created_at=(fecha + timedelta(n)), causa_incidencia= tipo)
-        #                     newIncidencia.save()
-        #             except Exception as e:
-        #                 print(e)
-        #                 stuent_data={"error":True,"errorMessage":"Failed to Update Data"}
-        #                 return JsonResponse(stuent_data,safe=False)
-        #     else:
-        #         try:
-        #             newIncidencia = Incidencia(matriculaCredencial=person, created_at=fecha, causa_incidencia= tipo)
-        #             newIncidencia.save()
-        #         except Exception as e:
-        #             print(e)
-        #             stuent_data={"error":True,"errorMessage":"Failed to Update Data"}
-        #             return JsonResponse(stuent_data,safe=False)
         stuent_data={"error":False,"errorMessage":"Incidencia aplicada al Personal"}
         return JsonResponse(stuent_data,safe=False)
     else:
-        person =  Person.objects.get(pk=request.POST.get("person"))
+        person =  Person.objects.get(pk=(request.POST.get("person").strip()))
         fecha = request.POST.get("fechaIncidencia")
         fechaComp = request.POST.get("fechaIncidenciaComp")
+        if request.POST.get("return"):
+            variables = AddIncidenciaPerson(person, tipo, fecha, fechaComp) 
+            diasEco = getDiasEconomicos(person)
+            diasVaca1 = getVacaciones(person, periodo1.periodo.pk)
+            diasVaca2 = getVacaciones(person, periodo2.periodo.pk)
+            diasExtra = 10 - getVacaciones(person, 6)  if person.vacaciones_extra else 'No Aplica'
+            stuent_data={"error":False,"errorMessage": json.loads(variables.content.decode('utf-8')).get("errorMessage", ""), "persona": person.matricula, "diasEco": diasEco, "diasVaca1":diasVaca1, "diasVaca2": diasVaca2, "diasExtra":diasExtra}
+            return JsonResponse(stuent_data,safe=False)
         return AddIncidenciaPerson(person, tipo, fecha, fechaComp) 
-       # if tipo.pk == 1 or tipo.pk ==2:
-           
-    #     else:
-    #         if request.POST.get("fechaIncidenciaComp") :
-    #             if tipo.pk == 10:
-    #                 fechaComp =  datetime.datetime.strptime(request.POST.get("fechaIncidenciaComp"), "%Y-%m-%dT%H:%M")
-    #                 newIncidencia = Incidencia(matriculaCredencial=person, created_at=fecha, causa_incidencia= tipo)
-    #                 newIncidencia.save()
-    #                 newIncidencia1 = Incidencia(matriculaCredencial=person, created_at=fechaComp, causa_incidencia= tipo)
-    #                 newIncidencia1.save()
-    #                 resultadoHtml = "<tr><td> "+ nombreDias[int((fecha).strftime("%w"))] +"</td><td>"+ (fecha).strftime("%d/%m/%Y") +"</td><td style='display:none'>"+ str(newIncidencia.pk) +"</td><td>"+fecha.strftime('%H:%M') +"</td><td style='display:none' >"+ str( newIncidencia1.pk) + "</td> <td >"+fechaComp.strftime('%H:%M') +"</td><td>"+tipo.nombre+"</td><td>-</td> <td><button class='btn btn-default btn-xs eliminar' type='button'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span> Eliminar Registro </button></td></tr>"
-    #                 stuent_data={"error":False,"errorMessage":"Incidencia Agregada!", "tabla":resultadoHtml}
-    #             else:
-    #                 fechaComp =  datetime.datetime.strptime(request.POST.get("fechaIncidenciaComp"), "%Y-%m-%d")
-                   
-    #         else:
-    #             try:
-    #                 newIncidencia = Incidencia(matriculaCredencial=person, created_at=fecha, causa_incidencia= tipo)
-    #                 newIncidencia.save()
-    #                 resultadoHtml = "<tr><td> "+ nombreDias[int(fecha.strftime("%w"))] +"</td><td>"+ fecha.strftime("%d/%m/%Y") +"</td><td style='display:none'>"+ str(newIncidencia.pk) +"</td><td>--:--</td><td style='display:none' >"+ str( newIncidencia.pk) + "</td> <td >--:--</td><td>"+tipo.nombre+"</td><td>-</td><td><button class='btn btn-default btn-xs eliminar' type='button'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span> Eliminar Registro </button></td></tr>"
-    #                 stuent_data={"error":False,"errorMessage":"Incidencia Agregada!", "tabla":resultadoHtml}
-    #                 return JsonResponse(stuent_data,safe=False) 
-    #             except Exception as e:
-    #                 print(e)
-    #                 stuent_data={"error":True,"errorMessage":"Failed to Update Data"}
-    #                 return JsonResponse(stuent_data,safe=False)
-    # return JsonResponse(stuent_data,safe=False)
+
+def ValidateVacations(person, fecha):
+    incidencias = Incidencia.objects.filter( Q(matriculaCredencial= person) & Q(created_at = fecha) )
+    if incidencias.count() > 0:
+        return False    
+    return True
+
+
 
 @csrf_exempt
 def DeleteIncidencia(request):
@@ -1031,7 +1000,6 @@ def DeleteIncidencia(request):
 
 @csrf_exempt
 def GetPersonasIncidencia(request):
-  
     q=request.GET.get("q")
     queryset = Person.objects.filter(Q(activo=True) & ~Q(cat_contratacion__pk =6)).order_by('apellido1')
     if q and q !=" ":
@@ -1049,7 +1017,7 @@ def GetPersonasIncidencia(request):
 @csrf_exempt
 def GetIncidenciaTable(request):
     nombreDias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sabado']
-    causaIncidencia = CausaIncidencia.objects.all()
+    causaIncidencia = CausaIncidencia.objects.filter(isVisible = True)
     print(request.GET.get('id'))
     person = Person.objects.get(pk=request.GET.get('id'))
     dateInicio = datetime.datetime.strptime(request.GET.get("fecha1"), "%d/%m/%Y")
@@ -1126,30 +1094,21 @@ def getDiasEconomicos(person):
 
 def getVacaciones(person, tipo):
     now = datetime.datetime.now()
-    if tipo ==5:
-        if now.month>=6:
-            dateInicio = datetime.datetime(now.year, 1, 1, 00, 00, 00, 0) 
-            dateFin = datetime.datetime(now.year, 5, 31, 00, 00, 00, 0) 
-        else:
-            dateInicio = datetime.datetime(now.year-1, 6, 1, 00, 00, 00, 0) 
-            dateFin = datetime.datetime(now.year, 1, 1, 00, 00, 00, 0) 
-    elif tipo == 4:
+    periodo1 = PeriodosVacaciones.objects.get(idPeriodo= 1)
+    periodo2= PeriodosVacaciones.objects.get(idPeriodo= 2)
+    if tipo == 4:
         dateInicio = datetime.datetime(now.year-1, 5, 1, 00, 00, 00, 0) 
         dateFin = datetime.datetime(now.year, 5, 1, 00, 00, 00, 0) 
-    elif tipo == 20:
-        if now.month>=6:
-            dateInicio = datetime.datetime(now.year, 6, 1, 00, 00, 00, 0) 
-            dateFin = datetime.datetime(now.year+1, 1, 1, 00, 00, 00, 0) 
-        else:
-            dateInicio = datetime.datetime(now.year, 1, 1, 00, 00, 00, 0) 
-            dateFin = datetime.datetime(now.year, 5, 31, 00, 00, 00, 0) 
+    # elif tipo == periodo2.periodo.pk:
+    #     dateInicio = periodo2.dateInicio 
+    #     dateFin = periodo2.dateFin 
     elif tipo == 3 or tipo == 6 :
         dateInicio = datetime.datetime(now.year, 1, 1, 00, 00, 00, 0) 
         dateFin = datetime.datetime(now.year, 12, 31, 00, 00, 00, 0)     
     else:
        # dateInicio = person.date_update_vacaciones
        # dateFin = datetime.datetime(dateInicio.year+1, dateInicio.month, dateInicio.day, 00,00,00,0)
-        incidencias = Incidencia.objects.filter(Q(matriculaCredencial = person) & Q(causa_incidencia__pk=tipo)) #Vacaciones Segundo Periodo
+        incidencias = Incidencia.objects.filter(Q(matriculaCredencial = person) & Q(causa_incidencia__pk=tipo) & Q(created_at__year__gt= 2022)) #Vacaciones Segundo Periodo
         return incidencias.count()
     incidencias = Incidencia.objects.filter(Q(matriculaCredencial = person) & Q(created_at__range=[dateInicio, dateFin]) & Q(causa_incidencia__pk=tipo)) #Vacaciones Segundo Periodo
     return incidencias.count()
@@ -1165,7 +1124,8 @@ class AdminConsulta(View):
 @csrf_exempt
 def loginAdmin(request):
     try:
-        if request.is_ajax():
+        #if request.is_ajax():
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest': 
             user = request.GET['usuario'] 
             pwd = request.GET['password']
             response = get_attributes(user, pwd)
@@ -1219,7 +1179,7 @@ class AdminInciListView(ListView):
         now = datetime.datetime.now()
         list = [] 
         dashboard = False 
-        if self.kwargs['matricula'] == ('H210527' or 'M210276' or 'M210668'):
+        if self.kwargs['matricula'] in  ('H210527' , 'M210276' , 'M210668'):
             dashboard = True
         for ayuda in querysetAyuda:
             personaConAyuda=PersonaAyuda.objects.filter(Q(ayuda = ayuda) & Q(created_at__month = now.month) & Q(created_at__year = now.year) )
@@ -1233,6 +1193,8 @@ class AdminInciListView(ListView):
                 'ayudas': list,
                 'mes': now.strftime("%B"),
                 'dashboard': dashboard,
+                'periodo1_pk':  PeriodosVacaciones.objects.get(idPeriodo= 1).periodo.pk,
+                'periodo2_pk':  PeriodosVacaciones.objects.get(idPeriodo= 2).periodo.pk,
                 }
         return render(request, 'people/inci/administradores/inci_list.html' , content)
 

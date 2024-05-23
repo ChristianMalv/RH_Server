@@ -7,5 +7,7 @@ from .compensacionesView import InsertComp, GetCompPersonas, PersonCompListView,
 from .areasView import AreasListView
 from .ayudasView import PersonAyudaListView, GetAyudaPersonas, InsertAyuda, DeleteAyuda, GetPersonasAyuda, GetPersonaAyuda, AddAyuda, DeleteAyudaMonto
 from .charts import DashboardCheck, UpdateDashboard
-from .sersoc import  SersocListView, SersocCreateView, CreateSersocPerson
+from .sersoc import  SersocListView, SersocCreateView, CreateSersocPerson, GetAsistencia, SersocAsistListView
 from .consulta import ValidateRFC
+from .vacaciones import PersonVacacionesListView, GetPersonasVacacion, GetDetalleVacacion, DeleteDayVacacion
+from .capacitacion import CapacitacionCreateView, CapacitacionListView, SaveCapacitacion, loginUsers, Capacitacion, CapacitacionesxPersona

@@ -43,7 +43,7 @@ from django.http import FileResponse, Http404
 from pyreportjasper import PyReportJasper
 import json 
 from .incidenciasView import calculoIncidenciasPersona, revisarFecha
-from PyPDF2 import PdfMerger
+from PyPDF2 import PdfFileMerger
 @csrf_exempt
 def InsertComp(request):
     id=request.POST.get("id").strip()
@@ -174,7 +174,7 @@ def compensacionesArea(request,fechaInicio,fechaFin, folio ):
             )
             pyreportjasper.process_report()
             print('Result is the file below.')
-    merger = PdfMerger()
+    merger = PdfFileMerger()
     for x in range(i):
         existing_pdf = settings.MEDIA_ROOT+ '/Formatos/Compensacion/Area/ReporteCompensacion '+ str(x) +'.pdf' 
         outputfinal = settings.MEDIA_ROOT+ '/Formatos/Compensacion/Area/ReporteCompensacionGeneral '+fechaInicio+' al '+fechaFin+'.pdf'
@@ -300,7 +300,10 @@ def CreateJsonReportNoData(dateInicio, dateFin):
                 except AttributeError:
                  print("Attribute does not exist")
                 print(incidencia[0]['created_at'])
-                fechaRevisada = revisarFecha(persona.cat_horario.nombre, incidencia[0]['created_at'])
+                if persona.cat_horario:
+                    fechaRevisada = revisarFecha(persona.cat_horario.nombre, incidencia[0]['created_at'])
+                else:
+                    fechaRevisada=0 
                 if fechaRevisada==1:
                     tipoInci="Entrada no Registrada" 
                 else:
@@ -318,7 +321,7 @@ def dataToAppend(dateInicio, dateFin, persona, incidencia, fecha  ):
     return {'Fecha':  "Del día "+ dateInicio.strftime("%d-%m-%Y")+" al "+dateFin.strftime("%d-%m-%Y"),
                 'Rfc': persona.rfc,
                 'Nombre': persona.nombres + ' ' + persona.apellido1 + ' '+ persona.apellido2,
-                'Horario': persona.cat_horario.nombre,
+                'Horario': persona.cat_horario.nombre if persona.cat_horario else "Sin horario capturado",
                 'FechaIncidencia':fecha,
                 'Incidencia': incidencia,
                 'Area': persona.cat_area_org.nombre,
@@ -337,7 +340,7 @@ def reporteIncidencias(request,fechaInicio,fechaFin, incidencia  ):
     if incidencia > 0:
         tipoIncidencia= CausaIncidencia.objects.get(pk=incidencia)
         incidencia = tipoIncidencia.nombre
-        CreateJsonReport(dateInicio, dateFin,incidencia)
+        CreateJsonReport(dateInicio, dateFin,tipoIncidencia)
         dataFile= '/Formatos/dataReporteIncidencias.json'
         outputFile= settings.MEDIA_ROOT+ '/Formatos/ReporteIncidencias'+ incidencia +' '+fechaInicio+' al '+fechaFin+'.xls' 
     else:
@@ -345,7 +348,7 @@ def reporteIncidencias(request,fechaInicio,fechaFin, incidencia  ):
         outputFile= settings.MEDIA_ROOT+ '/Formatos/ReporteIncidenciasSinRegistroEntradaSalida'+fechaInicio+' al '+fechaFin+'.xls' 
         dataFile = '/Formatos/dataReporteSinRegistros.json'
         incidencia = 'Entrada y Salida sin Registro'
-    input_file = settings.MEDIA_ROOT+ '/Formatos/ReporteIncidencias_v1.jrxml'
+    input_file = settings.MEDIA_ROOT+ '/Formatos/ReporteIncidencias_v1_2.jrxml'
     conn = {
       'driver': 'json',
       'data_file': settings.MEDIA_ROOT+ dataFile,
