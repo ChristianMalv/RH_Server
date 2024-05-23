@@ -17,6 +17,8 @@ from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 import requests
 from django.utils import timezone
+import base64
+from django.core.files.base import ContentFile
 
 
 def context_data():
@@ -30,49 +32,9 @@ def context_data():
 
     return context
 
-
-# # Create your views here.
-# def login_page(request):
-#     context = context_data()
-#     context['topbar'] = False
-#     context['footer'] = False
-#     context['page_name'] = 'login'
-#     context['page_title'] = 'Login'
-#     return render(request, 'registro/login.html', context)
-
-# def login_user(request):
-#     logout(request)
-#     resp = {"status":'failed','msg':''}
-#     username = ''
-#     password = ''
-#     if request.POST:
-#         username = request.POST['username']
-#         password = request.POST['password']
-
-#         user = authenticate(username=username, password=password)
-#         if user is not None:
-#             if user.is_active:
-#                 login(request, user)
-#                 resp['status']='success'
-#             else:
-#                 resp['msg'] = "Incorrect username or password"
-#         else:
-#             resp['msg'] = "Incorrect username or password"
-#     return HttpResponse(json.dumps(resp),content_type='application/json')
-
-
-# def home(request):
-#     context = context_data()
-#     context['page'] = 'home'
-#     context['page_title'] = 'Home'
-#     context['employees'] = models.Employee.objects.count()
-#     return render(request, 'registro/home.html', context)
-
 def logout_user(request):
     logout(request)
     return redirect('login-page')
-
-
 
 def employee_list(request):
     context =context_data()
@@ -82,14 +44,12 @@ def employee_list(request):
 
     return render(request, 'registro/employee_list.html', context)
 
-
- 
 def manage_employee(request, pk=None):
     # Suponiendo que context_data() es una función que prepara datos generales para el contexto
     context = context_data()
     
     try:
-        response = requests.get("https://credenciales.aprende.gob.mx/personal/api")
+        response = requests.get("http://localhost:8000/personal/api")
         direcciones = response.json() if response.status_code == 200 else []
     except requests.RequestException:
         direcciones = []  # En caso de fallo, envía una lista vacía
@@ -112,13 +72,42 @@ def manage_employee(request, pk=None):
 
     return render(request, 'registro/manage_employee.html', context)
 
+# def save_employee(request):
+#     resp = {'status': 'failed', 'msg': ''}
+#     employee_id = None
+#     employee = None  # Inicializamos employee con None
 
+#     if not request.method == 'POST':
+#         resp['msg'] = "No data has been sent into the request."
+#     else:
+#         if request.POST['id'] == '':
+#             form = forms.SaveEmployee(request.POST, request.FILES)
+#         else:
+#             employee = models.Employee.objects.get(id=request.POST['id'])
+#             form = forms.SaveEmployee(request.POST, request.FILES, instance=employee)
+#         if form.is_valid():
+#             employee = form.save()
+#             employee_id = employee.id
+#             if request.POST['id'] == '':
+#                 messages.success(request, f"El visitante {request.POST['employee_code']} ha ingresado correctamente.")
+#             else:
+#                 messages.success(request, f"El visitante {request.POST['employee_code']} ha sido actualizado correctamente.")
+#             resp['status'] = 'success'
+#         else:
+#             for field in form:
+#                 for error in field.errors:
+#                     if not resp['msg'] == '':
+#                         resp['msg'] += str("<br />")
+#                     resp['msg'] += str(f"[{field.label}] {error}")
 
+#     resp['employee_id'] = employee_id
+
+#     return JsonResponse(resp)
 
 def save_employee(request):
     resp = {'status': 'failed', 'msg': ''}
     employee_id = None
-    employee = None  # Inicializamos employee con None
+    employee = None
 
     if not request.method == 'POST':
         resp['msg'] = "No data has been sent into the request."
@@ -128,6 +117,7 @@ def save_employee(request):
         else:
             employee = models.Employee.objects.get(id=request.POST['id'])
             form = forms.SaveEmployee(request.POST, request.FILES, instance=employee)
+        
         if form.is_valid():
             employee = form.save()
             employee_id = employee.id
@@ -136,6 +126,13 @@ def save_employee(request):
             else:
                 messages.success(request, f"El visitante {request.POST['employee_code']} ha sido actualizado correctamente.")
             resp['status'] = 'success'
+
+            # Convertir la imagen en base64
+            if employee.avatar:
+                with open(employee.avatar.path, "rb") as image_file:
+                    encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
+                resp['avatar_base64'] = encoded_string
+                resp['matricula'] = employee.matricula
         else:
             for field in form:
                 for error in field.errors:

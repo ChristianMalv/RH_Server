@@ -166,6 +166,7 @@
                     <form action="" id="employee-form" class="divisor">
                         {% csrf_token %}
                         <input type="hidden" name="id" value="{{ employee.id }}">
+                        <input type="hidden" name="avatar_base64" id="avatar_base64"> <!-- Campo oculto para la imagen en base64 -->
                         <div class="row">
                             <div class="col-lg-6">
                                 <select id="direccionSelect" name="direccion">
@@ -184,31 +185,36 @@
                                     <label for="first_name">Nombre(s)</label>
                                     <input type="text" id="first_name" name="first_name" value="{{ employee.first_name }}" placeholder="Nombre(s)" required>
                                 </div>
+
                                 <div class="mb-3">
                                     <label for="middle_name" >Apellido Paterno</label>
                                     <input type="text"  id="middle_name" name="middle_name" value="{{ employee.middle_name }}" placeholder="Apellido Paterno" required>
                                 </div>
+
                                 <div class="mb-3">
                                     <label for="last_name" >Apellido Materno</label>
                                     <input type="text"  id="last_name" name="last_name" value="{{ employee.last_name }}" placeholder="Apellido Materno" required>
                                 </div>
+
                                 <div class="mb-3">
                                     <label for="department" >Área a visitar</label>
                                     <input type="text"  id="department" name="department" value="{{ employee.department }}" placeholder="Área a visitar" required>
                                 </div>
+
                                 <div class="mb-3">
                                     
                                     <input type="hidden"  id="tipo" name="tipo" value="{{ employee.tipo }}" placeholder="Tipo de visitante" required>
                                 </div>
+
                                 <div class="mb-3">
                                     
                                     <input type="hidden"  id="matricula" name="matricula" value="{{ employee.matricula }}" placeholder="Matrícula" required>
                                 </div>
+
                                 <div class="mb-3">
                                     <label for="employee_code" >No. Gafete: </label>
                                     <input type="number" min="0" id="employee_code" name="employee_code" value="{{ employee.employee_code }}" placeholder="Número de gafete" required>
                                 </div>
-
                             </div>
                             <div class="col-lg-6">
                                 <div class="mb-3">
@@ -235,9 +241,10 @@
             </div>
         </div>
     </div>
-    
 </section>
+
  {% endblock pageContent %} {% block ScriptBlock %}
+
 <script>
     $(document).ready(function() {
         // Obtener la URL actual
@@ -292,6 +299,7 @@
             });
         }
     });
+
     document.addEventListener('DOMContentLoaded', function () {
         function updateTime() {
             const now = new Date();
@@ -312,9 +320,9 @@
             document.getElementById('clock').textContent = timeString;
             document.getElementById('date').textContent = dateString;
         }
-    
         setInterval(updateTime, 1000);
     });
+
     document.addEventListener('DOMContentLoaded', function() {
         const direccionSelect = document.getElementById('direccionSelect');
         const empleadoSelect = document.getElementById('empleadoSelect');
@@ -366,7 +374,6 @@
         });
     });
     
-
     let capturedImageFile; // Variable para almacenar la imagen capturada como un objeto File
 
     $(function() {
@@ -390,15 +397,18 @@
                 processData: false,
                 contentType: false,
                 success: function(response) {
-                    console.log({data:response});
                     if (response.status === 'success' && response.employee_id) {
                         Swal.fire({
                             icon: 'success',
                             title: 'Visita correcta',
-                            timer: 1500, // Mostrar el mensaje durante 1.5 segundos
+                            timer: 1500, 
                             showConfirmButton: false
                         }).then(() => {
                             // window.location.href = "/employee-page/" + response.employee_id;
+
+                            console.log("Avatar en base64:", response.avatar_base64);
+                            console.log(`La matricula del empleado es: ${response.matricula}`)
+                            alert(`La matrícula del usuario, es: ${response.matricula}\n Su foto en bs64: ${response.avatar_base64}`)
                             window.location.href = "{% url 'employee-page' %}"
                         });
                     } else {
@@ -479,10 +489,11 @@
                     // Convertir la imagen a un objeto File y almacenarla en una variable global
                     capturedImageFile = dataURLtoFile(imageDataUrl, 'captured_image.jpeg');
 
+                    document.getElementById('avatar_base64').value = imageDataUrl;
+
                     // Ocultar la cámara
                     videoElement.style.display = 'none';
                 }
-
 
                 // Crear y agregar el botón "Tomar foto"
                 let takePhotoButton = document.createElement('button');
@@ -509,7 +520,6 @@
 
         // Llamar a la función startCamera al cargar la página
         window.addEventListener('load', startCamera);
-
     });    
 </script>
 {% endblock ScriptBlock %}

@@ -37,15 +37,14 @@
                 </div>
                 <div class="lh-1 text-center">
                     <img src="{% qr_url_from_text employee.matricula size=5 version=1 image_format='png' %}" id="card-qr" alt="QR con Matricula y foto">
-                    {% comment %} <div class="text-center"><b>{{employee.matricula}}</b></div> {% endcomment %}
                     <!-- {% with image_data=employee.avatar.read %}
                         {% with image_base64=image_data|base64_encode %}
-                            {% with qr_text=image_base64 %}
-                                <img src="{% qr_url_from_text qr_text size=5 version=1 image_format='png' %}" id="card-qr" alt="QR con Matricula y foto">
+                            {% with image_src="data:image/png;base64,"|add:image_base64 %}
+                                {{ image_src}}
+                                <img src="{{ image_src }}" alt="Imagen del empleado" id="employee-avatar">
                             {% endwith %}
                         {% endwith %}
                     {% endwith %} -->
-
                 </div>
             </div>
         </div>
