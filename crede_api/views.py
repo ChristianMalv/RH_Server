@@ -104,7 +104,7 @@ class AreaListApiView(APIView):
         #    & Q(metadatos__contains={'primer_apellido':primer_apellido}) \
         #    & Q(metadatos__contains={'segundo_apellido':segundo_apellido}) \
         #    & Q(created_at__day=now.day, created_at__month = now.month, created_at__year = now.year)
-        visitor = Visitante.objects.filter(metadatos__contains={'tarjeton':tarjeton}).last()
+        visitor = Visitante.objects.filter(metadatos__contains={'tarjeton':tarjeton},salida__isnull=True).last()
         data = {}
 
         for key in request.data.keys():
@@ -134,13 +134,13 @@ class SalidaApiView(APIView):
         return Response(serializer.data,status=status.HTTP_200_OK)
     def post(self,request,*args,**kargs):
         tarjeton = request.data.get('tarjeton')
-        visitante = Visitante.objects.filter(medadatos__contains={'tarjeton':tarjeton},salida__isnull=True).last()
+        visitante = Visitante.objects.filter(metadatos__contains={'tarjeton':tarjeton},salida__isnull=True).last()
         if visitante is None:
-            return Response("{'error':'Tarjetón ya entregado o sin ingreso'}",status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error':'Tarjetón ya retirado o sin ingreso'},status=status.HTTP_400_BAD_REQUEST)
         else:
-            visitante.salida = datetime.datime.now()
+            visitante.salida = datetime.datetime.now()
             visitante.save()
-            serializer = VisitanteSerializer(q,many=False)
+            serializer = VisitanteSerializer(visitante,many=False)
             return Response(serializer.data,status = status.HTTP_200_OK)
 
 
