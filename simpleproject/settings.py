@@ -10,27 +10,27 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
+# settings.py
+
 import os
 import mimetypes
 
 mimetypes.add_type("text/css", ".css", True)
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'vp-0rke=$u$g7yn6w=l$02+f!*y4uizr_x4k*l@w!4u2xb(68g'
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost:9000','localhost', '172.16.110.29', '127.0.0.1', 'credenciales.televisioneducativa.gob.mx', 'credenciales.aprende.gob.mx']
-
-
-# Application definition
+ALLOWED_HOSTS = [
+    '172.16.110.29',
+    'localhost:9000',
+    'localhost',
+    '127.0.0.1',
+    'credenciales.televisioneducativa.gob.mx',
+    'credenciales.aprende.gob.mx'
+]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -45,18 +45,17 @@ INSTALLED_APPS = [
     'people',
     'evaluacion',
     'django.contrib.postgres',
-   'crede_api',
-	'crispy_bootstrap4',
-	'rest_framework',
+    'crede_api',
+    'crispy_bootstrap4',
+    'rest_framework',
     'rest_framework.authtoken',
-	'corsheaders',
-    
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-	'corsheaders.middleware.CorsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -69,9 +68,7 @@ ROOT_URLCONF = 'simpleproject.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [
-            os.path.join(BASE_DIR, 'templates')
-        ],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -85,18 +82,36 @@ TEMPLATES = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-"http://localhost:9000"
+    "http://172.16.110.29:8088",
+]
+
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOW_METHODS = [
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
+]
+
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "accept-encoding",
+    "authorization",
+    "content-type",
+    "dnt",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
 ]
 
 WSGI_APPLICATION = 'simpleproject.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/2.1/ref/settings/#databases
-
 DATABASES = {
- 
-     'default': {
+    'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'recursoshumanos',
         'USER': 'postgres',
@@ -105,10 +120,6 @@ DATABASES = {
         'PORT': '5432',
     }
 }
-
-
-# Password validation
-# https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -130,12 +141,9 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated', 
-    )
+        'rest_framework.permissions.IsAuthenticated',
+    ),
 }
-
-# Internationalization
-# https://docs.djangoproject.com/en/2.1/topics/i18n/
 
 LANGUAGE_CODE = 'es'
 
@@ -145,14 +153,9 @@ USE_I18N = True
 
 USE_L10N = True
 
-DATE_FORMAT = "%d/%m/%y"
-
 USE_TZ = False
 
 DATE_FORMAT = "%d/%m/%y"
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
 
@@ -162,5 +165,6 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap4'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-STATIC_ROOT = str(BASE_DIR) + "/static/"
-DEFAULT_AUTO_FIELD='django.db.models.AutoField'
+STATIC_ROOT = os.path.join(BASE_DIR, "static/")
+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
