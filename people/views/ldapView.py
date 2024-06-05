@@ -66,7 +66,6 @@ def get_attributes(user, pwd):
       
     except Exception as e:
         login_data={"error":True,"exception": e }
-        print (':(')
     return login_data    
        
 

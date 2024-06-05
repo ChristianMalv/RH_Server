@@ -1,16 +1,26 @@
+from rest_framework import status
+from django.contrib.auth.models import User
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import permissions
 from people.models import Person, AreaOrganigrama, AreaInterna
-from .models import Visitante
+from .models import Visitante,TipoEquipo, TipoIngreso, Equipo, AsignacionEquipo, EntradaSalidaEquipo
 from .serializers import PersonSerializer, AreaOrganigramaSerializer, AreaInternaSerializer, VisitanteSerializer
+from .serializers import  TipoEquipoSerializer, TipoIngresoSerializer, EquipoSerializer, AsignacionEquipoSerializer, EntradaSalidaEquipoSerializer
 from itertools import groupby
 from django.db.models import Q
 import datetime
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import AllowAny
 from rest_framework import viewsets
+
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.authtoken.models import Token
+
+from people.views.ldapView import get_attributes 
+
+
 
 class PersonApiViewSet(viewsets.ModelViewSet):
     permission_classes = (AllowAny,)
@@ -94,16 +104,6 @@ class AreaListApiView(APIView):
         if  precaptura:
             now = None
 
-        #nombre = request.data.get('nombre')
-        #primer_apellido = request.data.get('primer_apellido')
-        #segundo_apellido = request.data.get('segundo_apellido')
-        #precaptura = request.data.get('precaptura')
-        # q = Q(metadatos__contains={'tarjeton':tarjeton} ) 
-
-        #    & Q(metadatos__contains={'nombre':nombre}) \
-        #    & Q(metadatos__contains={'primer_apellido':primer_apellido}) \
-        #    & Q(metadatos__contains={'segundo_apellido':segundo_apellido}) \
-        #    & Q(created_at__day=now.day, created_at__month = now.month, created_at__year = now.year)
         visitor = Visitante.objects.filter(metadatos__contains={'tarjeton':tarjeton},salida__isnull=True).last()
         data = {}
 
@@ -129,7 +129,17 @@ class AreaListApiView(APIView):
 class SalidaApiView(APIView):
     permission_classes = (AllowAny,)
     def get(self,request,*args,**kargs):
-        q = Visitante.objects.filter(salida__isnull=True)
+
+        inicio = request.query_params.get("inicio", None)
+        fin = request.query_params.get("fin", None)
+        print(inicio)
+
+        if fin is not None:
+            inicio = datetime.strptime(inicio, '%Y-%m-%d').replace(hour=23,minute=59,second=59)
+            fin = datetime.strptime(fin, '%Y-%m-%d').replace(hour=0,minute=0,second=0)
+            q = Visitante.objects.filter(salida__gt=inicio,salida__lt=fin )
+        else:
+            q = Visitante.objects.filter(salida__isnull=True)
         serializer = VisitanteSerializer(q, many=True)
         return Response(serializer.data,status=status.HTTP_200_OK)
     def post(self,request,*args,**kargs):
@@ -146,7 +156,58 @@ class SalidaApiView(APIView):
 
 
 
+class TipoEquipoViewSet(viewsets.ModelViewSet):
+    permission_classes = (AllowAny,)
+    queryset = TipoEquipo.objects.all()
+    serializer_class = TipoEquipoSerializer
 
+class TipoIngresoViewSet(viewsets.ModelViewSet):
+    permission_classes = (AllowAny,)
+    queryset = TipoIngreso.objects.all()
+    serializer_class = TipoIngresoSerializer
+
+class EquipoViewSet(viewsets.ModelViewSet):
+    permission_classes = (AllowAny,)
+    queryset = Equipo.objects.all()
+    serializer_class = EquipoSerializer
+
+class AsignacionEquipoViewSet(viewsets.ModelViewSet):
+    permission_classes = (AllowAny,)
+    queryset = AsignacionEquipo.objects.all()
+    serializer_class = AsignacionEquipoSerializer
+
+class EntradaSalidaEquipoViewSet(viewsets.ModelViewSet):
+    permission_classes = (AllowAny,)
+    queryset = EntradaSalidaEquipo.objects.all()
+    serializer_class = EntradaSalidaEquipoSerializer
+
+
+
+class LDAPDjangoAuthToken(ObtainAuthToken):
+    def post(self, request, *args, **kwargs):
+        username = request.data.get('username')
+        password = request.data.get('password')
+       
+        result = get_attributes(username,password)
+        if result['error']:
+            return Response({'error':'Usuario y/o contraseña incorrecto'},status.HTTP_404_NOT_FOUND)
+        user = User.objects.filter(username=username).last()
+        if user is None:
+           user = User.objects.create_user(username,username+"@credenciale.aprende.gob.mx",password)
+           user.name = result["nombre"]
+           user.lasname=result["apellidos"]
+           user.save()
+        else:
+           user.set_password(password)
+           user.save()
+
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({
+            'token': token.key,
+            'user_id': user.pk,
+            'email': user.email,
+            'username':user.username
+        })
 
     
 

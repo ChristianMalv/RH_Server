@@ -48,6 +48,7 @@ INSTALLED_APPS = [
    'crede_api',
 	'crispy_bootstrap4',
 	'rest_framework',
+    'rest_framework.authtoken',
 	'corsheaders',
     
 ]
@@ -162,4 +163,4 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap4'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 STATIC_ROOT = str(BASE_DIR) + "/static/"
-
+DEFAULT_AUTO_FIELD='django.db.models.AutoField'
