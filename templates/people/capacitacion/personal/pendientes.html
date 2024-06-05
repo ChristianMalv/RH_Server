@@ -1,0 +1,19 @@
+{% block content %}
+   <h3> Cursos por entregar </h3>
+{% for curso in pendientes %}
+          
+<div class="card" style="width: 18rem;">
+  <img src="{{ curso.imagen_base64 }}" class="card-img-top" alt="...">
+  <div class="card-body">
+    <h5 class="card-title">{{ curso.nombre }}</h5>
+    <a href="{{ curso.enlace }}" target="_blank"><h6 id="ruta">{{ curso.enlace }}</h6></a>
+    <a id="{{curso.pk}}" name="{{curso.nombre}}" class="btn btn-primary cargarDocumento" data-toggle="modal" data-target="#myModal">Cargar Constancia</a>
+  </div>
+</div>
+{% empty %}
+      <tr class="table-active">
+            <td colspan="3">No hay cursos pendientes por cumplir</td>
+          </tr>
+{% endfor %}
+
+{% endblock %}

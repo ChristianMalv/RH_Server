@@ -92,7 +92,7 @@ $("#admin-login").click(function(){
     })
     .done(function(response){
       if(response['error']==false){
-        window.open("personas/"+ response['data'] , '_self'); 
+        window.open("persona/"+ response['data'] , '_self'); 
         setTimeout(function(){ 
         cleanForm();
         }, 3000); 

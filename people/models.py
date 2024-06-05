@@ -4,6 +4,7 @@ from django.db import models
 from django.utils import timezone
 from smart_selects.db_fields import ChainedForeignKey 
 from multi_email_field.fields import MultiEmailField
+from django.db.models import JSONField
 # Create your models here.
 import os
 
@@ -316,4 +317,17 @@ class Capacitacion(Catalogo):
 class EvidenciaCurso(models.Model):
     info_person = models.ForeignKey(Person, on_delete=models.CASCADE)
     curso_tomado = models.ForeignKey(Capacitacion, on_delete=models.CASCADE)
-    ruta_drive =  models.CharField(max_length=255, blank=False, verbose_name="Ruta Drive")
+    metadatos = JSONField()
+    aprobado = models.IntegerField()
+    observaciones = models.CharField(max_length=255, blank=True, null=True, verbose_name="Observaciones")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+class Sharepoint(models.Model):
+    client_id = models.CharField(max_length=255, blank=True, null=True, verbose_name="CLIENT_ID")
+    tenant_id = models.CharField(max_length=255, blank=True, null=True, verbose_name="TENANT_ID")
+    authority_url = models.CharField(max_length=255, blank=True, null=True, verbose_name="AUTHORITY_URL")
+    resource_url = models.CharField(max_length=255, blank=True, null=True, verbose_name="RESOURCE_URL")
+    api_version = models.CharField(max_length=255, blank=True, null=True, verbose_name="API_VERSION")
+    username = models.CharField(max_length=255, blank=True, null=True, verbose_name="USERNAME")
+    password = models.CharField(max_length=255, blank=True, null=True, verbose_name="PASSWORD")

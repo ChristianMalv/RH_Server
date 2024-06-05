@@ -1,0 +1,242 @@
+{% extends 'base_dir.html' %}
+{% csrf_token %}
+{% block content %}
+<style>
+  #heading { color: #545454; }
+  span { color: #000000 }
+  #ruta { color: #4D92DF; }
+  
+      .cards {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .cards > * {
+        flex: 1 1 350px;
+        width: 350px;
+        margin: 10px;
+       
+
+      }
+
+      .cards * { font-size: 14px; }
+      .cards h4 { font-size: 18px; }
+
+
+</style>
+<div class="container">
+
+  <div class="row">
+                        <div class="col-md-12 col-lg-12">
+                            <h2> Seguimiento Capacitación </h2>
+                            <h3>{{person.nombres}} {{ person.apellido1 }} {{person.apellido2}}</h2>
+                            <hr class="red">
+                        </div>
+                    </div>
+  
+  <ul class="nav nav-tabs">
+  <li id="liPendientes" class="tablinks"><a data-toggle="tab" onclick="openTab(event, 'Pendientes')" id="defaultOpen">Cursos pendientes</a></li>
+  <li id="liEntregadas" class="tablinks"><a data-toggle="tab" onclick="openTab(event, 'Entregadas')">Cursos entregados</a></li>
+  <li id="liRechazados" class="tablinks"><a data-toggle="tab" onclick="openTab(event, 'Rechazados')">Evidencias rechazadas</a></li>
+  </ul>
+<div id="Pendientes" class="tabcontent">  
+<h3> Cursos por entregar </h3>
+{% for curso in pendientes %}
+          
+<div class="card" style="width: 18rem;">
+  <img src="{{ curso.imagen_base64 }}" class="card-img-top" alt="...">
+  <div class="card-body">
+    <h5 class="card-title">{{ curso.nombre }}</h5>
+    <a href="{{ curso.enlace }}" target="_blank"><h6 id="ruta">{{ curso.enlace }}</h6></a>
+    <a id="{{curso.pk}}" name="{{curso.nombre}}" class="btn btn-primary cargarDocumento" data-toggle="modal" data-target="#myModal">Cargar Constancia</a>
+  </div>
+</div>
+{% empty %}
+      <tr class="table-active">
+            <td colspan="3">No hay cursos pendientes por cumplir</td>
+          </tr>
+{% endfor %} 
+
+</div>
+<div id="Entregadas" class="tabcontent"> 
+<h3> Cursos entregados </h3> 
+  {% for curso in entregadas %}
+            
+  <div class="card" style="width: 18rem;">
+    <img src="{{ curso.curso_tomado__imagen_base64 }}" class="card-img-top" alt="...">
+    <div class="card-body">
+      <h5 class="card-title">{{ curso.curso_tomado__nombre }}</h5>
+      {% for key, value in curso.metadatos.items %}
+         {% if key == 'webUrl' %}
+          <a href="{{ value }}" target="_blank" class="btn btn-primary">Consultar Evidencia</a>
+          {% endif %}
+      {% endfor %}
+        {% if curso.aprobado == 0 %}
+        <h6> En verificación </h6>
+        {% elif curso.aprobado == 2 %}
+        <h6> Aceptado </h6>
+        {% endif %}
+    </div>
+  </div>
+  {% empty %}
+      <tr class="table-active">
+            <td colspan="3">No hay cursos entregados aún</td>
+          </tr>
+  {% endfor %}
+</div>
+<div id="Rechazados" class="tabcontent"> 
+<h3> Evidencias rechazadas </h3> 
+{% for curso in rechazos %}
+            
+  <div class="card" style="width: 18rem;">
+    <img src="{{ curso.curso_tomado__imagen_base64 }}" class="card-img-top" alt="...">
+    <div class="card-body">
+      <h5 class="card-title">{{ curso.curso_tomado__nombre }}</h5>
+      {% for key, value in curso.metadatos.items %}
+         {% if key == 'webUrl' %}
+          <a href="{{ value }}" target="_blank" class="btn btn-primary">Consultar Evidencia</a>
+          {% endif %}
+      {% endfor %}
+    <p><h6> Observaciones:</h6> {{curso.observaciones}} </p> 
+     <a id="{{curso.pk}}" name="{{curso.curso_tomado__pk}}" class="btn btn-primary remplazarDocumento" data-toggle="modal" data-target="#myModal">Cargar Constancia</a>
+    </div>
+  </div>
+  {% empty %}
+      <tr class="table-active">
+            <td colspan="3">No hay cursos rechazados aún</td>
+          </tr>
+  {% endfor %}
+</div>
+<div class="modal fade"  id="myModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Adjuntar evidencia de la Capacitación</h4>
+      </div>
+      <div class="modal-body">
+        <form id="data" method="post" enctype="multipart/form-data">
+        <!--<form action="{% url 'save_capacitacion_persona' %}" method="post" enctype="multipart/form-data">-->
+          {% csrf_token %}
+          <div class="col-md-12">
+            <div style="display:none"> 
+              <input type="text" id="pk" name="pk"/>
+              <input type="text" id="matricula" name="matricula" value="{{person.matricula}}"/>
+              <input type="text" id="remplazar" name="remplazar"/>
+              <input type="text" id="pk_evidencia" name="pk_evidencia"/>
+            </div>
+                <h4 id="cursoDocumento"></h4>
+              <input type="file" name="myfile" placeholder="Cargue documento que acredite el curso" accept="dcoument/pdf">
+              <hr>
+         </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal" id="close_btn">Cerrar</button>
+            <button type="submit" id="submit" class="btn btn-primary">Guardar</button>
+          </div>
+        </form>   
+          
+        <div class="form-group">
+          <div class="alert alert-success" id="ins_success" style="display:none">
+        </div>
+        <div class="alert alert-danger" id="ins_error" style="display:none">
+
+        </div>
+         
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<script>
+document.getElementById("defaultOpen").click();
+
+$("form#data").submit(function(e) {
+    e.preventDefault();    
+    var formData = new FormData(this);
+
+    $.ajax({
+        url: "{% url 'save_capacitacion_persona' %}",
+        type: 'POST',
+        data: formData,
+        cache: false,
+        contentType: false,
+        processData: false
+    }).done(function(response){
+        if(response['error']==false){
+            $("#ins_error").hide();
+            $("#ins_success").text(response['errorMessage']);
+            $("#ins_success").show();
+            $("#Pendientes").html(response['pendientes']);
+            $("#Entregadas").html(response['entregadas']);
+            $("#Rechazos").html(response['rechazados']);
+        }
+        else{
+            $("#ins_success").hide();
+            $("#ins_error").text(response['errorMessage']);
+            $("#ins_error").show();
+        }
+    })
+    .fail(function(){
+          $("#ins_success").hide();
+          $("#ins_error").text("Something Went Wrong!");
+          $("#ins_error").show();
+    })
+    setTimeout(() => {
+          $("#ins_success").hide();
+          $("#ins_error").hide();
+          $("#myfile").val();  
+        }, 2000);
+});
+
+function openTab(evt, cityName) {
+  // Declare all variables
+  var i, tabcontent, tablinks;
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+
+  tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
+  }
+
+  document.getElementById(cityName).style.display = "block";
+  document.getElementById('li'+cityName).className += " active";  
+  //evt.currentTarget.className += " active";
+}
+
+$(document).on("click",".cargarDocumento",function(){
+  var id = $(this).attr('id');
+  console.log(id);
+  $('#pk').val(id);
+  var element = document.getElementById(id);
+  var name = element.getAttribute('name');
+  $("#cursoDocumento").html(name);
+   $('#remplazar').val(false);
+  });
+
+$(document).on("click",".remplazarDocumento",function(){
+  var id = $(this).attr('id');
+  console.log(id);
+  var element = document.getElementById(id);
+  var name = element.getAttribute('name');
+  $('#pk').val(name);
+  $('#remplazar').val(true);
+  $("#pk_evidencia").val(id);
+  $("#cursoDocumento").html('Remplace evidencia anterior');
+  });
+</script>
+<style type="text/css">
+
+.tabcontent {
+  animation: fadeEffect 1s; /* Fading effect takes 1 second */
+}
+
+/* Go from zero to full opacity */
+@keyframes fadeEffect {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}
+</style>
+{% endblock %}

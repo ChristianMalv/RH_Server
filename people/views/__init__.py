@@ -10,4 +10,5 @@ from .charts import DashboardCheck, UpdateDashboard
 from .sersoc import  SersocListView, SersocCreateView, CreateSersocPerson, GetAsistencia, SersocAsistListView
 from .consulta import ValidateRFC
 from .vacaciones import PersonVacacionesListView, GetPersonasVacacion, GetDetalleVacacion, DeleteDayVacacion
-from .capacitacion import CapacitacionCreateView, CapacitacionListView, SaveCapacitacion, loginUsers, Capacitacion, CapacitacionesxPersona
+from .capacitacion import CapacitacionCreateView, CapacitacionListView, SaveCapacitacion, loginUsers, CapacitacionView, CapacitacionesxPersona, SaveCapacitacionEvidencia, CapacitacionXCursoView, UpdateStatusEvidencia
+from .sharepoint import UploadFile

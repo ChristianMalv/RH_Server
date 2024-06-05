@@ -5,7 +5,8 @@ from django.conf.urls import include
 from people.views import PersonListView, PersonCreateView, PersonUpdateView, ReportePersonasPDF, PersonCheckView, searchPerson, saveCheckedPerson, PersonBajaListView, GetPersonas, InsertBaja, DirectoryListView, GetPersonasDirectory, GetCompPersonas, InsertComp, PersonCompListView, DetalleIncidencias, PersonInciListView, ReporteIncidenciasPDF, UpdateIncidencia, GetPersonasIncidencia, AddIncidencia, DeleteIncidencia, PersonDirectoryUpdateView, DeleteComp, AreasListView, json_to_pdf, GetPersonasCompensacion, compensacionesArea, IncidenciaConsulta, ValidatePersonIncidencia, DetailPersonIncidencia, GetIncidenciaTable, \
     loginAdmin, AdminConsulta, AdminInciListView, GetAdminIncidencia, reporteIncidencias, PersonAyudaListView, GetAyudaPersonas, InsertAyuda, DeleteAyuda, GetPersonasAyuda, DashboardCheck, UpdateDashboard, \
         GetPersonaAyuda,  SersocListView, SersocCreateView, CreateSersocPerson, AddAyuda, DeleteAyudaMonto, ValidateRFC, PersonVacacionesListView, GetPersonasVacacion, GetDetalleVacacion, \
-        GetAsistencia, DeleteDayVacacion, SersocAsistListView, CapacitacionCreateView, CapacitacionListView, SaveCapacitacion, loginUsers, Capacitacion, CapacitacionesxPersona
+        GetAsistencia, DeleteDayVacacion, SersocAsistListView, \
+        CapacitacionCreateView, CapacitacionListView, SaveCapacitacion, loginUsers, CapacitacionView, CapacitacionesxPersona, SaveCapacitacionEvidencia, CapacitacionXCursoView, UpdateStatusEvidencia
 from django.contrib.auth import views
 from django.contrib.auth.decorators import login_required
 from crede_api import urls as crede_urls
@@ -116,9 +117,12 @@ urlpatterns = [
     path('capacitacion/add/', SaveCapacitacion, name='save_capacitacion'),
     path('<int:pk>/edit/', PersonUpdateView.as_view(), name='capacitacion_edit'),
     path('capacitacion/login', loginUsers, name="capacitacion_login"), 
-    path('capacitacion/users', Capacitacion.as_view(), name="capacitacion_users"), 
-    path('capacitacion/persona', CapacitacionesxPersona.as_view(), name="capacitacion_persona"),
-
+    path('capacitacion/users', CapacitacionView.as_view(), name="capacitacion_users"), 
+    path('capacitacion/persona/<str:matricula>', CapacitacionesxPersona.as_view(), name="capacitacion_persona"),
+    path('capacitacion/persona/save/', SaveCapacitacionEvidencia, name="save_capacitacion_persona"),
+    path('capacitacion/curso/<int:pk>/', CapacitacionXCursoView.as_view(), name="capacitacion_curso"),
+    path('capacitacion/update/', UpdateStatusEvidencia, name="update_status_capacitacion"),
+    
     #Api URL's
     path('api-auth/', include('rest_framework.urls')),
     path('', include(crede_urls)),
