@@ -1,6 +1,31 @@
 
 {% extends 'base.html' %}
 {% block content %}
+<style>
+  #heading { color: #545454; }
+  span { color: #000000 }
+  #ruta { color: #4D92DF; }
+  
+      .cards {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .cards > * {
+        flex: 1 1 350px;
+        width: 350px;
+        margin: 10px;
+       
+
+      }
+
+      .cards * { font-size: 14px; }
+      .cards h4 { font-size: 18px; }
+
+
+</style> 
 <div class="container">
  
 <form method="get">
@@ -18,12 +43,7 @@
        <a class="btn btn-primary" id="insert_btn"  data-toggle="modal" data-target="#myModal">Agregar Capacitación</a>
       </p>
     </div>
-     <div class="col-md-6"> 
-       <p>
-       <button type="button" class="btn btn-danger" id="print-all" >Consulta evidencias de Capacitación</button>
-      </p>
-    </div>
-  </div>
+     </div>
   <div class="col-md-12">
    
   
@@ -35,18 +55,16 @@
     
   <div id="RowsSearch"></div>
 <div class ="col-md-12" id="RowsInicio">
+ <div class="cards">
   {% for curso in capacitacion %}
-   
-   <div class="card" style="width: 18rem;">
+  <div>
     <img src="{{ curso.imagen_base64 }}" class="card-img-top" alt="...">
-    <div class="card-body">
-      <h5 class="card-title">{{ curso.nombre }}</h5>
-        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-      <a href="#" class="btn btn-primary">Go somewhere</a>
-    </div>
+    <h5 class="card-title">{{ curso.nombre }}</h5>
+    <a href="{% url 'capacitacion_curso' curso.pk %}" class="btn btn-default">Verificar Cumplimiento</a>
+    <hr>
   </div>
   {% endfor %}  
-  
+  </div>
   <div id="Pages"> 
     {% if is_paginated %}
       <ul class="pagination">
@@ -80,15 +98,17 @@
           </div>
           <div class="modal-body">
                 <div class="col-md-12">
-                <h4> Nombre </h4>
-                  <input id="nombre" placeholder="Ingrese el nombre del curso">
+                <h4> Nombre del Curso</h4>
+                  <input type="text" id="nombre" placeholder="Captura sin espacios" >
+                  <h4> Ruta del Curso </h4>
+                  <input id="ruta" placeholder="Url del curso" >
                 <h4> Fotografía </h4>
                   <input type="file" id="imagen" placeholder="Cargue imagen referente al curso" accept="image/png, image/gif, image/jpeg">
                   <img id="myimage" ssrcset="image-320w.jpg 320w, image-640w.jpg 640w, image-1024w.jpg 1024w" sizes="(max-width: 320px) 280px, (max-width: 640px) 600px, 1000px">
                 <hr>
                </div> 
               <div style="display:none"> </div>
-              <textarea id="imagenb64" rows="30" cols="50"></textarea>
+              <textarea id="imagenb64" style="display:none" rows="30" cols="50"></textarea>
                <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal" id="close_btn">Cerrar</button>
             <button type="button" id="save" class="btn btn-primary">Guardar</button>
@@ -125,54 +145,61 @@ $('.decimales').on('input', function () {
 const input = document.getElementById("imagen");
 const avatar = document.getElementById("myimage");
 const textArea = document.getElementById("imagenb64");
-const convertBase64 = (file) => {
-  return new Promise((resolve, reject) => {
-    const fileReader = new FileReader();
-    fileReader.readAsDataURL(file);
-
-    fileReader.onload = () => {
-      resolve(fileReader.result);
-     };
-
-    fileReader.onerror = (error) => {
-      reject(error);
-    };
-  });
-};
 
 const uploadImage = async (event) => {
   const file = event.target.files[0];
-  const base64 = await convertBase64(file);
-  avatar.src = base64;
-  textArea.innerText = base64;
+  var reader = new FileReader();
+                reader.onload = function (e) {
+                    var img = document.createElement("img");
+                    img.onload = function (event) {
+                        var canvas = document.createElement("canvas");
+                        var ctx = canvas.getContext("2d");
+                        var MAX_WIDTH = 300;
+                        var MAX_HEIGHT = 300;
+
+                        var width = img.width;
+                        var height = img.height;
+
+                        // Change the resizing logic
+                        if (width > height) {
+                            if (width > MAX_WIDTH) {
+                                height = height * (MAX_WIDTH / width);
+                                width = MAX_WIDTH;
+                            }
+                        } else {
+                            if (height > MAX_HEIGHT) {
+                                width = width * (MAX_HEIGHT / height);
+                                height = MAX_HEIGHT;
+                            }
+                        }
+
+                        var canvas = document.createElement("canvas");
+                        canvas.width = width;
+                        canvas.height = height;
+                        var ctx = canvas.getContext("2d");
+                        ctx.drawImage(img, 0, 0, width, height);
+                        // Show resized image in preview element
+                        var dataurl = canvas.toDataURL(file.type);
+                        avatar.src = dataurl;
+                        textArea.innerText = dataurl
+                    }
+                    img.src = e.target.result;
+                }
+                reader.readAsDataURL(file);
 };
 
 input.addEventListener("change", (e) => {
   uploadImage(e);
 });
-/*
-document.getElementById('imagen').onchange = function (evt) {
-    var tgt = evt.target || window.event.srcElement,
-        files = tgt.files;
-    
-    // FileReader support
-    if (FileReader && files && files.length) {
-        var fr = new FileReader();
-        fr.onload = function () {
-            document.getElementById('myimage').src = fr.result;
-        }
-        console.log(files[0]);
-        fr.readAsDataURL(files[0]);
-    }
-    
-    // Not supported
-    else {
-        // fallback -- perhaps submit the input to an iframe and temporarily store
-        // them on the server until the user's session ends.
-    }
-}
-*/
-  
+
+ $(function() {
+        $('#nombre').on('keypress', function(e) {
+            if (e.which == 32){
+                console.log('Space Detected');
+                return false;
+            }
+        });
+});  
 function doSearch() {
                 var tableReg = document.getElementById('persona_buscado');
                 var searchText = document.getElementById('searchPerson').value.toLowerCase();
@@ -249,11 +276,10 @@ $("#save").click(function(){
   $.ajax({
       url:"{% url 'save_capacitacion' %}",
       type:'POST',
-      data:{nombre:$("#nombre").val(), imagen:$("#imagenb64").val()},
+      data:{nombre:$("#nombre").val(), imagen:$("#imagenb64").val(), ruta:$("#ruta").val()},
      })
     .done(function(response){
                 if(response['error']==false){
-                   this_html.parent().parent().parent().remove();
                     $("#ins_error").hide();
                     $("#ins_success").text(response['errorMessage']);
                     $("#ins_success").show();

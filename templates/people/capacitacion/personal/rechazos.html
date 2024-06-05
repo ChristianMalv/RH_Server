@@ -1,0 +1,24 @@
+{% block content %}
+    <h3> Cursos rechazados </h3> 
+  {% for curso in rechazos %}
+            
+  <div class="card" style="width: 18rem;">
+    <img src="{{ curso.curso_tomado__imagen_base64 }}" class="card-img-top" alt="...">
+    <div class="card-body">
+      <h5 class="card-title">{{ curso.curso_tomado__nombre }}</h5>
+      {% for key, value in curso.metadatos.items %}
+         {% if key == 'webUrl' %}
+          <a href="{{ value }}" target="_blank" class="btn btn-primary">Consultar Evidencia</a>
+          {% endif %}
+      {% endfor %}
+    <p><h6> Observaciones:</h6> {{curso.observaciones}} </p> 
+     <a id="{{curso.pk}}" name="{{curso.curso_tomado__pk}}" class="btn btn-primary remplazarDocumento" data-toggle="modal" data-target="#myModal">Cargar Constancia</a>
+    </div>
+  </div>
+  {% empty %}
+      <tr class="table-active">
+            <td colspan="3">No hay cursos entregados aún</td>
+          </tr>
+  {% endfor %}
+  
+{% endblock %}
