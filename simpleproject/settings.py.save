@@ -24,13 +24,12 @@ SECRET_KEY = 'vp-0rke=$u$g7yn6w=l$02+f!*y4uizr_x4k*l@w!4u2xb(68g'
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    	'172.16.110.29',
-    	'localhost:9000',
-    	'localhost',
-    	'127.0.0.1',
-    	'credenciales.televisioneducativa.gob.mx',
-    	'credenciales.aprende.gob.mx',
-	'inventarios.aprende.gob.mx'
+    '172.16.110.29',
+    'localhost:9000',
+    'localhost',
+    '127.0.0.1',
+    'credenciales.televisioneducativa.gob.mx',
+    'credenciales.aprende.gob.mx'
 ]
 
 INSTALLED_APPS = [
@@ -84,6 +83,7 @@ TEMPLATES = [
 
 CORS_ALLOWED_ORIGINS = [
     "http://172.16.110.29:8088",
+    "http://inventarios.aprende.gob.mx/"
 ]
 
 CORS_ALLOW_CREDENTIALS = True
