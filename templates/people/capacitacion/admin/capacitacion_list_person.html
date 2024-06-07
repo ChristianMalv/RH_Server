@@ -1,0 +1,196 @@
+
+{% extends 'base.html' %}
+{% block content %}
+ 
+<div class="container">
+ 
+<form method="get">
+   <div class="col-md-12">
+    <div class="col-md-3">
+    <p>
+      <input name ="q" id="searchAyuda" value="{{request.GET.q}}" placeholder="Buscar capacitacion..">
+    </p>  
+    </div>
+  </div>  
+ </form>
+  <div class="col-md-12">
+    <div class="col-md-6">
+      <table>
+        <img src="{{ curso.imagen_base64 }}">
+        <tr><p><strong>Nombre de Curso: </strong> {{ curso.nombre  }} </p> </tr>
+        <tr style="color: #4D92DF;"><strong>Enlace del curso: </strong><a href="{{ curso.enlace }}" target="_blank">{{ curso.enlace }}</a></tr>
+      </table>
+    </div>
+  </div>
+  <div class="col-md-12">
+   
+  
+  <div class="col-md-6"> 
+      
+    </div>
+  </div>
+  <div id="listaPersonas"></div>
+    
+  <div id="RowsSearch"></div>
+<div class ="col-md-12" id="RowsInicio">
+ <table class="table table-striped" >
+      <thead>
+        <tr>
+        <th>Matricula</th>
+          <th>Persona</th>
+          <th>Registro de Evidencia</th>
+          <th>Evidencia</th>
+          <th class="col-md-3">Estatus</th>
+        </tr>
+      </thead>
+      <tbody>  
+       {% for evidencia in evidencias %}
+      <tr>
+      <td style="display:none" > {{evidencia.pk}}</td>
+      <td> {{ evidencia.info_person__matricula }}</td>
+      <td> {{ evidencia.info_person__nombres }} {{evidencia.info_person__apellido1 }} {{ evidencia.info_person__apellido2 }}</td>
+      <td> {{evidencia.created_at}}</td> 
+      <td>
+       {% for key, value in evidencia.metadatos.items %}
+         {% if key == 'webUrl' %}
+          <a href="{{ value }}" id="consultar" name="{{evidencia.pk}}" target="_blank" class="btn btn-primary">Consultar Evidencia</a>
+          {% endif %}
+        {% endfor %}
+      </td>
+      
+      {% if evidencia.aprobado == 2 %} 
+      <td id="estado">
+       <h6>Aceptado</h6>
+      {% elif evidencia.aprobado == 1 %}
+      <td id="estado">
+        <h6>Rechazado</h6>
+      {% else %}
+      <td id="estado" style="display:none">
+      {% endif %}
+      </td>
+      
+      {% if evidencia.aprobado == 0 %}
+      <td id="buttons">
+        <button type='button' id="rechazar" name="{{evidencia.pk}}" class='btn btn-outline-danger' data-toggle="modal" data-target="#myModalObs">Rechazar</button>
+        <button type='button' id="aceptar" name="{{evidencia.pk}}" class='btn btn-outline-success m-2 acceptPpomentDoc'>Aceptar</button>
+      {% else %}
+      <td id="buttons" style="display:none">
+        <button type='button' id="rechazar" name="{{evidencia.pk}}" class='btn btn-outline-danger' data-toggle="modal" data-target="#myModalObs">Rechazar</button>
+        <button type='button' id="aceptar" name="{{evidencia.pk}}" class='btn btn-outline-success m-2 acceptPpomentDoc'>Aceptar</button>
+      {% endif %}
+      </td>
+    </td>
+       </tr>
+    {% empty %}
+      <tr class="table-active">
+            <td colspan="3">No hay evidencias para este curso</td>
+          </tr>
+    {% endfor %}
+      </tbody>
+    </table>
+</div>
+
+<div class="modal fade"  id="myModalObs">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Agregar Observaciones</h4>
+        </div>
+          <div class="modal-body">
+            <!--<form id="updata" method="post" enctype="multipart/form-data">-->
+            <!--<form action="{% url 'save_capacitacion_persona' %}" method="post" enctype="multipart/form-data">-->
+            {% csrf_token %}
+              <div class="col-md-12">
+                <input style="display:none" type="text" id="pk" name="pk"/>
+                <input style="display:none" type="text" id="matricula" name="matricula" value="{{person.matricula}}"/>
+                <input style="display:none" type="text" id="remplazar" name="pk"/>
+                <h4 id="cursoDocumento">Causas de rechazo </h4>
+                 <hr>
+                <div class="form-group">
+                  <textarea id="obs" class="form-control" rows="3"></textarea>
+                </div>
+               </div> 
+              <div style="display:none"> </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" id="close_btn">Cerrar</button>
+                <button type="submit"  id="guardarObservaciones" class="btn btn-primary">Guardar</button>
+              </div>
+            <!-- </form> -->  
+          </div>
+          <div class="form-group">
+            <div class="alert alert-success" id="ins_success" style="display:none">
+
+            </div>
+            <div class="alert alert-danger" id="ins_error" style="display:none">
+
+            </div>
+          </div>
+     </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->    
+
+
+<script>
+ $("#aceptar").click(function(){
+  var id = $(this).attr('name');
+  updateStatus(id, '2');
+  $("#buttons").hide();
+  $("#estado").show();  
+  $("#estado").html('<h6>Aceptado</h6>');
+ });
+  $("#rechazar").click(function(){
+    var id = $(this).attr('name');
+    $("#pk").val(id);
+  
+ });
+
+$("#guardarObservaciones").click(function(){
+  updateStatus($("#pk").val(), '1',  $("#obs").val());
+  console.log($("#pk").val());
+  $("#myModalObs").show();
+  $("#buttons").hide();
+  $("#estado").show(); 
+  $("#estado").html('<h6>Rechazado</h6>');
+});
+
+$("#consultar").click(function(){
+   var id = $(this).attr('name');
+    console.log(id);
+    updateStatus(id, '0');
+    $("#buttons").show();
+    $("#estado").hide();
+ });
+
+function updateStatus(pk, status, obs) {
+ $.ajax({
+      url:"{% url 'update_status_capacitacion' %}",
+      type:'GET',
+      data:{pk:pk, status:status, obs: obs}
+            })
+    .done(function(response){
+       if(response['error']==false){
+        $("#ins_error").hide();
+        $("#ins_success").text(response['errorMessage']);
+        $("#ins_success").show();
+        return true;
+       }
+      $("#ins_success").hide();
+      $("#ins_error").text(response['errorMessage']);
+      $("#ins_error").show();
+      return false;
+      })
+    .fail(function(){
+      $("#ins_success").hide();
+      $("#ins_error").text("Something Went Wrong!");
+      $("#ins_error").show();
+     return false;
+      })
+    setTimeout(() => {
+          $("#ins_success").hide();
+          $("#ins_error").hide();  
+          $("#obs").val();
+        }, 2000);  
+}              
+</script>
+
+{% endblock %}
