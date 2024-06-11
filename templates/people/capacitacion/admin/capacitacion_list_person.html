@@ -185,11 +185,14 @@ function updateStatus(pk, status, obs) {
       $("#ins_error").show();
      return false;
       })
-    setTimeout(() => {
+    .always(function(){
+      setTimeout(() => {
           $("#ins_success").hide();
-          $("#ins_error").hide();  
-          $("#obs").val();
-        }, 2000);  
+          $("#ins_error").hide();
+          $("#obs").val('');
+          $("#close_btn").click();
+        }, 2000);
+    }) 
 }              
 </script>
 

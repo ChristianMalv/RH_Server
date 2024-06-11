@@ -56,8 +56,8 @@ def SaveCapacitacion(request):
         addCapacitacion.imagen_base64 = imagen
         addCapacitacion.enlace = ruta
         addCapacitacion.save()
-        capacitacionData={"nombre":nombre,"error":False,"errorMessage":"Capacitación registrada"}
-        return JsonResponse(capacitacionData,safe=False)
+        capacitacionData={"nombre":nombre,"error":False,"errorMessage":"Capacitación registrada" , "html_data": GetTableCursos()}
+        return JsonResponse(capacitacionData, safe=False )
     except  Exception as e:
         raise e
         ayudaData={"error":True,"errorMessage":"Error al querer dar de alta Capacitación"}
@@ -128,7 +128,9 @@ def SaveCapacitacionEvidencia(request):
             curso = Capacitacion.objects.get(pk = pk)
             person = Person.objects.get(matricula = matricula)
             file_name = UploadFile(file, matricula, curso)
+            print("File Uploaded OK")
             json_data = DownloadFiles(curso, file_name)
+            print("Getting information about the file"+ file_name)
             if remplazar == 'true':
                 pk_evidencia= request.POST.get('pk_evidencia')
                 evidencia = EvidenciaCurso.objects.get(pk=pk_evidencia)
@@ -144,6 +146,16 @@ def SaveCapacitacionEvidencia(request):
         print(e)
         capacitacion_data={"error":True,"errorMessage":"Error al cargar evidencia"}
         return JsonResponse(capacitacion_data,safe=False)
+
+@csrf_exempt
+def GetTableCursos():
+    queryset = Capacitacion.objects.filter( Q(activo=True) )
+    t = get_template('people/capacitacion/cursos.html')
+    content = t.render(
+    {
+        'capacitacion': queryset,
+    })  
+    return content
 
 @csrf_exempt
 def GetTablePendientes(matricula):

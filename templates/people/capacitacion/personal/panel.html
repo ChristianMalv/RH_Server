@@ -127,7 +127,7 @@
               <input type="text" id="pk_evidencia" name="pk_evidencia"/>
             </div>
                 <h4 id="cursoDocumento"></h4>
-              <input type="file" name="myfile" placeholder="Cargue documento que acredite el curso" accept="dcoument/pdf">
+              <input type="file" id="myfile" name="myfile" placeholder="Cargue documento que acredite el curso" accept="document/pdf">
               <hr>
          </div>
           <div class="modal-footer">
@@ -168,7 +168,7 @@ $("form#data").submit(function(e) {
             $("#ins_success").show();
             $("#Pendientes").html(response['pendientes']);
             $("#Entregadas").html(response['entregadas']);
-            $("#Rechazos").html(response['rechazados']);
+            $("#Rechazados").html(response['rechazados']);
         }
         else{
             $("#ins_success").hide();
@@ -181,11 +181,13 @@ $("form#data").submit(function(e) {
           $("#ins_error").text("Something Went Wrong!");
           $("#ins_error").show();
     })
-    setTimeout(() => {
+    .always(function(){
+      setTimeout(() => {
           $("#ins_success").hide();
           $("#ins_error").hide();
-          $("#myfile").val();  
+          $("#close_btn").click();
         }, 2000);
+    })
 });
 
 function openTab(evt, cityName) {

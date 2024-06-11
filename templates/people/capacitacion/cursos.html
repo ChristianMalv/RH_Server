@@ -1,0 +1,8 @@
+{% for curso in capacitacion %}
+  <div>
+    <img src="{{ curso.imagen_base64 }}" class="card-img-top" alt="...">
+    <h5 class="card-title">{{ curso.nombre }}</h5>
+    <a href="{% url 'capacitacion_curso' curso.pk %}" class="btn btn-default">Verificar Cumplimiento</a>
+    <hr>
+  </div>
+{% endfor %}  
