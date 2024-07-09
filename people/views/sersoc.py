@@ -9,8 +9,9 @@ from django.urls.base import reverse
 from django.views.generic import ListView, CreateView, UpdateView
 from django.urls import reverse_lazy
 from django.views.generic import View
-from people.models import  Person, ServicioSocial,Contratacion, Incidencia
+from people.models import  Person, ServicioSocial,Contratacion, Incidencia, DocumentosSS
 from people.forms import  PersonForm, ServicioSocialForm, ServicioSocialInlineFormset
+from .sharepoint import GetDirectoryInfo
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
@@ -21,6 +22,7 @@ import textwrap, operator, base64, json, datetime
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import get_template
 from django.db.models import Max, Min
+from .sharepoint import UploadFile, DownloadFiles
 @method_decorator(login_required, name='dispatch')
 class SersocListView(ListView):
     model = ServicioSocial
@@ -64,10 +66,12 @@ def CreateSersocPerson(request, pk=None):
             return redirect('sersoc_list')
     else:
         if pk:
-           person = Person.objects.get(pk=pk)
-           sersoc = ServicioSocial.objects.get(info_person = person)
-           my_form = PersonForm(instance=person)
-           sersoc_form = ServicioSocialForm(instance=sersoc)
+            person = Person.objects.get(pk=pk)
+            sersoc = ServicioSocial.objects.get(info_person = person)
+            my_form = PersonForm(instance=person)
+            sersoc_form = ServicioSocialForm(instance=sersoc)
+            documentos = DocumentosSS.objects.filter(info_person = person)
+            return render(request, 'people/sersoc/serviciosocial_form.html', {'form': my_form, 'sersoc_form': sersoc_form, "files": documentos, "person":person})
         else:
             my_form = PersonForm()
             my_form.fields["puesto"].initial = 'Servicio Social'
@@ -76,22 +80,25 @@ def CreateSersocPerson(request, pk=None):
             my_form.fields["fecha_ingreso"].initial = datetime.datetime.now()
             my_form.fields["cat_contratacion"].initial = 6
             sersoc_form = ServicioSocialForm()
-    return render(request, 'people/sersoc/serviciosocial_form.html', {'form': my_form, 'sersoc_form': sersoc_form})
+       # print(getDirectoryItems(person.matricula))
+    return render(request, 'people/sersoc/serviciosocial_form.html', {'form': my_form, 'sersoc_form': sersoc_form })
 
 
 class IncidenciaToShowSS:  
-    def __init__(self, dia,  fecha, idIn, Entrada, idOut, Salida):
+    def __init__(self, dia,  fecha, idIn, Entrada, idOut, Salida, horas):
         self.dia = dia
         self.fecha = fecha  
         self.idIn = idIn  
         self.Entrada = Entrada
         self.idOut = idOut
         self.Salida = Salida 
+        self.horas = horas
 
 @method_decorator(login_required, name='dispatch')
 class SersocAsistListView(ListView):
     model = ServicioSocial
     def get(self, request, *args, **kwargs):
+        horas = 0
         person = Person.objects.get(pk=self.kwargs['person'])
         nombreDias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sabado']
         list = []  
@@ -109,24 +116,34 @@ class SersocAsistListView(ListView):
                     if incidencia.count()>1:
                         incidenciaIn = incidencia.earliest('created_at')
                         if  incidenciaIn.causa_incidencia != None : 
-                            list.append( IncidenciaToShowSS( nombreDias[int(incidenciaIn.created_at.strftime("%w"))] , incidenciaIn.created_at.strftime("%d/%m/%Y"), incidenciaIn.pk, incidenciaIn.created_at.strftime("%H:%M:%S"),  incidenciaOut.pk, incidenciaOut.created_at.strftime("%H:%M:%S")  )) 
+                            diferencia_tiempo = (incidenciaOut.created_at - incidenciaIn.created_at).Hours
+                            horas += diferencia_tiempo
+                            list.append( IncidenciaToShowSS( nombreDias[int(incidenciaIn.created_at.strftime("%w"))] , incidenciaIn.created_at.strftime("%d/%m/%Y"), incidenciaIn.pk, incidenciaIn.created_at.strftime("%H:%M:%S"),  incidenciaOut.pk, incidenciaOut.created_at.strftime("%H:%M:%S") , diferencia_tiempo  )) 
                         else:
-                            list.append( IncidenciaToShowSS( nombreDias[int(incidenciaIn.created_at.strftime("%w"))] , incidenciaIn.created_at.strftime("%d/%m/%Y"), incidenciaIn.pk, incidenciaIn.created_at.strftime("%H:%M:%S"),  incidenciaOut.pk, incidenciaOut.created_at.strftime("%H:%M:%S"))) 
+                            list.append( IncidenciaToShowSS( nombreDias[int(incidenciaIn.created_at.strftime("%w"))] , incidenciaIn.created_at.strftime("%d/%m/%Y"), incidenciaIn.pk, incidenciaIn.created_at.strftime("%H:%M:%S"),  incidenciaOut.pk, incidenciaOut.created_at.strftime("%H:%M:%S"), diferencia_tiempo)) 
                         
                     else:
                         incicenciaFirst = incidencia.first()
                         if  incicenciaFirst.causa_incidencia != None :
-                            list.append( IncidenciaToShowSS(nombreDias[int( incicenciaFirst.created_at.strftime("%w"))] ,  incicenciaFirst.created_at.strftime("%d/%m/%Y"),  incicenciaFirst.pk, "--:--",  incicenciaFirst.pk, "--:--" )) 
+                            list.append( IncidenciaToShowSS(nombreDias[int( incicenciaFirst.created_at.strftime("%w"))] ,  incicenciaFirst.created_at.strftime("%d/%m/%Y"),  incicenciaFirst.pk, "--:--",  incicenciaFirst.pk, "--:--" ), "-") 
                     
                 else:
-                    list.append( IncidenciaToShowSS( nombreDias[int(  (dateInicio + timedelta(n)).strftime("%w")  )], (dateInicio + timedelta(n)).strftime("%d/%m/%Y"),  "null" , "--:--",  "null", "--:--")) 
-        content =  {
+                    list.append( IncidenciaToShowSS( nombreDias[int(  (dateInicio + timedelta(n)).strftime("%w")  )], (dateInicio + timedelta(n)).strftime("%d/%m/%Y"),  "null" , "--:--",  "null", "--:--"), "-") 
+            content =  {
                 'list': list,
                 'person': person,
                 'sersoc': sersoc,
                 'fechaInicio': dateInicio, 
                 'fechaFin': dateFin,
-            }            
+                'horas' : horas,
+            } 
+        else:
+            content =  {
+                'list': list,
+                'person': person,
+                'sersoc': sersoc,
+                'horas': None,
+            }          
        
         return render(request, 'people/sersoc/detalle_incidencia.html' , content)
 
@@ -214,3 +231,56 @@ class SersocCreateView(CreateView):
                                   sersocFormset=sersoc_meta_formset
                                   )
         )
+
+class SersocFileListView(ListView):
+    model = ServicioSocial
+    def get(self, request, *args, **kwargs):
+       
+       
+        return render(request, 'people/sersoc/file_detail.html')
+
+class FilesToShow:  
+    def __init__(self, name,  isDirectory, size, link):
+        self.name = name
+        self.isDirectory = isDirectory 
+        self.size = size
+        self.link = link
+    def to_dict(self):
+        return {
+            'name': self.name,
+            'isDirectory': self.isDirectory,
+            'size': self.size,
+           
+        }
+       
+def getDirectoryItems(matricula):
+    directory_info = GetDirectoryInfo(matricula)
+    files = []
+    if 'value' in directory_info:
+        for file in directory_info['value']:
+            files.append(FilesToShow(file['name'], False, file['size'],file['webUrl']))
+    return files
+
+@csrf_exempt 
+def SaveDocumento(request):
+    try:
+        if request.method == 'POST':
+            file = request.FILES['myfile']
+            pk = request.POST.get('pk')
+            matricula = request.POST.get('matricula')
+            person = Person.objects.get(matricula = matricula)
+            file_name = UploadFile(file, None,  person.matricula)
+            json_data = DownloadFiles(person.matricula, file_name)
+            try:
+                doc = DocumentosSS.objects.get(Q(nombre=file_name) & Q(info_person = person))
+                doc.metadatos = json_data  
+            except DocumentosSS.DoesNotExist:
+                print("Doc not exist")
+                documento = DocumentosSS( info_person = person, nombre= file_name, metadatos = json_data)
+                documento.save()
+        documento_data={"error":False,"errorMessage":"Documento Agregado!", "documento": json_data }
+        return JsonResponse(documento_data,safe=False)
+    except Exception as e:
+        print(e)
+        capacitacion_data={"error":True,"errorMessage":"Error al cargar evidencia"}
+        return JsonResponse(documento_data,safe=False)

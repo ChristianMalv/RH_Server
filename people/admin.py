@@ -2,7 +2,7 @@ from django.contrib import admin
 # Register your models here.
 from .models import AreaInterna, AreaOrganigrama, Bajas, ClavePuesto, Compensacion, Compensaciones, Contratacion, Filiacion, Horarios, Incidencia, Person, EntidadFederativa, \
       Nivel, NivelSueldo, Nombramiento, Pais, Puesto, TipoRelacion, TipoVia, Horarios, CausaIncidencia, Compensaciones, MultipleOrganigrama, ServicioSocial, PeriodosVacaciones,\
-      Capacitacion, EvidenciaCurso, Sharepoint
+      Capacitacion, EvidenciaCurso, Sharepoint, DocumentosSS
 
 admin.site.register(Nombramiento)
 admin.site.register(Nivel)
@@ -28,6 +28,7 @@ admin.site.register(PeriodosVacaciones)
 admin.site.register(Capacitacion)
 admin.site.register(EvidenciaCurso)
 admin.site.register(Sharepoint)
+admin.site.register(DocumentosSS)
 @admin.register(Incidencia)
 class IncidenciaAdmin(admin.ModelAdmin):
     readonly_fields = ('created_at', )

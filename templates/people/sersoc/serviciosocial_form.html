@@ -1,25 +1,25 @@
-{% extends 'base.html' %}
+{% extends 'base_ss.html' %}
 
 {% load crispy_forms_tags %}
 
-
- 
 {% block content %}
 
 {{ form.media.js }}
 {{ form.media.js }}
+
   <form method="post" novalidate>
     {% csrf_token %}
    
     <div class="row">
-      <div class="col-md-4">
-        {{ form.nombres|as_crispy_field }}
-      </div>
+      
       <div class="col-md-4">
         {{ form.apellido1|as_crispy_field }}
       </div>
       <div class="col-md-4">
         {{ form.apellido2|as_crispy_field }}
+      </div>
+      <div class="col-md-4">
+        {{ form.nombres|as_crispy_field }}
       </div>
       <div class="col-md-6">
         {{ form.curp|as_crispy_field }}
@@ -29,10 +29,10 @@
       </div>
       <div class="alert alert-info col-md-12">
       <h4> Especifique área donde se realizará el Servicio Social </h4>
-      <div class="col-md-4">
+      <div class="col-md-12">
         {{ form.areaInterna|as_crispy_field }}
       </div>
-       <div class="col-md-4" >
+       <div class="col-md-12" >
         {{ form.cat_area_org|as_crispy_field }}
       </div>
       </div>
@@ -54,18 +54,6 @@
         </div>
       </div>
     <div class="row">
-      <div class="col-md-3">
-        {{ form.cat_entidades_federativas|as_crispy_field }}
-      </div>
-      <div class="col-md-3">
-        {{ form.municipio|as_crispy_field }}
-      </div>
-      <div class="col-md-6">
-        {{ form.cp|as_crispy_field }}
-      </div>
-      <div class="col-md-6">
-        {{ form.colonia|as_crispy_field }}
-      </div>
       <div class="col-md-6">
         {{ form.nombre_via|as_crispy_field }}
       </div>
@@ -75,14 +63,30 @@
       <div class="col-md-3">
         {{ form.num_interior|as_crispy_field }}
       </div>
-     
       <div class="col-md-3">
         {{ form.cat_tipo_via|as_crispy_field }}
       </div>
+      <div class="col-md-6">
+        {{ form.colonia|as_crispy_field }}
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-3">
+        {{ form.cat_entidades_federativas|as_crispy_field }}
+      </div>
+      <div class="col-md-3">
+        {{ form.municipio|as_crispy_field }}
+      </div>
+      <div class="col-md-3">
+        {{ form.cp|as_crispy_field }}
+      </div>
     </div>
     <div class="row">  
-      <div class="col-md-4">
+      <div class="col-md-6">
         {{ form.email_personal|as_crispy_field }}
+      </div> 
+      <div class="col-md-4">
+        {{  sersoc_form.tipo_sangre|as_crispy_field }}
       </div> 
       <div class="col-md-4">
         {{ form.telefono1|as_crispy_field }}
@@ -95,22 +99,18 @@
       <div class="col-md-6">
         {{ form.emergencia_contacto|as_crispy_field }}
       </div>
-      <div class="col-md-6">
+      <div class="col-md-3">
         {{ form.emergencia_cat_relacion|as_crispy_field }}
       </div>
        
-      <div class="col-md-6">
+      <div class="col-md-3">
         {{ form.emergencia_telefono|as_crispy_field }}
-      </div> 
-    
-      <div class="col-md-6">
-        {{  sersoc_form.tipo_sangre|as_crispy_field }}
       </div> 
       
     </div>
    
     <div class="row">  
-      <div class="col-md-6">
+      <div class="col-md-12">
         {{ sersoc_form.escuela_procedencia|as_crispy_field }}
       </div>
        <div class="col-md-6">
@@ -144,7 +144,31 @@
         {{ sersoc_form.description|as_crispy_field }}
       </div>
     </div>
-
+    {% if person.pk %}
+    <div id="file-manager">
+      <p>
+        <a id="{{person.pk}}" name="{{person.matricula}}" class="btn btn-primary remplazarDocumento" data-toggle="modal" data-target="#myModal">Cargar Archivo</a>
+       </p>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Documento</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for file in files %}
+            <tr>
+              <td>{{ file.nombre }}</td>
+            </tr>
+          {% empty %}
+            <tr class="table-active">
+              <td colspan="3">No hay archivos cargados</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
       <div class="row" >
           <div class="col-md-4"></div>
           <div class="col-md-4">
@@ -186,10 +210,46 @@
 
       
     </br>
+    
+</form>
 
-  </form>
+<div class="modal fade"  id="myModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Adjuntar documentación</h4>
+      </div>
+      <div class="modal-body">
+        <form id="data" method="post" enctype="multipart/form-data">
+        <!--<form action="{% url 'save_capacitacion_persona' %}" method="post" enctype="multipart/form-data">-->
+          {% csrf_token %}
+          <div class="col-md-12">
+            <div style="display:none"> 
+              <input type="text" id="pk" name="pk"/>
+              <input type="text" id="matricula" name="matricula" value="{{person.matricula}}"/>
+            </div>
+                <h4 id="cursoDocumento"></h4>
+              <input type="file" name="myfile" placeholder="Cargue documento del estudiante" accept="dcoument/pdf">
+              <hr>
+         </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal" id="close_btn">Cerrar</button>
+            <button type="submit" id="submit" class="btn btn-primary">Guardar</button>
+          </div>
+        </form>   
+          
+        <div class="form-group">
+          <div class="alert alert-success" id="ins_success" style="display:none">
+        </div>
+        <div class="alert alert-danger" id="ins_error" style="display:none">
 
-    <script>
+        </div>
+         
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<script>
 
 const downloadLink = document.getElementById('save');
 let mediaRecorder;
@@ -215,14 +275,53 @@ if (navigator.mediaDevices.getUserMedia) {
     });
 }
 
-
 document.getElementById("snap").addEventListener("click", function() {
         context.drawImage(video, 0, 0, 640, 480);
         $("#id_imagen_base64").val(canvas.toDataURL("image/jpg"))
         return false;
     });
-
+ 
+    $("form#data").submit(function(e) {
+      e.preventDefault();    
+      var formData = new FormData(this);
+  
+      $.ajax({
+          url: "{% url 'save_file_ss' %}",
+          type: 'POST',
+          data: formData,
+          cache: false,
+          contentType: false,
+          processData: false
+      }).done(function(response){
+          if(response['error']==false){
+              $("#ins_error").hide();
+              $("#ins_success").text(response['errorMessage']);
+              $("#ins_success").show();
+              $("#Pendientes").html(response['pendientes']);
+              $("#Entregadas").html(response['entregadas']);
+              $("#Rechazos").html(response['rechazados']);
+          }
+          else{
+              $("#ins_success").hide();
+              $("#ins_error").text(response['errorMessage']);
+              $("#ins_error").show();
+          }
+      })
+      .fail(function(){
+            $("#ins_success").hide();
+            $("#ins_error").text("Something Went Wrong!");
+            $("#ins_error").show();
+      })
+      setTimeout(() => {
+            $("#ins_success").hide();
+            $("#ins_error").hide();
+            $("#myfile").val();  
+          }, 2000);
+  });
+    
 
     </script>
+
+    
 {% endblock %}
 

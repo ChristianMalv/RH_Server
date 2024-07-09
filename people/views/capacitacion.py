@@ -127,8 +127,8 @@ def SaveCapacitacionEvidencia(request):
             remplazar = request.POST.get('remplazar')
             curso = Capacitacion.objects.get(pk = pk)
             person = Person.objects.get(matricula = matricula)
-            file_name = UploadFile(file, matricula, curso)
-            json_data = DownloadFiles(curso, file_name)
+            file_name = UploadFile(file, matricula,  '{}_{}'.format(curso.pk, curso.nombre))
+            json_data = DownloadFiles('{}_{}'.format(curso.pk, curso.nombre), file_name)
             if remplazar == 'true':
                 pk_evidencia= request.POST.get('pk_evidencia')
                 evidencia = EvidenciaCurso.objects.get(pk=pk_evidencia)

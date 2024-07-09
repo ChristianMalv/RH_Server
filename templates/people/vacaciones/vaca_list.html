@@ -38,7 +38,7 @@
           {% endif %}
           <td><button class="btn btn-default btn-xs agregar" data-toggle="modal" data-target="#myModal" type="button">
           <span class="glyphicon glyphicon-plus" aria-hidden="true" ></span> Agregar Vacaciones </button>
-           <button class="btn btn-default btn-xs consultar" data-toggle="modal" data-target="#Consulta" type="button" >
+           <button class="btn btn-default btn-xs consultar" data-toggle="modal" data-target="#Consulta" type="button" name="{{person.pk}}">
           <span class="glyphicon glyphicon-book" aria-hidden="true"></span> Consultar Vacaciones </button></td>
         </tr>
       {% empty %}
@@ -383,12 +383,13 @@ function cleanDiv()
 $(document).on("click",".consultar",function(){
   var this_html=$(this);
     $("#nombreEmpleadoCons").text(getAndShowId(this_html).nombre);
-    $("#idEmpleadoCons").val(getAndShowId(this_html).id);
+    var id = $(this).attr('name');
+    console.log(id);
     cleanDiv();
     $.ajax({
         url:"{% url 'detail_vacacion' %}",
         type:'GET',
-        data:{ person: $("#idEmpleadoCons").val(), },
+        data:{ person: id, },
         })
       .done(function(response){
         if(response['error']==false) 

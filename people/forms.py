@@ -64,8 +64,7 @@ class ConsultaIncidenciaForm(forms.ModelForm):
         fields= ('matricula', 'rfc', )
 
 class ServicioSocialForm(forms.ModelForm):
-    telefono_escuela =  forms.CharField(max_length=15, required=False, label="Teléfono escuela",
-                               validators=[RegexValidator('^\d{4,}$', message="Introduzca un Teléfono válido")])
+    #telefono_escuela =  forms.CharField(max_length=15, required=False, label="Teléfono escuela", validators=[RegexValidator('^\d{4,}$', message="Introduzca un Teléfono válido")])
     class Meta:
         model = ServicioSocial
         exclude = ['info_person'] 

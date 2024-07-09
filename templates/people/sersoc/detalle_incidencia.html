@@ -22,6 +22,7 @@
       <input id="periodo1_pk" value="{{periodo1.pk}}"  style="display:none"/>
       <input id="periodo2_pk" value="{{periodo2.pk}}"  style="display:none"/>
       <tr><p><strong>Horario: </strong>{{ sersoc.horario }}</p> </tr>
+      <tr><p><strong>Número de horas: </strong>{{ sersoc.horario }}</p> </tr>
       </table>
     </div>  
   </div>
@@ -62,11 +63,18 @@
         <td>{% if incidencia.observacion == 0 %} {% else %}{{incidencia.observacion}}{% endif %}</td>
         <td> {% if incidencia.horas == 0 %} - {% else %} {{incidencia.horas}} </td> {% endif %}
        </tr>
+      
     {% empty %}
       <tr class="table-active">
             <td colspan="3">No hay registros de entrada o salida</td>
           </tr>
     {% endfor %}
+    {% if horas %}
+      <tr class="table-active">
+        <td colspan="3">Total de horas: {{ horas }}</td>
+      </tr>
+    {% endif %}
+ 
       </tbody>
     </table>
   </div>

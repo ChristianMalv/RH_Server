@@ -25,12 +25,12 @@
   <div class="col-md-12">
     <div class="col-md-6"> 
        <p>
-       <button type="button" class="btn btn-danger" id="print-all" >Imprimir Compensaciones</button>
+       <button type="button" class="btn btn-danger" id="print-all" > <span class="glyphicon glyphicon-print"> </span> Imprimir Compensaciones </button>
       </p>
     </div>
   
   <div class="col-md-6"> 
-       <button type="button" class="btn btn-default" id="print-area" >Imprimir Compensaciones por Área</button>
+       <button type="button" class="btn btn-default" id="print-area" ><span class="glyphicon glyphicon-print"> </span> Imprimir Compensaciones por Área</button>
     </div>
   </div>
   <div id="listaPersonas"></div>
@@ -51,7 +51,7 @@
         <tr>
           <td style="display:none" > {{person.pk}}</td>
           <td>{{ person.info_person.matricula }}</td>
-          <td><a href="{% url 'person_edit' person.info_person.pk %}?redirect_page={{ request.GET.page }}" >{{ person.info_person.nombres  }} {{ person.info_person.apellido1  }} {{ person.info_person.apellido2 }} </a></td>
+          <td><a href="{% url 'person_edit' person.info_person.pk %}?redirect_page={{ request.GET.page }}" > {{person.info_person.apellido1}} {{person.info_person.apellido2}} {{person.info_person.nombres}} </a></td>
           <td>{{person.compensacion.nombre}}</td>
           <td><button class="btn btn-default btn-xs eliminar" type="button"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Eliminar compensacion </button></td>
         </tr>

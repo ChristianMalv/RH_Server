@@ -33,7 +33,7 @@ class PersonInciListView(ListView):
     paginate_by = 50
 
     def get(self, request, *args, **kwargs):
-        queryset = Person.objects.filter( Q(activo=True) & ~Q(cat_contratacion__pk =6) )
+        queryset = Person.objects.filter( Q(activo=True) & ~Q(cat_contratacion__pk =6) ).order_by('apellido1')
         causaIncidencia = CausaIncidencia.objects.filter(isVisible = True)
         
         #t = get_template('people/Incidencias/inci_list.html')
@@ -917,7 +917,7 @@ def AddIncidenciaPerson(person, tipo, fecha, fechaComp):
             #Registro de Entrada y Registro de Salida 1 dd/mm/aaa --:-- ----
             fecha=  datetime.datetime.strptime(fecha, "%Y-%m-%dT%H:%M")
             return JsonResponse(AddOneDate(person, fecha, tipo),safe=False)
-        case 3 | 8 | 9 | 11| 12 | 14 | 16 | 19 | 21 | 22 | 23 | 24 | 25:
+        case 3 | 8 | 9 | 11| 12 | 14 | 16 | 19 | 21 | 22 | 23 | 24 | 25 | 27| 28 :
             #Permiso dia economica 1 dd/mm/aaaa
             fecha=  datetime.datetime.strptime(fecha, "%Y-%m-%d")
             return JsonResponse(AddOneDate(person, fecha, tipo),safe=False)
@@ -1145,7 +1145,7 @@ def loginAdmin(request):
     return HttpResponse(status=404)
 
 def getAllPersonas(matricula):
-    person = Person.objects.get(matricula=matricula)
+    person = Person.objects.get(matricula=matricula).order_by('apellido1')
     multipleAreas = MultipleOrganigrama.objects.filter(info_person = person).values('areasInternas')
     if person.areaInterna.pk ==1:
         queryset = Person.objects.filter( Q(activo=True) & ~Q(cat_contratacion__pk =6)).order_by('apellido1')

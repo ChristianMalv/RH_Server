@@ -2,15 +2,35 @@ from django.urls import path
 from django.contrib import admin
 from django.urls import re_path
 from django.conf.urls import include
-from people.views import PersonListView, PersonCreateView, PersonUpdateView, ReportePersonasPDF, PersonCheckView, searchPerson, saveCheckedPerson, PersonBajaListView, GetPersonas, InsertBaja, DirectoryListView, GetPersonasDirectory, GetCompPersonas, InsertComp, PersonCompListView, DetalleIncidencias, PersonInciListView, ReporteIncidenciasPDF, UpdateIncidencia, GetPersonasIncidencia, AddIncidencia, DeleteIncidencia, PersonDirectoryUpdateView, DeleteComp, AreasListView, json_to_pdf, GetPersonasCompensacion, compensacionesArea, IncidenciaConsulta, ValidatePersonIncidencia, DetailPersonIncidencia, GetIncidenciaTable, \
+from people.views import (PersonListView, 
+                          PersonCreateView, 
+                          PersonUpdateView, 
+                          ReportePersonasPDF, 
+                          PersonCheckView, 
+                          searchPerson, 
+                          saveCheckedPerson, 
+                          PersonBajaListView, 
+                          GetPersonas, 
+                          InsertBaja, 
+                          DirectoryListView, 
+                          GetPersonasDirectory, 
+                          GetCompPersonas, 
+                          InsertComp, 
+                          PersonCompListView, 
+                          DetalleIncidencias, PersonInciListView, ReporteIncidenciasPDF, 
+                          UpdateIncidencia, GetPersonasIncidencia, AddIncidencia, DeleteIncidencia, 
+                          PersonDirectoryUpdateView, 
+                          DeleteComp, AreasListView, json_to_pdf, GetPersonasCompensacion, compensacionesArea, 
+                          IncidenciaConsulta, ValidatePersonIncidencia, DetailPersonIncidencia, GetIncidenciaTable, \
     loginAdmin, AdminConsulta, AdminInciListView, GetAdminIncidencia, reporteIncidencias, PersonAyudaListView, GetAyudaPersonas, InsertAyuda, DeleteAyuda, GetPersonasAyuda, DashboardCheck, UpdateDashboard, \
         GetPersonaAyuda,  SersocListView, SersocCreateView, CreateSersocPerson, AddAyuda, DeleteAyudaMonto, ValidateRFC, PersonVacacionesListView, GetPersonasVacacion, GetDetalleVacacion, \
-        GetAsistencia, DeleteDayVacacion, SersocAsistListView, \
-        CapacitacionCreateView, CapacitacionListView, SaveCapacitacion, loginUsers, CapacitacionView, CapacitacionesxPersona, SaveCapacitacionEvidencia, CapacitacionXCursoView, UpdateStatusEvidencia
+        GetAsistencia, DeleteDayVacacion, SersocAsistListView, SersocFileListView, getDirectoryItems, \
+        CapacitacionCreateView, CapacitacionListView, SaveCapacitacion, loginUsers, CapacitacionView, CapacitacionesxPersona, SaveCapacitacionEvidencia, CapacitacionXCursoView, UpdateStatusEvidencia, SaveDocumento)
 from django.contrib.auth import views
 from django.contrib.auth.decorators import login_required
 from crede_api import urls as crede_urls
-
+from django.conf import settings
+from django.conf.urls.static import static
 urlpatterns = [
     path('login/', views.LoginView.as_view(), name='login'),
     path('logout/', views.LogoutView.as_view(next_page='/'), name='logout'),
@@ -107,7 +127,9 @@ urlpatterns = [
     path('<int:pk>/<int:sersoc>/print/sersoc/', ReportePersonasPDF.as_view(), name='sersoc_print'),
     path('<int:person>/asist/sersoc/', SersocAsistListView.as_view(), name='sersoc_asist'),
     path('sersoc/', SersocListView.as_view(), name='sersoc_list'),
-
+    path('sersoc/file', SersocFileListView.as_view(), name='sersoc_file'),
+    path('sersoc/directory', getDirectoryItems, name='get_detail'),
+    path('sersoc/file/save', SaveDocumento, name="save_file_ss"),
     #Consulta 
     path('consulta/<str:rfc>/', ValidateRFC, name='validate_rfc'),
 
@@ -126,4 +148,4 @@ urlpatterns = [
     #Api URL's
     path('api-auth/', include('rest_framework.urls')),
     path('', include(crede_urls)),
-]   
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)   

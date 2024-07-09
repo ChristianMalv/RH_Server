@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <script src="https://use.fontawesome.com/releases/v5.11.2/js/all.js" data-auto-replace-svg="nest"></script>
+        <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/23.2.6/css/dx.light.css" />
+      <script src="https://framework-gb.cdn.gob.mx/qa/gobmx.js"></script>
+   
+ 
+
+       
+    <title>Sistema de Recursos Humanos</title>
+  </head>
+  <body>
+          <main class="page">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-md-12">
+          <div class="row">
+          <label id="Title1"> <h1> Sistema de Gestión de Talento </h1></label>
+          </div>
+          <div class="btn-group" role="group" >
+           {% if perms.people.dar_baja and perms.people.asignar_comp and perms.people.ver_incidencias and perms.people.asignar_ayudas %}
+            <button id="btnGroupVerticalDrop1" type="button" class="btn btn-primary btn-lg active dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                    Personal
+                    <span class="caret"></span>
+            </button>
+
+              <ul class="dropdown-menu" role="menu" aria-labelledby="btnGroupVerticalDrop1">
+              <li><a href="{% url 'person_list' %}">Activo</a></li>
+             {% endif %}  
+              {% if perms.people.dar_baja %}
+                <li><a href="{% url 'baja_list' %}">Bajas</a></li>
+              {% endif %}  
+              {% if perms.people.asignar_comp %}
+                <li><a href="{% url 'comp_list' %}">Compensaciones</a></li>
+                {% endif %}  
+              {% if perms.people.ver_vacaciones %}
+                <li><a href="{% url 'vacaciones_list' %}">Vacaciones</a></li>
+              {% endif %}
+                {% if perms.people.ver_incidencias  %}
+                  <li><a href="{% url 'inci_list' %}">Incidencias</a></li>
+                {% endif %}  
+              {% if perms.people.asignar_ayudas  %}
+                  <li><a href="{% url 'ayuda_list' %}">Ayudas</a></li>
+                {% endif %}    
+            </ul>
+          </div>
+            {% if perms.people.servicio_social%}
+          <div class="btn-group" role="group" >
+            <button id="btnGroupVerticalDrop2" type="button" class="btn btn-primary btn-lg active dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Servicio Social  
+            <span class="caret"></span>
+            </button>
+             <ul class="dropdown-menu" role="menu" aria-labelledby="btnGroupVerticalDrop2"> 
+              <li><a href="{% url 'sersoc_list' %}">Activo</a></li>
+            
+                <li><a href="{% url 'sersoc_list' %}">Finalizado</a></li>
+             
+          </div>
+           {% endif %} 
+          <div class="btn-group" role="group" >
+            <button id="btnGroupVerticalDrop2" type="button" class="btn btn-primary btn-lg active dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Capacitación  
+            <span class="caret"></span>
+            </button>
+             <ul class="dropdown-menu" role="menu" aria-labelledby="btnGroupVerticalDrop2"> 
+               <li><a href="{% url 'capacitacion_list' %}">Cursos</a></li>
+               <li><a href="{% url 'sersoc_list' %}">Personas</a></li>
+             
+          </div> 
+          <hr class="red">
+          {% block content %}
+          {% endblock %}
+        </div>
+      </div>
+    </div>
+
+          </main>
+  </body>
+
+        <link href="https://framework-gb.cdn.gob.mx/qa/assets/styles/main.css" rel="stylesheet">
+       
+</html>

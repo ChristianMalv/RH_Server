@@ -5,13 +5,19 @@ import msal
 from django.db.models import Q
 from people.models import Sharepoint
 
-def DownloadFiles(curso, file):
-    sharepoint = Sharepoint.objects.get(pk=1)
+def getToken(pk):
+    sharepoint = Sharepoint.objects.get(pk=pk)
     authority = sharepoint.authority_url+'{}'.format(sharepoint.tenant_id)
     SCOPES = ['Sites.ReadWrite.All','Files.ReadWrite.All'] 
     cognos_to_onedrive = msal.PublicClientApplication(sharepoint.client_id, authority=authority)
     token = cognos_to_onedrive.acquire_token_by_username_password(sharepoint.username,sharepoint.password,SCOPES)
-    folder = '{}_{}'.format(curso.pk, curso.nombre)
+    return token, sharepoint
+
+
+
+def DownloadFiles(folder, file):
+    token, sharepoint = getToken(1)
+    
     headers = {'Authorization': 'Bearer {}'.format(token['access_token'])}
     onedrive_destination = '{}/{}/me/drive/root:/{}'.format(sharepoint.resource_url, sharepoint.api_version, folder)
     response = requests.get(onedrive_destination +':/children', headers=headers)
@@ -21,11 +27,18 @@ def DownloadFiles(curso, file):
     return row 
 
 
-def UploadFile(file, matricula, curso):
+def GetDirectoryInfo(folder):
+    token, sharepoint = getToken(1)
+    headers = {'Authorization': 'Bearer {}'.format(token['access_token'])}
+    onedrive_destination = '{}/{}/me/drive/root:/{}'.format(sharepoint.resource_url, sharepoint.api_version, folder)
+    response = requests.get(onedrive_destination +':/children', headers=headers)
+    content = json.loads(response.content)
+    return content 
+
+def UploadFile(file, nombre, folder):
     sharepoint = Sharepoint.objects.get(pk=1)
     authority = sharepoint.authority_url+'{}'.format(sharepoint.tenant_id)
     SCOPES = ['Sites.ReadWrite.All','Files.ReadWrite.All'] # Add other scopes/permissions as needed.
-    folder = '{}_{}'.format(curso.pk, curso.nombre)
     #https://login.microsoftonline.com/6b874ffe-e856-4262-bc7f-9f7b945ef3b3/oauth2/v2.0/authorize?response_type=token&client_id=de4fad1d-eb00-48ff-aed5-bd79ff1d0878&scope=Sites.ReadWrite.All+Files.ReadWrite.All&state=NVQnGCAchrJIqsAeAxYO0Mc0N8l3Wq
 
     cognos_to_onedrive = msal.PublicClientApplication(sharepoint.client_id, authority=authority)
@@ -33,10 +46,15 @@ def UploadFile(file, matricula, curso):
     extension = os.path.splitext(file.name)[1]
     onedrive_destination = '{}/{}/me/drive/root:/{}'.format(sharepoint.resource_url, sharepoint.api_version, folder)
     headers = {'Authorization': 'Bearer {}'.format(token['access_token'])}
-    if file.size < 4100000: 
-        r = requests.put(onedrive_destination+"/"+matricula+extension+":/content", data=file, headers=headers)
+    if nombre:  
+        nombre = nombre+extension
     else:
-        upload_session = requests.post(onedrive_destination+"/"+matricula+extension+":/createUploadSession", headers=headers).json()
+        nombre = file.name
+    
+    if file.size < 4100000: 
+        r = requests.put(onedrive_destination+"/"+nombre+":/content", data=file, headers=headers)
+    else:
+        upload_session = requests.post(onedrive_destination+"/"+nombre+":/createUploadSession", headers=headers).json()
         total_file_size = file.size
         chunk_size = 327680
         chunk_number = total_file_size//chunk_size
@@ -56,4 +74,4 @@ def UploadFile(file, matricula, curso):
             i = i + 1
             
     file.close()
-    return matricula+extension
+    return nombre

@@ -72,7 +72,7 @@ def InsertComp(request):
 def GetCompPersonas(request):
    
     querysetComp = Compensaciones.objects.all().values("info_person__pk", "info_person__matricula", "info_person__nombres","info_person__apellido1", "info_person__apellido2")
-    querysetPersons = Person.objects.filter(Q(activo=True) & ~Q(cat_contratacion__pk =6)).values("pk", "matricula", "nombres", "apellido1", "apellido2")    
+    querysetPersons = Person.objects.filter(Q(activo=True) & ~Q(cat_contratacion__pk =6)).values("pk", "matricula", "nombres", "apellido1", "apellido2").order_by('apellido1')
     persons_data = querysetPersons.difference(querysetComp)  
      #persons_data= Person.objects.all()  
     t = get_template('people/comp/add_compensacion.html')
@@ -94,7 +94,7 @@ class CompToShow:
 class PersonCompListView(ListView):
     model = Compensaciones
     def get(self, request, *args, **kwargs):
-        queryset =Compensaciones.objects.all()
+        queryset =Compensaciones.objects.all().order_by('info_person__apellido1')
         querysetComp = Compensacion.objects.all()
         list = []  
         for comp in querysetComp:
@@ -110,7 +110,7 @@ class PersonCompListView(ListView):
 def GetPersonasCompensacion(request):
   
     q=request.GET.get("q")
-    queryset =Compensaciones.objects.all()
+    queryset =Compensaciones.objects.all().order_by('info_person__apellido1')
     querysetComp = Compensacion.objects.all()
     if q and q !=" ":
         q =q.split(" ")

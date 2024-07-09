@@ -20,13 +20,13 @@
 <div class="row">
   <div class ="col-md-12">
       <div class="col-md-6">
-          <button type="button" class="btn btn-danger" id="print-all" > Imprimir Listas Personal Base</a>
+          <button type="button" class="btn btn-danger" id="print-all"> <span class="glyphicon glyphicon-print"> </span> Imprimir Listas Personal Base</a>
       </div>
       <div class="col-md-6">
         <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#myModal">Agregar Incidencia General</a>
       </div>
        <div class="col-md-6">
-          <button type="button" class="btn btn-danger" id="report-inci" > Generar Reporte de Incidencias</a>
+          <button type="button" class="btn btn-danger" id="report-inci"> <span class="glyphicon glyphicon-list-alt"> </span> Generar Reporte de Incidencias</a>
       </div>
   </div>
 </div>
@@ -55,7 +55,7 @@
       <tr>
         <td style="display:none" > {{person.pk}}</td>
         <td>{{ person.matricula }}</td>
-        <td>  {{ person.nombres  }} {{ person.apellido1  }} {{ person.apellido2 }} </a></td>
+        <td>{{person.apellido1}} {{person.apellido2}} {{person.nombres}}</a></td>
       
         <td> 
         {% if person.comision_sindical == False %}

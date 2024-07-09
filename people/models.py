@@ -292,18 +292,24 @@ class ServicioSocial(models.Model):
     carrera = models.CharField(max_length=255, blank=False, verbose_name="Carrera o Especialidad")
     creditos_cursados = models.CharField(max_length=20, blank=False, verbose_name="Total de Créditos Cursados")
     numero_matricula = models.CharField(max_length=20, blank=False, verbose_name="Número de Matrícula")
-    telefono_escuela = models.CharField(max_length=14, blank=False, verbose_name="Teléfono de la Escuela")
+    telefono_escuela = models.CharField(max_length=50, blank=False, verbose_name="Teléfono de la Escuela")
     telefono_ext_escuela = models.CharField(max_length=14, blank=False, verbose_name="extensión")
     
     periodo = models.CharField(max_length=255, blank=False, verbose_name="Periodo en el que se realizará el Servicio")
     horario = models.CharField(max_length=255, blank=False, verbose_name="Horario de desempeño de las actividades")
-    description = models.TextField(max_length=250, blank=True, verbose_name="Actividades")
+    description = models.TextField(max_length=300, blank=True, verbose_name="Actividades")
     class Meta:
         verbose_name = "Servicio social"
         verbose_name_plural = "Servicios sociales"
         permissions = (("servicio_social", "Puede ver, crear y editar servicios sociales"), ("imprimir_credenciales_ss", "Puede Imprimir credenciales de servicio social"), ("asistencias_ss", "Puede editar y ver indicdencias de servicio social"),  )
 
-
+class DocumentosSS(Catalogo):
+    info_person = models.ForeignKey(Person, on_delete=models.CASCADE)
+    metadatos = JSONField()
+    class Meta:
+        verbose_name = "Documento Servicio Social"
+        verbose_name_plural = "Documentos Servicio sociales"
+        
 class Capacitacion(Catalogo):
     class Meta:
         verbose_name = "Capacitación"
