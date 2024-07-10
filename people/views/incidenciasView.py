@@ -1145,7 +1145,7 @@ def loginAdmin(request):
     return HttpResponse(status=404)
 
 def getAllPersonas(matricula):
-    person = Person.objects.get(matricula=matricula).order_by('apellido1')
+    person = Person.objects.get(matricula=matricula)
     multipleAreas = MultipleOrganigrama.objects.filter(info_person = person).values('areasInternas')
     if person.areaInterna.pk ==1:
         queryset = Person.objects.filter( Q(activo=True) & ~Q(cat_contratacion__pk =6)).order_by('apellido1')
