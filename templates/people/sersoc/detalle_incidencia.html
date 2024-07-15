@@ -37,6 +37,7 @@
           <th>Fecha</th>
           <th>Registro de entrada</th>
           <th>Registro de salida</th>
+          <th>Horas</th>
         </tr>
       </thead>
       <tbody>  
@@ -60,7 +61,7 @@
         <td data-type="salida">{% if incidencia.Salida == "null" %}Sin Registro{% else %}{{ incidencia.Salida }}{% endif %}</td>  
         {% endif %}
 
-        <td>{% if incidencia.observacion == 0 %} {% else %}{{incidencia.observacion}}{% endif %}</td>
+       <!-- <td>{% if incidencia.observacion == 0 %} {% else %}{{incidencia.observacion}}{% endif %}</td>-->
         <td> {% if incidencia.horas == 0 %} - {% else %} {{incidencia.horas}} </td> {% endif %}
        </tr>
       
@@ -71,7 +72,7 @@
     {% endfor %}
     {% if horas %}
       <tr class="table-active">
-        <td colspan="3">Total de horas: {{ horas }}</td>
+        <td colspan="3" > <b>Total de horas:</b> {{ horas }}</td>
       </tr>
     {% endif %}
  

@@ -98,7 +98,7 @@ class IncidenciaToShowSS:
 class SersocAsistListView(ListView):
     model = ServicioSocial
     def get(self, request, *args, **kwargs):
-        horas = 0
+        horas =  diferencia_tiempo = 0
         person = Person.objects.get(pk=self.kwargs['person'])
         nombreDias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sabado']
         list = []  
@@ -115,27 +115,28 @@ class SersocAsistListView(ListView):
                     #print(incidenciaOut)
                     if incidencia.count()>1:
                         incidenciaIn = incidencia.earliest('created_at')
-                        if  incidenciaIn.causa_incidencia != None : 
-                            diferencia_tiempo = (incidenciaOut.created_at - incidenciaIn.created_at).Hours
-                            horas += diferencia_tiempo
-                            list.append( IncidenciaToShowSS( nombreDias[int(incidenciaIn.created_at.strftime("%w"))] , incidenciaIn.created_at.strftime("%d/%m/%Y"), incidenciaIn.pk, incidenciaIn.created_at.strftime("%H:%M:%S"),  incidenciaOut.pk, incidenciaOut.created_at.strftime("%H:%M:%S") , diferencia_tiempo  )) 
-                        else:
-                            list.append( IncidenciaToShowSS( nombreDias[int(incidenciaIn.created_at.strftime("%w"))] , incidenciaIn.created_at.strftime("%d/%m/%Y"), incidenciaIn.pk, incidenciaIn.created_at.strftime("%H:%M:%S"),  incidenciaOut.pk, incidenciaOut.created_at.strftime("%H:%M:%S"), diferencia_tiempo)) 
-                        
+                        diferencia_tiempo = (incidenciaOut.created_at - incidenciaIn.created_at).total_seconds() 
+                        hora, resto = divmod(diferencia_tiempo, 3600)
+                        minuto, segundo = divmod(resto, 60)
+                        horas += diferencia_tiempo
+                        list.append( IncidenciaToShowSS( nombreDias[int(incidenciaIn.created_at.strftime("%w"))] , incidenciaIn.created_at.strftime("%d/%m/%Y"), incidenciaIn.pk, incidenciaIn.created_at.strftime("%H:%M:%S"),  incidenciaOut.pk, incidenciaOut.created_at.strftime("%H:%M:%S") , "{:02}:{:02}:{:02}".format(int(hora), int(minuto), int(segundo))  )) 
                     else:
                         incicenciaFirst = incidencia.first()
                         if  incicenciaFirst.causa_incidencia != None :
-                            list.append( IncidenciaToShowSS(nombreDias[int( incicenciaFirst.created_at.strftime("%w"))] ,  incicenciaFirst.created_at.strftime("%d/%m/%Y"),  incicenciaFirst.pk, "--:--",  incicenciaFirst.pk, "--:--" ), "-") 
+                            list.append( IncidenciaToShowSS(nombreDias[int( incicenciaFirst.created_at.strftime("%w"))] ,  incicenciaFirst.created_at.strftime("%d/%m/%Y"),  incicenciaFirst.pk, "--:--",  incicenciaFirst.pk, "--:--" , "-")) 
                     
                 else:
-                    list.append( IncidenciaToShowSS( nombreDias[int(  (dateInicio + timedelta(n)).strftime("%w")  )], (dateInicio + timedelta(n)).strftime("%d/%m/%Y"),  "null" , "--:--",  "null", "--:--"), "-") 
+                    list.append( IncidenciaToShowSS( nombreDias[int(  (dateInicio + timedelta(n)).strftime("%w")  )], (dateInicio + timedelta(n)).strftime("%d/%m/%Y"),  "null" , "--:--",  "null", "--:--", "-") )
+            hora, resto = divmod(horas, 3600)
+            minuto, segundo = divmod(resto, 60)
+
             content =  {
                 'list': list,
                 'person': person,
                 'sersoc': sersoc,
                 'fechaInicio': dateInicio, 
                 'fechaFin': dateFin,
-                'horas' : horas,
+                'horas' : "{:02}:{:02}:{:02}".format(int(hora), int(minuto), int(segundo)),
             } 
         else:
             content =  {
