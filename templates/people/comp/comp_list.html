@@ -26,6 +26,10 @@
     <div class="col-md-6"> 
        <p>
        <button type="button" class="btn btn-danger" id="print-all" > <span class="glyphicon glyphicon-print"> </span> Imprimir Compensaciones </button>
+       <div id="dropdownMenu" class="dropdown-content">
+        <button type="button" id="downloadXml" >Descargar XLS</button>
+        <button type="button" id="downloadPdf" >Descargar PDF</button>
+    </div>
       </p>
     </div>
   
@@ -147,8 +151,36 @@
         </div>
   </div>
 </div>
-   
 
+<style type="text/css">
+/* Style the button */
+#downloadButton {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+/* Style the dropdown menu */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content a:hover {
+    background-color: #f1f1f1;
+}
+</style>
 
 <script>
 
@@ -345,8 +377,8 @@ $(document).on("click",".eliminar",function(){
 
 
 $("#print-all").click(function(){
-  console.log(":S");
-  var respFolio = getInteger();
+ console.log(":S");
+ 
   //var input1 = $('#input1').val();
   //var input2 = $('#input2').val();
   //window.open( "print/"+ input1.replaceAll('/', '-')+"/"+ input2.replaceAll('/', '-') , '_blank');
@@ -365,10 +397,26 @@ $("#print-all").click(function(){
               }
               else
               {
-                window.open( "print/"+ input1.replaceAll('/', '-')+"/"+ input2.replaceAll('/', '-')+"/"+respFolio , '_blank');
+                dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none' : 'block';
+                //
                 }
             
             }
+});
+
+$("#downloadXml").click(function(){
+  var respFolio = getInteger();
+  var input1 = $('#input1').val();
+  var input2 = $('#input2').val();
+  window.open( "print/"+ input1.replaceAll('/', '-')+"/"+ input2.replaceAll('/', '-')+"/"+respFolio +"/xls"  , '_blank');
+
+});
+
+$("#downloadPdf").click(function(){
+  var respFolio = getInteger();
+  var input1 = $('#input1').val();
+  var input2 = $('#input2').val();
+  window.open( "print/"+ input1.replaceAll('/', '-')+"/"+ input2.replaceAll('/', '-')+"/"+respFolio +"/pdf"  , '_blank');
 });
 
 function getInteger(){

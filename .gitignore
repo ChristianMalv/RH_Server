@@ -1,4 +1,3 @@
-media/
 env/
 myvenv/
 people/migrations/
@@ -83,3 +82,412 @@ simpleproject/settings.py
 simpleproject/settings.py
 requirements.txt
 simpleproject/settings.py
+/myenv
+/people/migrations
+/crede_api/migrations
+/media/Formatos/Compensacion/Area
+/media/Formatos/Credencial
+media/Incidencias/2024/05/09/S230782_Christian_Francisco_Malvaez_Soto_IN.png
+media/Incidencias/2024/05/09/H210527_Christian_Francisco_Malvaez_Soto_IN.png
+media/Incidencias/2024/04/26/H210527_Christian_Francisco_Malvaez_Soto_IN.png
+media/Incidencias/2024/03/21/H210527_Christian_Francisco_Malvaez_Soto_IN.png
+media/Incidencias/2024/03/05/H210527_Christian_Francisco_Malvaez_Soto_IN.png
+media/Incidencias/2023/12/27/S230781_Christian_Malvaez_Soto_IN.png
+media/Incidencias/2023/08/16/H210527_Christian_Francisco_Malvaez_Soto_IN.png
+media/Incidencias/2023/05/12/H210527_Christian_Francisco_Malvaez_Soto_IN_nGRuU3Y.png
+media/Incidencias/2023/05/12/H210527_Christian_Francisco_Malvaez_Soto_IN.png
+media/Incidencias/2023/05/10/H210527_Christian_Francisco_Malvaez_Soto_OUT.png
+media/Incidencias/2023/05/10/H210527_Christian_Francisco_Malvaez_Soto_IN_heaLtEb.png
+media/Incidencias/2023/05/10/H210527_Christian_Francisco_Malvaez_Soto_IN.png
+media/Incidencias/2023/05/09/H210527_Christian_Francisco_Malvaez_Soto_IN_Wsj0BWn.png
+media/Incidencias/2023/05/09/H210527_Christian_Francisco_Malvaez_Soto_IN.png
+media/Incidencias/2023/04/03/H210527_Christian_Francisco_Malvaez_Soto_OUT.png
+media/Incidencias/2022/07/05/H210527_Christian_Francisco_Malvaez_Soto_IN.png
+media/Incidencias/2022/05/22/H210527_Christian_Francisco_Malvaez_Soto_IN.png
+media/Incidencias/2022/05/05/H210527_Christian_Francisco_Malvaez_Soto_OUT_l0m4PoP.png
+media/Incidencias/2022/05/05/H210527_Christian_Francisco_Malvaez_Soto_OUT.png
+media/Incidencias/2022/05/05/H210527_Christian_Francisco_Malvaez_Soto_IN.png
+media/Incidencias/2022/04/21/H210527_Christian_Francisco_Malvaez_Soto_RlQuC5p.png
+media/Incidencias/2022/04/21/H210527_Christian_Francisco_Malvaez_Soto.png
+media/Incidencias/2022/04/18/H210527_Christian_Francisco_Malvaez_Soto_x9eMFcN.png
+media/Incidencias/2022/04/18/H210527_Christian_Francisco_Malvaez_Soto_tx63SBG.png
+media/Incidencias/2022/04/18/H210527_Christian_Francisco_Malvaez_Soto_j3lw6Ac.png
+media/Incidencias/2022/04/18/H210527_Christian_Francisco_Malvaez_Soto_BXKR7Ju.png
+media/Incidencias/2022/04/18/H210527_Christian_Francisco_Malvaez_Soto_8FLgvP1.png
+media/Incidencias/2022/04/18/H210527_Christian_Francisco_Malvaez_Soto.png
+media/Incidencias/2022/04/13/H190001_Juan_Raúl_Martínez_Mora_o4VeQCp.png
+media/Incidencias/2022/04/13/H190001_Juan_Raúl_Martínez_Mora.png
+media/Incidencias/2022/04/13/E130002_Luis_Héctor_Acosta_Cachú.png
+media/Incidencias/2022/04/13/B980003_María_del_Socorro_Aguilar_Ramírez.png
+media/Incidencias/2022/04/13/B920039_Marisela_Cázares_Martínez.png
+media/Incidencias/2022/04/13/B880040_Beatriz_Chiu_Fuentes.png
+media/Incidencias/2022/04/12/B980011_María_Luisa_Alcántara_Fuentes.png
+media/Incidencias/2022/04/12/B980003_María_del_Socorro_Aguilar_Ramírez.png
+media/Incidencias/2022/04/12/B940012_Leonor_Elvia_Aparicio_Aparicio.png
+media/Incidencias/2022/04/11/C000008_Francisco_Martín_Aguilar_De_la_Garza.png
+media/Incidencias/2022/04/11/B880009_Rubén_Ávila_Escalona.png
+media/imagenes/nofoto.png
+media/imagenes/Matricula_H210542.png
+media/imagenes/Matricula_H210527.png
+media/imagenes/Matricula_H210524.png
+media/imagenes/Matricula_H210473.png
+media/imagenes/Matricula_H210276.png
+media/imagenes/Matricula_H190001.png
+media/imagenes/Matricula_E130002.png
+media/imagenes/Matricula_C990068.png
+media/imagenes/Matricula_C080015.png
+media/imagenes/Matricula_B920013.png
+media/imagenes/Matricula_B910014.png
+media/imagenes/Matricula_B900147.png
+media/imagenes/Matricula_B820005.png
+media/imagenes/LogoFull.png
+media/imagenes/LOGO-SEP.png
+media/imagenes/logo-aprendemx.png
+media/imagenes/fondoverdeconcorte.png
+media/imagenes/fondoverde.png
+media/imagenes/fondoguinda.png
+media/imagenes/fondo.png
+media/imagenes/FirmaR.png
+media/imagenes/firma.png
+media/imagenes/desktop.ini
+media/fotos/fotoH210527.jpg
+media/fotos/fotoH210010.jpg
+media/fotos/fotoH190001.jpg
+media/fotos/fotoC990068.jpg
+media/fotos/fotoC080015.jpg
+media/fotos/fotoB920013.jpg
+media/fotos/fotoB910014.jpg
+media/fotos/fotoB900147.jpg
+media/FormatosCompensacion_v1.pdf
+media/Formatos/~$porte de Asistencia v2.docx
+media/Formatos/ReporteIncidenciasVacaciones Primer Periodo 2023 01-11-2023 al 05-11-2023.xls
+media/Formatos/ReporteIncidenciasVacaciones Primer Periodo 2023 01-11-2023 al 05-11-2023.pdf
+media/Formatos/ReporteIncidenciasSinRegistroEntradaSalida20-06-2023 al 21-06-2023.xls
+media/Formatos/ReporteIncidenciasSinRegistroEntradaSalida20-06-2023 al 21-06-2023.pdf
+media/Formatos/ReporteIncidenciasSinRegistroEntradaSalida16-06-2023 al 19-06-2023.xls
+media/Formatos/ReporteIncidenciasSinRegistroEntradaSalida16-06-2023 al 19-06-2023.pdf
+media/Formatos/ReporteIncidenciasSinRegistroEntradaSalida10-06-2024 al 17-06-2024.xls
+media/Formatos/ReporteIncidenciasSinRegistroEntradaSalida10-06-2024 al 17-06-2024.pdf
+media/Formatos/ReporteIncidenciasSinRegistroEntradaSalida01-11-2023 al 05-11-2023.xls
+media/Formatos/ReporteIncidenciasSinRegistroEntradaSalida01-11-2023 al 05-11-2023.pdf
+media/Formatos/ReporteIncidenciasSinRegistroEntradaSalida01-09-2023 al 22-09-2023.xls
+media/Formatos/ReporteIncidenciasSinRegistroEntradaSalida01-09-2023 al 22-09-2023.pdf
+media/Formatos/ReporteIncidenciasSinRegistroEntradaSalida01-05-2024 al 15-05-2024.xls
+media/Formatos/ReporteIncidenciasSinRegistroEntradaSalida01-05-2024 al 15-05-2024.pdf
+media/Formatos/ReporteIncidenciasRegistro de Entrada 01-04-2023 al 12-05-2023.xls
+media/Formatos/ReporteIncidenciasRegistro de Entrada 01-04-2023 al 12-05-2023.pdf
+media/Formatos/ReporteIncidenciasPermiso por día económico 01-04-2023 al 12-05-2023.xls
+media/Formatos/ReporteIncidenciasPermiso por día económico 01-04-2023 al 12-05-2023.pdf
+media/Formatos/ReporteIncidenciasOtra 01-06-2023 al 12-06-2023.xls
+media/Formatos/ReporteIncidenciasOtra 01-06-2023 al 12-06-2023.pdf
+media/Formatos/ReporteIncidenciasLicencia médica 01-06-2023 al 12-06-2023.xls
+media/Formatos/ReporteIncidenciasLicencia médica 01-06-2023 al 12-06-2023.pdf
+media/Formatos/ReporteIncidenciasLicencia médica 01-04-2023 al 08-05-2023.xls
+media/Formatos/ReporteIncidenciasLicencia médica 01-04-2023 al 08-05-2023.pdf
+media/Formatos/ReporteIncidencias_v1_2.jrxml
+media/Formatos/ReporteIncidencias_v1_2.jasper
+media/Formatos/ReporteIncidencias_v1.jrxml
+media/Formatos/ReporteIncidencias_v1.jasper
+media/Formatos/ReporteIncidencias3 01-04-2023 al 08-05-2023.xls
+media/Formatos/ReporteIncidencias3 01-04-2023 al 08-05-2023.pdf
+media/Formatos/ReporteIncidencias2 01-04-2023 al 08-05-2023.xls
+media/Formatos/ReporteIncidencias2 01-04-2023 al 08-05-2023.pdf
+media/Formatos/ReporteIncidencias12 02-05-2023 al 03-05-2023.pdf
+media/Formatos/ReporteIncidencias12 02-05-2022 al 03-05-2023.xls
+media/Formatos/ReporteIncidencias12 02-05-2022 al 03-05-2023.pdf
+media/Formatos/ReporteIncidencias12 02-05-2022 al 03-05-2023.csv
+media/Formatos/ReporteIncidencias12 01-04-2023 al 08-05-2023.xls
+media/Formatos/ReporteIncidencias12 01-04-2023 al 08-05-2023.pdf
+media/Formatos/ReporteIncidencias11 02-05-2022 al 03-05-2023.pdf
+media/Formatos/ReporteIncidencias11 02-05-2022 al 03-05-2023.csv
+media/Formatos/ReporteIncidencias11 01-04-2023 al 08-05-2023.xls
+media/Formatos/ReporteIncidencias11 01-04-2023 al 08-05-2023.pdf
+media/Formatos/ReporteIncidencias10 01-04-2023 al 08-05-2023.xls
+media/Formatos/ReporteIncidencias10 01-04-2023 al 08-05-2023.pdf
+media/Formatos/ReporteIncidencias1 01-04-2023 al 08-05-2023.xls
+media/Formatos/ReporteIncidencias1 01-04-2023 al 08-05-2023.pdf
+media/Formatos/ReporteCompensacion 22-07-2024 al 29-07-2024.pdf
+media/Formatos/ReporteCompensacion 10-06-2024 al 11-06-2024.pdf
+media/Formatos/ReporteCompensacion 09-10-2023 al 05-11-2023.pdf
+media/Formatos/ReporteCompensacion 08-03-2023 al 04-04-2023.pdf
+media/Formatos/ReporteCompensacion 07-03-2023 al 08-04-2023.pdf
+media/Formatos/ReporteCompensacion 05-10-2023 al 10-11-2023.pdf
+media/Formatos/ReporteCompensacion 05-04-2023 al 07-05-2023.pdf
+media/Formatos/ReporteCompensacion 02-12-2022 al 08-01-2023.pdf
+media/Formatos/ReporteCompensacion 01-12-2022 al 31-12-2022.pdf
+media/Formatos/ReporteCompensacion 01-12-2022 al 28-02-2023.pdf
+media/Formatos/ReporteCompensacion 01-12-2022 al 01-01-2023.pdf
+media/Formatos/ReporteCompensacion 01-11-2022 al 30-11-2022.pdf
+media/Formatos/ReporteCompensacion 01-07-2024 al 02-07-2024.xls
+media/Formatos/ReporteCompensacion 01-07-2024 al 02-07-2024.pdf
+media/Formatos/ReporteCompensacion 01-01-2023 al 01-02-2023.pdf
+media/Formatos/Reporte de AsistenciaReporte_General_Listas de Asistencia_2022-04-10__2022-05-08.pdf
+media/Formatos/Reporte de AsistenciaReporte_Asistencia.pdf
+media/Formatos/Reporte de AsistenciaH230704_Ricardo Rios Orozco_2024-02-01__2024-02-14.pdf
+media/Formatos/Reporte de AsistenciaH230704_Ricardo Rios Orozco_2023-10-02__2023-10-31.pdf
+media/Formatos/Reporte de AsistenciaH210532_Alonso Valverde Mendoza_2022-12-01__2023-01-11.pdf
+media/Formatos/Reporte de AsistenciaH210532_Alonso Valverde Mendoza_2022-12-01__2023-01-01.pdf
+media/Formatos/Reporte de AsistenciaH210527_Christian Francisco Malvaez Soto_2023-11-01__2023-11-10.pdf
+media/Formatos/Reporte de AsistenciaH210234_Mauricio Adalberto Palma Palomino_2022-12-01__2023-01-08.pdf
+media/Formatos/Reporte de AsistenciaB900284_Enrique Ramírez Pérez_2022-12-01__2023-01-18.pdf
+media/Formatos/Reporte de AsistenciaB900284_Enrique Ramírez Pérez_2022-12-01__2023-01-11.pdf
+media/Formatos/Reporte de AsistenciaB860151_Guillermo Madrigal Illescas_2023-04-05__2023-05-07.pdf
+media/Formatos/Reporte de AsistenciaB830331_Rubén Ricaño Cortés_2023-05-01__2023-05-08.pdf
+media/Formatos/Reporte de AsistenciaB830331_Rubén Ricaño Cortés_2022-12-02__2023-01-08.pdf
+media/Formatos/Reporte de AsistenciaB830331_Rubén Ricaño Cortés_2022-12-01__2023-01-11.pdf
+media/Formatos/Reporte de AsistenciaB830331_Rubén Ricaño Cortés_2022-12-01__2023-01-08.pdf
+media/Formatos/Reporte de AsistenciaB830331_Rubén Ricaño Cortés_2022-12-01__2023-01-01.pdf
+media/Formatos/Reporte de Asistencia_General.pdf
+media/Formatos/Reporte de Asistencia_General Ant.pdf
+media/Formatos/Reporte de Asistencia99.pdf
+media/Formatos/Reporte de Asistencia98.pdf
+media/Formatos/Reporte de Asistencia97.pdf
+media/Formatos/Reporte de Asistencia96.pdf
+media/Formatos/Reporte de Asistencia95.pdf
+media/Formatos/Reporte de Asistencia94.pdf
+media/Formatos/Reporte de Asistencia93.pdf
+media/Formatos/Reporte de Asistencia92.pdf
+media/Formatos/Reporte de Asistencia91.pdf
+media/Formatos/Reporte de Asistencia90.pdf
+media/Formatos/Reporte de Asistencia9.pdf
+media/Formatos/Reporte de Asistencia89.pdf
+media/Formatos/Reporte de Asistencia88.pdf
+media/Formatos/Reporte de Asistencia87.pdf
+media/Formatos/Reporte de Asistencia86.pdf
+media/Formatos/Reporte de Asistencia85.pdf
+media/Formatos/Reporte de Asistencia84.pdf
+media/Formatos/Reporte de Asistencia83.pdf
+media/Formatos/Reporte de Asistencia82.pdf
+media/Formatos/Reporte de Asistencia81.pdf
+media/Formatos/Reporte de Asistencia80.pdf
+media/Formatos/Reporte de Asistencia8.pdf
+media/Formatos/Reporte de Asistencia79.pdf
+media/Formatos/Reporte de Asistencia78.pdf
+media/Formatos/Reporte de Asistencia77.pdf
+media/Formatos/Reporte de Asistencia76.pdf
+media/Formatos/Reporte de Asistencia75.pdf
+media/Formatos/Reporte de Asistencia74.pdf
+media/Formatos/Reporte de Asistencia73.pdf
+media/Formatos/Reporte de Asistencia72.pdf
+media/Formatos/Reporte de Asistencia71.pdf
+media/Formatos/Reporte de Asistencia70.pdf
+media/Formatos/Reporte de Asistencia7.pdf
+media/Formatos/Reporte de Asistencia69.pdf
+media/Formatos/Reporte de Asistencia68.pdf
+media/Formatos/Reporte de Asistencia67.pdf
+media/Formatos/Reporte de Asistencia66.pdf
+media/Formatos/Reporte de Asistencia65.pdf
+media/Formatos/Reporte de Asistencia64.pdf
+media/Formatos/Reporte de Asistencia63.pdf
+media/Formatos/Reporte de Asistencia62.pdf
+media/Formatos/Reporte de Asistencia61.pdf
+media/Formatos/Reporte de Asistencia60.pdf
+media/Formatos/Reporte de Asistencia6.pdf
+media/Formatos/Reporte de Asistencia59.pdf
+media/Formatos/Reporte de Asistencia58.pdf
+media/Formatos/Reporte de Asistencia57.pdf
+media/Formatos/Reporte de Asistencia56.pdf
+media/Formatos/Reporte de Asistencia55.pdf
+media/Formatos/Reporte de Asistencia54.pdf
+media/Formatos/Reporte de Asistencia53.pdf
+media/Formatos/Reporte de Asistencia52.pdf
+media/Formatos/Reporte de Asistencia51.pdf
+media/Formatos/Reporte de Asistencia50.pdf
+media/Formatos/Reporte de Asistencia5.pdf
+media/Formatos/Reporte de Asistencia49.pdf
+media/Formatos/Reporte de Asistencia48.pdf
+media/Formatos/Reporte de Asistencia47.pdf
+media/Formatos/Reporte de Asistencia46.pdf
+media/Formatos/Reporte de Asistencia45.pdf
+media/Formatos/Reporte de Asistencia44.pdf
+media/Formatos/Reporte de Asistencia43.pdf
+media/Formatos/Reporte de Asistencia42.pdf
+media/Formatos/Reporte de Asistencia41.pdf
+media/Formatos/Reporte de Asistencia40.pdf
+media/Formatos/Reporte de Asistencia4.pdf
+media/Formatos/Reporte de Asistencia39.pdf
+media/Formatos/Reporte de Asistencia38.pdf
+media/Formatos/Reporte de Asistencia37.pdf
+media/Formatos/Reporte de Asistencia36.pdf
+media/Formatos/Reporte de Asistencia35.pdf
+media/Formatos/Reporte de Asistencia34.pdf
+media/Formatos/Reporte de Asistencia33.pdf
+media/Formatos/Reporte de Asistencia32.pdf
+media/Formatos/Reporte de Asistencia31.pdf
+media/Formatos/Reporte de Asistencia30.pdf
+media/Formatos/Reporte de Asistencia3.pdf
+media/Formatos/Reporte de Asistencia29.pdf
+media/Formatos/Reporte de Asistencia28.pdf
+media/Formatos/Reporte de Asistencia27.pdf
+media/Formatos/Reporte de Asistencia26.pdf
+media/Formatos/Reporte de Asistencia25.pdf
+media/Formatos/Reporte de Asistencia24.pdf
+media/Formatos/Reporte de Asistencia23.pdf
+media/Formatos/Reporte de Asistencia226.pdf
+media/Formatos/Reporte de Asistencia225.pdf
+media/Formatos/Reporte de Asistencia224.pdf
+media/Formatos/Reporte de Asistencia223.pdf
+media/Formatos/Reporte de Asistencia222.pdf
+media/Formatos/Reporte de Asistencia221.pdf
+media/Formatos/Reporte de Asistencia220.pdf
+media/Formatos/Reporte de Asistencia22.pdf
+media/Formatos/Reporte de Asistencia219.pdf
+media/Formatos/Reporte de Asistencia218.pdf
+media/Formatos/Reporte de Asistencia217.pdf
+media/Formatos/Reporte de Asistencia216.pdf
+media/Formatos/Reporte de Asistencia215.pdf
+media/Formatos/Reporte de Asistencia214.pdf
+media/Formatos/Reporte de Asistencia213.pdf
+media/Formatos/Reporte de Asistencia212.pdf
+media/Formatos/Reporte de Asistencia211.pdf
+media/Formatos/Reporte de Asistencia210.pdf
+media/Formatos/Reporte de Asistencia21.pdf
+media/Formatos/Reporte de Asistencia209.pdf
+media/Formatos/Reporte de Asistencia208.pdf
+media/Formatos/Reporte de Asistencia207.pdf
+media/Formatos/Reporte de Asistencia206.pdf
+media/Formatos/Reporte de Asistencia205.pdf
+media/Formatos/Reporte de Asistencia204.pdf
+media/Formatos/Reporte de Asistencia203.pdf
+media/Formatos/Reporte de Asistencia202.pdf
+media/Formatos/Reporte de Asistencia201.pdf
+media/Formatos/Reporte de Asistencia200.pdf
+media/Formatos/Reporte de Asistencia20.pdf
+media/Formatos/Reporte de Asistencia2.pdf
+media/Formatos/Reporte de Asistencia199.pdf
+media/Formatos/Reporte de Asistencia198.pdf
+media/Formatos/Reporte de Asistencia197.pdf
+media/Formatos/Reporte de Asistencia196.pdf
+media/Formatos/Reporte de Asistencia195.pdf
+media/Formatos/Reporte de Asistencia194.pdf
+media/Formatos/Reporte de Asistencia193.pdf
+media/Formatos/Reporte de Asistencia192.pdf
+media/Formatos/Reporte de Asistencia191.pdf
+media/Formatos/Reporte de Asistencia190.pdf
+media/Formatos/Reporte de Asistencia19.pdf
+media/Formatos/Reporte de Asistencia189.pdf
+media/Formatos/Reporte de Asistencia188.pdf
+media/Formatos/Reporte de Asistencia187.pdf
+media/Formatos/Reporte de Asistencia186.pdf
+media/Formatos/Reporte de Asistencia185.pdf
+media/Formatos/Reporte de Asistencia184.pdf
+media/Formatos/Reporte de Asistencia183.pdf
+media/Formatos/Reporte de Asistencia182.pdf
+media/Formatos/Reporte de Asistencia181.pdf
+media/Formatos/Reporte de Asistencia180.pdf
+media/Formatos/Reporte de Asistencia18.pdf
+media/Formatos/Reporte de Asistencia179.pdf
+media/Formatos/Reporte de Asistencia178.pdf
+media/Formatos/Reporte de Asistencia177.pdf
+media/Formatos/Reporte de Asistencia176.pdf
+media/Formatos/Reporte de Asistencia175.pdf
+media/Formatos/Reporte de Asistencia174.pdf
+media/Formatos/Reporte de Asistencia173.pdf
+media/Formatos/Reporte de Asistencia172.pdf
+media/Formatos/Reporte de Asistencia171.pdf
+media/Formatos/Reporte de Asistencia170.pdf
+media/Formatos/Reporte de Asistencia17.pdf
+media/Formatos/Reporte de Asistencia169.pdf
+media/Formatos/Reporte de Asistencia168.pdf
+media/Formatos/Reporte de Asistencia167.pdf
+media/Formatos/Reporte de Asistencia166.pdf
+media/Formatos/Reporte de Asistencia165.pdf
+media/Formatos/Reporte de Asistencia164.pdf
+media/Formatos/Reporte de Asistencia163.pdf
+media/Formatos/Reporte de Asistencia162.pdf
+media/Formatos/Reporte de Asistencia161.pdf
+media/Formatos/Reporte de Asistencia160.pdf
+media/Formatos/Reporte de Asistencia16.pdf
+media/Formatos/Reporte de Asistencia159.pdf
+media/Formatos/Reporte de Asistencia158.pdf
+media/Formatos/Reporte de Asistencia157.pdf
+media/Formatos/Reporte de Asistencia156.pdf
+media/Formatos/Reporte de Asistencia155.pdf
+media/Formatos/Reporte de Asistencia154.pdf
+media/Formatos/Reporte de Asistencia153.pdf
+media/Formatos/Reporte de Asistencia152.pdf
+media/Formatos/Reporte de Asistencia151.pdf
+media/Formatos/Reporte de Asistencia150.pdf
+media/Formatos/Reporte de Asistencia15.pdf
+media/Formatos/Reporte de Asistencia149.pdf
+media/Formatos/Reporte de Asistencia148.pdf
+media/Formatos/Reporte de Asistencia147.pdf
+media/Formatos/Reporte de Asistencia146.pdf
+media/Formatos/Reporte de Asistencia145.pdf
+media/Formatos/Reporte de Asistencia144.pdf
+media/Formatos/Reporte de Asistencia143.pdf
+media/Formatos/Reporte de Asistencia142.pdf
+media/Formatos/Reporte de Asistencia141.pdf
+media/Formatos/Reporte de Asistencia140.pdf
+media/Formatos/Reporte de Asistencia14.pdf
+media/Formatos/Reporte de Asistencia139.pdf
+media/Formatos/Reporte de Asistencia138.pdf
+media/Formatos/Reporte de Asistencia137.pdf
+media/Formatos/Reporte de Asistencia136.pdf
+media/Formatos/Reporte de Asistencia135.pdf
+media/Formatos/Reporte de Asistencia134.pdf
+media/Formatos/Reporte de Asistencia133.pdf
+media/Formatos/Reporte de Asistencia132.pdf
+media/Formatos/Reporte de Asistencia131.pdf
+media/Formatos/Reporte de Asistencia130.pdf
+media/Formatos/Reporte de Asistencia13.pdf
+media/Formatos/Reporte de Asistencia129.pdf
+media/Formatos/Reporte de Asistencia128.pdf
+media/Formatos/Reporte de Asistencia127.pdf
+media/Formatos/Reporte de Asistencia126.pdf
+media/Formatos/Reporte de Asistencia125.pdf
+media/Formatos/Reporte de Asistencia124.pdf
+media/Formatos/Reporte de Asistencia123.pdf
+media/Formatos/Reporte de Asistencia122.pdf
+media/Formatos/Reporte de Asistencia121.pdf
+media/Formatos/Reporte de Asistencia120.pdf
+media/Formatos/Reporte de Asistencia12.pdf
+media/Formatos/Reporte de Asistencia119.pdf
+media/Formatos/Reporte de Asistencia118.pdf
+media/Formatos/Reporte de Asistencia117.pdf
+media/Formatos/Reporte de Asistencia116.pdf
+media/Formatos/Reporte de Asistencia115.pdf
+media/Formatos/Reporte de Asistencia114.pdf
+media/Formatos/Reporte de Asistencia113.pdf
+media/Formatos/Reporte de Asistencia112.pdf
+media/Formatos/Reporte de Asistencia111.pdf
+media/Formatos/Reporte de Asistencia110.pdf
+media/Formatos/Reporte de Asistencia11.pdf
+media/Formatos/Reporte de Asistencia109.pdf
+media/Formatos/Reporte de Asistencia108.pdf
+media/Formatos/Reporte de Asistencia107.pdf
+media/Formatos/Reporte de Asistencia106.pdf
+media/Formatos/Reporte de Asistencia105.pdf
+media/Formatos/Reporte de Asistencia104.pdf
+media/Formatos/Reporte de Asistencia103.pdf
+media/Formatos/Reporte de Asistencia102.pdf
+media/Formatos/Reporte de Asistencia101.pdf
+media/Formatos/Reporte de Asistencia100.pdf
+media/Formatos/Reporte de Asistencia10.pdf
+media/Formatos/Reporte de Asistencia1.pdf
+media/Formatos/Reporte de Asistencia0.pdf
+media/Formatos/Reporte de Asistencia.pdf
+media/Formatos/Reporte de Asistencia Vacio.pdf
+media/Formatos/Reporte de Asistencia Vacio v3.docx
+media/Formatos/Reporte de Asistencia Vacio v2.pdf
+media/Formatos/Reporte de Asistencia Vacio v2.docx
+media/Formatos/Reporte de Asistencia Vacio v2.1.pdf
+media/Formatos/Reporte de Asistencia v3.docx
+media/Formatos/Reporte de Asistencia v2.pdf
+media/Formatos/Reporte de Asistencia v2.docx
+media/Formatos/Reporte de Asistencia v2.1.pdf
+media/Formatos/logo-sep.png
+media/Formatos/logo-aprendemx.png
+media/Formatos/Incidencias.jrxml
+media/Formatos/Incidencias.jasper
+media/Formatos/Ejemplo Reporte de Asistencia1.pdf
+media/montserrat/Montserrat-Regular.ttf
+media/montserrat/Montserrat-Medium.ttf
+media/montserrat/Montserrat-Light.ttf
+media/montserrat/Montserrat-Bold.ttf
+media/llegadas/2022/04/11/B890007_Enrique_Villegas_Bañuelos.png
+media/llegadas/2022/04/11/B820005_Luciano_Aguilar_Hernández
+media/js/index.js
+media/js/dx.all.js
+media/js/data.js
+media/Formatos/dataReporteIncidencias

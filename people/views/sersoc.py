@@ -270,8 +270,8 @@ def SaveDocumento(request):
             pk = request.POST.get('pk')
             matricula = request.POST.get('matricula')
             person = Person.objects.get(matricula = matricula)
-            file_name = UploadFile(file, None,  person.matricula)
-            json_data = DownloadFiles(person.matricula, file_name)
+            file_name = UploadFile(file, None,  person.matricula, sharepoint = 2)
+            json_data = DownloadFiles(person.matricula, file_name, sharepoint = 2)
             try:
                 doc = DocumentosSS.objects.get(Q(nombre=file_name) & Q(info_person = person))
                 doc.metadatos = json_data  
@@ -279,9 +279,22 @@ def SaveDocumento(request):
                 print("Doc not exist")
                 documento = DocumentosSS( info_person = person, nombre= file_name, metadatos = json_data)
                 documento.save()
-        documento_data={"error":False,"errorMessage":"Documento Agregado!", "documento": json_data }
+       
+        documento_data={"error":False,"errorMessage":"Documento Agregado!", "documento": f'<tr><td>{file_name}</td><td> <a href="{json_data['webUrl']}" target="_blank" class="btn btn-primary">Consultar Documento</a></td></tr>' }
         return JsonResponse(documento_data,safe=False)
     except Exception as e:
         print(e)
         capacitacion_data={"error":True,"errorMessage":"Error al cargar evidencia"}
         return JsonResponse(documento_data,safe=False)
+
+@csrf_exempt 
+def DeleteDocumento(request):
+    doc = DocumentosSS.objects.get(pk = request.POST.get('id'))
+    try:
+        doc.delete()
+        doc_data={"error":False,"errorMessage":"Documento eliminado" }
+        return JsonResponse(doc_data,safe=False)
+    except  Exception as e:
+        raise e
+        doc_data={"error":True,"errorMessage":"Error al eliminar documento"}
+        return JsonResponse(doc_data,safe=False)

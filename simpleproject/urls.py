@@ -25,7 +25,7 @@ from people.views import (PersonListView,
     loginAdmin, AdminConsulta, AdminInciListView, GetAdminIncidencia, reporteIncidencias, PersonAyudaListView, GetAyudaPersonas, InsertAyuda, DeleteAyuda, GetPersonasAyuda, DashboardCheck, UpdateDashboard, \
         GetPersonaAyuda,  SersocListView, SersocCreateView, CreateSersocPerson, AddAyuda, DeleteAyudaMonto, ValidateRFC, PersonVacacionesListView, GetPersonasVacacion, GetDetalleVacacion, \
         GetAsistencia, DeleteDayVacacion, SersocAsistListView, SersocFileListView, getDirectoryItems, \
-        CapacitacionCreateView, CapacitacionListView, SaveCapacitacion, loginUsers, CapacitacionView, CapacitacionesxPersona, SaveCapacitacionEvidencia, CapacitacionXCursoView, UpdateStatusEvidencia, SaveDocumento)
+        CapacitacionCreateView, CapacitacionListView, SaveCapacitacion, loginUsers, CapacitacionView, CapacitacionesxPersona, SaveCapacitacionEvidencia, CapacitacionXCursoView, UpdateStatusEvidencia, SaveDocumento, DeleteDocumento)
 from django.contrib.auth import views
 from django.contrib.auth.decorators import login_required
 from crede_api import urls as crede_urls
@@ -54,7 +54,7 @@ urlpatterns = [
     path('get_personas_comp/', GetCompPersonas, name="get_PersonasComp"),
     path('compensaciones/insert/', InsertComp, name="insert_comp"),
     path('compensaciones/delete', DeleteComp, name='delete_Compensacion' ),
-    path('compensaciones/print/<str:fechaInicio>/<str:fechaFin>/<int:folio>', json_to_pdf, name='print_Compensaciones'),
+    path('compensaciones/print/<str:fechaInicio>/<str:fechaFin>/<int:folio>/<str:tipo>', json_to_pdf, name='print_Compensaciones'),
     path('compensaciones/printarea/<str:fechaInicio>/<str:fechaFin>/<int:folio>', compensacionesArea, name='print_CompensacionesArea'),
     path('search_compensacion/', GetPersonasCompensacion, name='search_person_compensacion'),
 
@@ -130,6 +130,7 @@ urlpatterns = [
     path('sersoc/file', SersocFileListView.as_view(), name='sersoc_file'),
     path('sersoc/directory', getDirectoryItems, name='get_detail'),
     path('sersoc/file/save', SaveDocumento, name="save_file_ss"),
+     path('sersoc/file/delete', DeleteDocumento, name="delete_file_ss"),
     #Consulta 
     path('consulta/<str:rfc>/', ValidateRFC, name='validate_rfc'),
 
@@ -148,4 +149,4 @@ urlpatterns = [
     #Api URL's
     path('api-auth/', include('rest_framework.urls')),
     path('', include(crede_urls)),
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)   
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

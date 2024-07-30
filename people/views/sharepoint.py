@@ -15,8 +15,8 @@ def getToken(pk):
 
 
 
-def DownloadFiles(folder, file):
-    token, sharepoint = getToken(1)
+def DownloadFiles(folder, file, sharepoint):
+    token, sharepoint = getToken(sharepoint)
     
     headers = {'Authorization': 'Bearer {}'.format(token['access_token'])}
     onedrive_destination = '{}/{}/me/drive/root:/{}'.format(sharepoint.resource_url, sharepoint.api_version, folder)
@@ -35,8 +35,8 @@ def GetDirectoryInfo(folder):
     content = json.loads(response.content)
     return content 
 
-def UploadFile(file, nombre, folder):
-    sharepoint = Sharepoint.objects.get(pk=1)
+def UploadFile(file, nombre, folder, sharepoint):
+    sharepoint = Sharepoint.objects.get(pk=sharepoint)
     authority = sharepoint.authority_url+'{}'.format(sharepoint.tenant_id)
     SCOPES = ['Sites.ReadWrite.All','Files.ReadWrite.All'] # Add other scopes/permissions as needed.
     #https://login.microsoftonline.com/6b874ffe-e856-4262-bc7f-9f7b945ef3b3/oauth2/v2.0/authorize?response_type=token&client_id=de4fad1d-eb00-48ff-aed5-bd79ff1d0878&scope=Sites.ReadWrite.All+Files.ReadWrite.All&state=NVQnGCAchrJIqsAeAxYO0Mc0N8l3Wq

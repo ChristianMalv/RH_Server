@@ -24,7 +24,8 @@ from .sersoc import (
     SersocAsistListView, 
     SersocFileListView, 
     getDirectoryItems,
-    SaveDocumento
+    SaveDocumento,
+    DeleteDocumento
 )
 from .consulta import ValidateRFC
 from .vacaciones import PersonVacacionesListView, GetPersonasVacacion, GetDetalleVacacion, DeleteDayVacacion

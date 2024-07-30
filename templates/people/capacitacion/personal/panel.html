@@ -30,19 +30,20 @@
 
   <div class="row">
                         <div class="col-md-12 col-lg-12">
-                            <h2> Seguimiento Capacitación </h2>
-                            <h3>{{person.nombres}} {{ person.apellido1 }} {{person.apellido2}}</h2>
+                            <h2 id="titleText">  </h2>
+                            <h3 id="personText"> 
+                            <h4>{{person.nombres}} {{ person.apellido1 }} {{person.apellido2}}</h4></h3>
                             <hr class="red">
                         </div>
                     </div>
-  
+  <h5 id="detailText"></h5>
   <ul class="nav nav-tabs">
-  <li id="liPendientes" class="tablinks"><a data-toggle="tab" onclick="openTab(event, 'Pendientes')" id="defaultOpen">Cursos pendientes</a></li>
-  <li id="liEntregadas" class="tablinks"><a data-toggle="tab" onclick="openTab(event, 'Entregadas')">Cursos entregados</a></li>
-  <li id="liRechazados" class="tablinks"><a data-toggle="tab" onclick="openTab(event, 'Rechazados')">Evidencias rechazadas</a></li>
+  <li id="liPendientes" class="tablinks"><a data-toggle="tab" onclick="openTab(event, 'Pendientes')" id="defaultOpen"><h5 id="pendientesLi"></h5></a></li>
+  <li id="liEntregadas" class="tablinks"><a data-toggle="tab" onclick="openTab(event, 'Entregadas')"><h5 id="entregadasLi"></h5></a></li>
+  <li id="liRechazados" class="tablinks"><a data-toggle="tab" onclick="openTab(event, 'Rechazados')"><h5 id="rechazadosLi"></h5></a></li>
   </ul>
 <div id="Pendientes" class="tabcontent">  
-<h3> Cursos por entregar </h3>
+<h3 id="pendientesText"> Cursos por entregar </h3>
 {% for curso in pendientes %}
           
 <div class="card" style="width: 18rem;">
@@ -50,18 +51,18 @@
   <div class="card-body">
     <h5 class="card-title">{{ curso.nombre }}</h5>
     <a href="{{ curso.enlace }}" target="_blank"><h6 id="ruta">{{ curso.enlace }}</h6></a>
-    <a id="{{curso.pk}}" name="{{curso.nombre}}" class="btn btn-primary cargarDocumento" data-toggle="modal" data-target="#myModal">Cargar Constancia</a>
+    <a id="{{curso.pk}}" name="{{curso.nombre}}" class="btn btn-primary cargarDocumento" data-toggle="modal" data-target="#myModal"><h6 class="cargarText"></h6></a>
   </div>
 </div>
 {% empty %}
       <tr class="table-active">
-            <td colspan="3">No hay cursos pendientes por cumplir</td>
+            <td colspan="3"><h6 id="pendientesNoText"></h6> </td>
           </tr>
 {% endfor %} 
 
 </div>
 <div id="Entregadas" class="tabcontent"> 
-<h3> Cursos entregados </h3> 
+<h3 id="entregadasText"> Cursos entregados </h3> 
   {% for curso in entregadas %}
             
   <div class="card" style="width: 18rem;">
@@ -70,7 +71,7 @@
       <h5 class="card-title">{{ curso.curso_tomado__nombre }}</h5>
       {% for key, value in curso.metadatos.items %}
          {% if key == 'webUrl' %}
-          <a href="{{ value }}" target="_blank" class="btn btn-primary">Consultar Evidencia</a>
+          <a href="{{ value }}" target="_blank" class="btn btn-primary"><h6 class="consultarText"></h6></a>
           {% endif %}
       {% endfor %}
         {% if curso.aprobado == 0 %}
@@ -82,12 +83,12 @@
   </div>
   {% empty %}
       <tr class="table-active">
-            <td colspan="3">No hay cursos entregados aún</td>
+            <td colspan="3"><h6 id="entregadasNoText"></h6></td>
           </tr>
   {% endfor %}
 </div>
 <div id="Rechazados" class="tabcontent"> 
-<h3> Evidencias rechazadas </h3> 
+<h3 id="rechazadasText"> Evidencias rechazadas </h3> 
 {% for curso in rechazos %}
             
   <div class="card" style="width: 18rem;">
@@ -96,16 +97,16 @@
       <h5 class="card-title">{{ curso.curso_tomado__nombre }}</h5>
       {% for key, value in curso.metadatos.items %}
          {% if key == 'webUrl' %}
-          <a href="{{ value }}" target="_blank" class="btn btn-primary">Consultar Evidencia</a>
+          <a href="{{ value }}" target="_blank" class="btn btn-primary"><h6 class="consultarText"></h6></a>
           {% endif %}
       {% endfor %}
     <p><h6> Observaciones:</h6> {{curso.observaciones}} </p> 
-     <a id="{{curso.pk}}" name="{{curso.curso_tomado__pk}}" class="btn btn-primary remplazarDocumento" data-toggle="modal" data-target="#myModal">Cargar Constancia</a>
+     <a id="{{curso.pk}}" name="{{curso.curso_tomado__pk}}" class="btn btn-primary remplazarDocumento" data-toggle="modal" data-target="#myModal"><h6 class="cargarText"></h6></a>
     </div>
   </div>
   {% empty %}
       <tr class="table-active">
-            <td colspan="3">No hay cursos rechazados aún</td>
+            <td colspan="3"><h6 id="rechazadasNoText"></h6></td>
           </tr>
   {% endfor %}
 </div>
@@ -113,7 +114,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title">Adjuntar evidencia de la Capacitación</h4>
+        <h4 class="modal-title" id="adjuntarText">Adjuntar evidencia de la Capacitación</h4>
       </div>
       <div class="modal-body">
         <form id="data" method="post" enctype="multipart/form-data">
@@ -226,6 +227,63 @@ $(document).on("click",".remplazarDocumento",function(){
   $("#pk_evidencia").val(id);
   $("#cursoDocumento").html('Remplace evidencia anterior');
   });
+
+  function setTranslations(lang) {
+        const translations = {
+            base: {
+        title: "Seguimiento Capacitación",
+        person: "Empleado(a)",
+        detail: "",
+		pendientesLi:"Acciones pendientes",
+		entregadasLi:"Acciones cargadas",
+		rechazadosLi:"Acciones rechazadas",
+		entregadas:"Acciones de actualización entregadas",
+		entregadasNo:"No hay acciones entregadas",
+		pendientes:"Acciones de actualización pendientes",
+		pendientesNo:"No hay acciones pendientes por cumplir",
+		rechazadas:"Acciones de actualización rechazadas",
+		rechazadasNo:"No hay acciones rechazadas",
+		adjuntar:"Adjuntar acción",
+		consultar:"Consultar acción",
+		cargar:"Cargar acción",
+    },
+    honorarios: {
+        title: "Acciones de actualización profesionalización",
+        person: " Prestador(a) de servicios profesionales por honorarios",
+        detail: "Carga de acciones de actualización profesionalización con base en la cláusula segunda del contrato de servicios profesionales respecto a la calidad de los servicios profesionales prestados a la Dirección General @prende.mx.",
+		pendientesLi:"Acciones pendientes",
+		entregadasLi:"Acciones cargadas",
+		rechazadosLi:"Acciones rechazadas",
+		entregadas:"Acciones de actualización profesional cargadas",
+		entregadasNo:"No hay acciones de actualización por cargar",
+		pendientes:"Acciones de actualización profesional pendientes",
+		pendientesNo:"No hay acciones de actualización pendientes",
+		rechazadas:"Acciones de actualización profesional rechazadas",
+		rechazadasNo:"No hay acciones de actualización rechazadas",
+		adjuntar:"Adjuntar acción",
+		consultar:"Consultar acción",
+		cargar:"Cargar acción",
+    }       };
+
+        const data = translations[lang];
+        $('#titleText').text(data.title);
+        $('#personText').text(data.person);
+        $('#detailText').text(data.detail);
+        $('#pendientesText').text(data.pendientes);
+        $('#entregadasText').text(data.entregadas);
+        $('#rechazadasText').text(data.rechazadas);
+        $('#pendientesNoText').text(data.pendientesNo);
+        $('#entregadasNoText').text(data.entregadasNo);
+        $('#rechazadasNoText').text(data.rechazadasNo);
+        $('#pendientesLi').text(data.pendientesLi);
+        $('#entregadasLi').text(data.entregadasLi);
+        $('#rechazadosLi').text(data.rechazadosLi);
+        $('#adjuntarText').text(data.adjuntar);
+        $('.consultarText').text(data.consultar);
+        $('.cargarText').text(data.cargar);
+    }
+ setTranslations('{{contrato}}');
+
 </script>
 <style type="text/css">
 

@@ -189,24 +189,26 @@ def compensacionesArea(request,fechaInicio,fechaFin, folio ):
         return response
         
 @csrf_exempt      
-def json_to_pdf(request,fechaInicio,fechaFin,folio  ):
+def json_to_pdf(request,fechaInicio,fechaFin,folio, tipo  ):
     dateInicio = datetime.datetime.strptime(fechaInicio, "%d-%m-%Y")
     dateFin = datetime.datetime.strptime(fechaFin, "%d-%m-%Y")
  
-    
-    input_file = settings.MEDIA_ROOT+ '/Formatos/Compensacion_v1.jrxml'
+    if tipo == "pdf":
+        input_file = settings.MEDIA_ROOT+ '/Formatos/Compensacion_v1.jrxml'
+    else:
+        input_file = settings.MEDIA_ROOT+ '/Formatos/Compensacion_v1_xls.jrxml'
     CreateJson(dateInicio, dateFin, None, folio, 'General')
     conn = {
       'driver': 'json',
       'data_file': settings.MEDIA_ROOT+ '/Formatos/dataGeneral.json',
       'json_query': 'compensacion'
    }
-    outputFile= settings.MEDIA_ROOT+ '/Formatos/ReporteCompensacion '+fechaInicio+' al '+fechaFin+'.pdf' 
+    outputFile= settings.MEDIA_ROOT+ '/Formatos/ReporteCompensacion '+fechaInicio+' al '+fechaFin+'.'+tipo 
     pyreportjasper = PyReportJasper()
     pyreportjasper.config(
       input_file,
       output_file=outputFile,
-      output_formats=["pdf"],
+      output_formats=[tipo],
       db_connection=conn
    )
     pyreportjasper.process_report()
@@ -215,8 +217,12 @@ def json_to_pdf(request,fechaInicio,fechaFin,folio  ):
     if os.path.isfile(outputFile):
     #    print('Report generated successfully!')
         with open(outputFile, 'rb') as pdf:
-            response = HttpResponse(pdf.read(),content_type='application/pdf')
-            response['Content-Disposition'] = 'filename=ReporteCompensacion.pdf'
+            if tipo == "pdf":
+                response = HttpResponse(pdf.read(),content_type='application/pdf')
+                response['Content-Disposition'] = 'filename=ReporteCompensacion.pdf'
+            else:
+                response = HttpResponse(pdf.read(),  content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+                response['Content-Disposition'] = 'attachment; filename=ReporteCompensacion.xls'
         return response
 
 

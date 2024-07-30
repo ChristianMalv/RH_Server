@@ -109,11 +109,16 @@ class CapacitacionesxPersona(View):
                                                                                                                     'curso_tomado__fecha_limite', 'curso_tomado__enlace', 'metadatos', 'aprobado')
         rechazos = EvidenciaCurso.objects.filter( Q(info_person__matricula = self.kwargs['matricula']) & Q(aprobado = 1) ).values('pk', 'curso_tomado__pk', 'curso_tomado__nombre', 'curso_tomado__imagen_base64',  \
                                                                                                                     'curso_tomado__fecha_limite', 'curso_tomado__enlace', 'metadatos', 'observaciones')
+        if (person.cat_contratacion.pk == 1) or (person.cat_contratacion.pk == 2):
+            contrato = 'base'
+        else:
+            contrato = 'honorarios'
         content = {
             'pendientes': person_cursos, 
             'entregadas': entregadas,
             'person': person,
             'rechazos': rechazos,
+            'contrato': contrato,
             }
         return render(request, 'people/capacitacion/personal/panel.html' , content)
     
