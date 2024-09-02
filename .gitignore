@@ -1,4 +1,5 @@
 env/
+media/
 myvenv/
 people/migrations/
 **/__pycache__/
