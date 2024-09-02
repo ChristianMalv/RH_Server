@@ -280,7 +280,7 @@ def SaveDocumento(request):
                 documento = DocumentosSS( info_person = person, nombre= file_name, metadatos = json_data)
                 documento.save()
        
-        documento_data={"error":False,"errorMessage":"Documento Agregado!", "documento": f'<tr><td>{file_name}</td><td> <a href="{json_data['webUrl']}" target="_blank" class="btn btn-primary">Consultar Documento</a></td></tr>' }
+        documento_data={"error":False,"errorMessage":"Documento Agregado!", "documento":json_data }
         return JsonResponse(documento_data,safe=False)
     except Exception as e:
         print(e)
